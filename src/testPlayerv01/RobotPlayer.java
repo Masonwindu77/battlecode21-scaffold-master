@@ -25,7 +25,14 @@ public strictfp class RobotPlayer {
         Direction.NORTHWEST,
     };
 
+    static final int[][] translateCoordinates = {
+        {-128,0}, 
+        {128, 0}, 
+        {0, -128}, 
+        {0, 128}};
+
     static int turnCount;
+    static boolean debug = true;
 
     static Map<Integer, MapLocation> enemyEnlightenmentCenterMapLocation = new HashMap<Integer, MapLocation>();
 
@@ -33,14 +40,19 @@ public strictfp class RobotPlayer {
     public static int spawnEnlightenmentCenterRobotId;
     private static int currentEnlightenmentCenterFlag;
 
+    static final int NBITS = 7;
+    static final int BITMASK = (1 << NBITS) - 1;
+
     private static int xOffset;
     private static int yOffset;
 
     protected static boolean messageReceived = false;
     protected static boolean haveMessageToSend = false;
 
+    static final int MIDDLE_GAME_ROUND_START = 100;
+
     // Max bit is 16|77|72|16
-    // 10000 to 30000
+    // 10000 to 30000    
     static final int ENEMY_ENLIGHTENMENT_CENTER_FOUND = 11;
     static final int ENEMY_ENLIGHTENMENT_CENTER_FOUND_X_COORDINATE = 112;
     static final int ENEMY_ENLIGHTENMENT_CENTER_FOUND_Y_COORDINATE = 113;
@@ -59,7 +71,19 @@ public strictfp class RobotPlayer {
         
         turnCount = 0;
 
-        System.out.println("I'm a " + robotController.getType() + " and I just got created!");
+        if (debug) {
+            System.out.println("I'm a " + robotController.getType() + " and I just got created!");
+        }
+        
+        switch (robotController.getType()) 
+        {
+            case ENLIGHTENMENT_CENTER: EnlightenmentCenterTest01.setup(); break;
+            case POLITICIAN:           PoliticianTest01.setup();          break;
+            case SLANDERER:             //runSlanderer();                  
+            break;
+            case MUCKRAKER:            MuckrakerTest01.setup();           break;
+        }
+
         while (true) {
             turnCount += 1;
             // Try/catch blocks stop unhandled exceptions, which cause your robot to freeze
@@ -71,7 +95,7 @@ public strictfp class RobotPlayer {
 
                 switch (robotController.getType()) {
                     case ENLIGHTENMENT_CENTER: EnlightenmentCenterTest01.run(); break;
-                    case POLITICIAN:           runPolitician();          break;
+                    case POLITICIAN:           PoliticianTest01.run();          break;
                     case SLANDERER:            runSlanderer();           break;
                     case MUCKRAKER:            MuckrakerTest01.run();           break;
                 }
@@ -130,20 +154,21 @@ public strictfp class RobotPlayer {
 
     static void checkIfSpawnEnlightenmentCenterHasEnemyLocation(int flag) throws GameActionException
     {
-
         if(robotController.canGetFlag(spawnEnlightenmentCenterRobotId))
         {
             currentEnlightenmentCenterFlag = robotController.getFlag(spawnEnlightenmentCenterRobotId);
-            //checkIfSpawnEnlightenmentCenterHasEnemyLocation(currentEnlightenmentCenterFlag);
 
+            if(checkIfEnemeyEnlightenmentCenterHasBeenFound(currentEnlightenmentCenterFlag))
+            {
+                MapLocation enemyCenterLocation = getLocationFromFlag(flag);
+            }
+            //checkIfSpawnEnlightenmentCenterHasEnemyLocation(currentEnlightenmentCenterFlag);
         }
         String flagOfEnlightenmentCenter = String.valueOf(flag);
 
         char[] arrayOfTheFlag = flagOfEnlightenmentCenter.toCharArray();
 
         int tryingThis = arrayOfTheFlag[0] + arrayOfTheFlag[1];
-        System.out.println("checkIfSpawnEnlightenmentCenterHasEnemyLocation" 
-        + tryingThis + "<--That was the variable AND:" + flagOfEnlightenmentCenter);
 
         if (tryingThis == ENEMY_ENLIGHTENMENT_CENTER_FOUND) {
 
@@ -157,6 +182,19 @@ public strictfp class RobotPlayer {
 
     }
 
+	protected static boolean checkIfEnemeyEnlightenmentCenterHasBeenFound(int flag) throws GameActionException
+    {
+        boolean foundTheCenter = false;
+        int extraInformation = flag / 128 / 128;
+
+        if (extraInformation == ENEMY_ENLIGHTENMENT_CENTER_FOUND) 
+        {
+            foundTheCenter = true;
+        }
+
+        return foundTheCenter;
+    }
+
     static void assignHomeEnlightenmentCenterLocation()
     {
         RobotInfo[] robots = robotController.senseNearbyRobots();
@@ -168,59 +206,44 @@ public strictfp class RobotPlayer {
         }
     }
 
-    static int getFirstTwoIntegersFromFlag(char[] splitFlag)
+    static void sendLocation(MapLocation location, int extraInformation) throws GameActionException
     {
-        int result = 0;
+        int x = location.x;
+        int y = location.y;
+        int encodedLocation = ((x & BITMASK) << NBITS) + (y & BITMASK) + (extraInformation * 128 * 128);
 
-        for (int i = 0; i < 2; i++)
-        {
-            int digit = (int)splitFlag[i] - (int)'0';
-            result *= 10;
-            result += digit;
-        }
-
-        return result;
-    }
-
-    protected static int getLastFiveIntegersFromFlag(char[] splitFlag)
-    {
-        int result = 0;
-
-        for (int i = 3; i < 8; i++)
-        {
-            int digit = (int)splitFlag[i] - (int)'0';
-            result *= 10;
-            result += digit;
-        }
-
-        return result;
-    }
-
-    protected static int createFlagWithXCoordinate(int typeOfMessage, MapLocation map)
-    {
-        int flag = typeOfMessage;
-        flag *= 100000;
-        flag += map.x;
-
-        return flag;
-    }
-
-    protected static int createFlagWithYCoordinate(int typeOfMessage, MapLocation map)
-    {
-        int flag = typeOfMessage;
-        flag *= 100000;
-        flag += map.y;
-
-        return flag;
-    }
-
-    static void sendLocation() throws GameActionException
-    {
-        ine encodedLocation = (x & BITMASK) << NBITS) + (y & BITMASK);
         if (robotController.canSetFlag(encodedLocation)) 
         {
             robotController.setFlag(encodedLocation);    
         }
+    }
+
+    static MapLocation getLocationFromFlag(int flag) throws GameActionException
+    {
+        int y = flag & BITMASK;
+        int x = (flag >> NBITS) & BITMASK;
+        MapLocation currentLocation = robotController.getLocation();
+
+        int offsetX128 = currentLocation.x / 128; // TODO: Test, can I put bitmask here?
+        int offsetY128 = currentLocation.y / 128;
+
+        MapLocation actualLocation = new MapLocation(offsetX128 * 128 + x, offsetY128 * 128 + y);
+
+        MapLocation alternative = actualLocation.translate(-128, 0);
+
+        for (int iterator = 0; iterator < translateCoordinates.length; ++iterator) 
+        {
+            for (int innerIterator = 0; innerIterator < 1; ++innerIterator) {
+                alternative = actualLocation.translate(translateCoordinates[iterator][innerIterator], translateCoordinates[iterator][innerIterator + 1]);
+
+                if (currentLocation.distanceSquaredTo(alternative) < currentLocation.distanceSquaredTo(actualLocation)) {
+                    actualLocation = alternative;
+                    break;
+                }
+            }            
+        }
+
+        return actualLocation;
     }
 
 }

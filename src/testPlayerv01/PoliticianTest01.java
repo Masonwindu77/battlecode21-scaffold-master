@@ -56,4 +56,9 @@ public class PoliticianTest01 extends RobotPlayer
             tryMove(randomDirection());
         }
     }
+
+    static void setup()
+    {
+        assignHomeEnlightenmentCenterLocation();
+    }
 }

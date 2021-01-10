@@ -21,7 +21,7 @@ public class MuckrakerTest01 extends RobotPlayer
             }
         }
 
-        if (enemyEnlightenmentCenterMapLocation.size() == 0) {
+        if (enemyEnlightenmentCenterMapLocation.size() <= 3) {
             checkIfRobotCanSenseEnemyEnlightenmentCenter();
         }
         
@@ -77,21 +77,8 @@ public class MuckrakerTest01 extends RobotPlayer
 
     private static void announceEnemyEnlightenmentCenterLocation() throws GameActionException 
     {
-        int flagToSend = 0;
-        if (robotController.getRoundNum() % 2 == 0) 
-        {
-            flagToSend = createFlagWithXCoordinate(ENEMY_ENLIGHTENMENT_CENTER_FOUND_X_COORDINATE
-            , enemyEnlightenmentCenterMapLocation.get(enemyEnlightenmentCenterMapLocation.size()));
-        }
-        else
-        {
-            flagToSend = createFlagWithYCoordinate(ENEMY_ENLIGHTENMENT_CENTER_FOUND_Y_COORDINATE
-            , enemyEnlightenmentCenterMapLocation.get(enemyEnlightenmentCenterMapLocation.size()));
-        }
-
-        if (robotController.canSetFlag(flagToSend)) {
-            robotController.setFlag(flagToSend);
-        }
+        MapLocation enemyCenterLocation = enemyEnlightenmentCenterMapLocation.get(enemyEnlightenmentCenterMapLocation.size());
+        sendLocation(enemyCenterLocation, ENEMY_ENLIGHTENMENT_CENTER_FOUND);
 	}
 
 	public static void setup() throws GameActionException
