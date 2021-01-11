@@ -2,19 +2,21 @@ package testPlayerv01;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.print.attribute.standard.PrinterLocation;
+
 import battlecode.common.*;
 
  @SuppressWarnings("unused")
 public strictfp class RobotPlayer {
-    static RobotController robotController;
+    protected static RobotController robotController;
 
     static final RobotType[] spawnableRobot = {
         RobotType.POLITICIAN,
-        //RobotType.SLANDERER,
+        RobotType.SLANDERER,
         RobotType.MUCKRAKER,
     };
 
-    static final Direction[] directions = {
+    public static final Direction[] directions = {
         Direction.NORTH,
         Direction.NORTHEAST,
         Direction.EAST,
@@ -25,38 +27,96 @@ public strictfp class RobotPlayer {
         Direction.NORTHWEST,
     };
 
-    static final int[][] translateCoordinates = {
-        {-128,0}, 
-        {128, 0}, 
-        {0, -128}, 
-        {0, 128}};
+    public static enum RobotRoles{
+        PoliticianEnlightenmentCenterBomb, // influence >= 100
+        SlandererAttacker, // Muckraker & Polis team
+        Scout, // Muckraker OR Polis
+        DefendHomeEnlightenmentCenter, // Muckraker w/influence > 1
+        Leader, // Polis w/ 20 influence
+        Follower, // Polis w/ < 20
+        DefendSlanderer, // Muckraker will scout
+    }
+
+    public static void println(String string)
+    {
+        if (debug) 
+        {
+            System.out.println(string);
+        }		
+    }    
 
     static int turnCount;
     static boolean debug = true;
 
-    static Map<Integer, MapLocation> enemyEnlightenmentCenterMapLocation = new HashMap<Integer, MapLocation>();
+    static Team enemy;
+    static Team friendly;
+    static double empowerFactor = 1;
+    static final int POLITICIAN_TAX = 10;
 
+    static boolean moveRobot;
+
+    // Robotinfo
+    static int robotCurrentInfluence;
+    static int robotCurrentConviction;
+    static boolean lowestRobotIdOfFriendlies;
+    static final int ACTION_RADIUS_POLITICIAN = 9;
+
+    // Roles
+    protected static RobotRoles robotRole;
+    protected static final int POLITICIAN_EC_BOMB = 160;
+    protected static final int POLITICIAN_LEADER = 20;
+    protected static final int POLITICIAN_FOLLOWER = 12;
+    public static final int INFLUENCE_FOR_SCOUT = 1;
+    protected static final int INFLUENCE_FOR_DEFEND_SLANDERER_MUCKRAKER = 3;
+
+    // Troops
+    static boolean politicianECBombNearby;
+
+    // Movement
+    protected static boolean targetInSight = false;
+    protected static final double passabilityThreshold = 0.4;
+    protected static Direction bugDirection = null;
+    protected static MapLocation locationToScout = null;
+    protected static MapLocation targetLocation = null;
+    protected static Direction directionToScout = null;
+    protected static MapLocation stuckLocation = null;
+
+    // Enemy Enlightenment Center
+    static Map<Integer, MapLocation> enemyEnlightenmentCenterMapLocation = new HashMap<Integer, MapLocation>();
+    static boolean enemyEnlightenmentCenterFound = false;
+    static MapLocation currentEnemyEnlightenmentCenterGoingFor;
+
+    // Home Enlightenment Center
     private static MapLocation enlightenmentCenterHomeLocation;
     public static int spawnEnlightenmentCenterRobotId;
     private static int currentEnlightenmentCenterFlag;
 
+    // Sending Flags
     static final int NBITS = 7;
     static final int BITMASK = (1 << NBITS) - 1;
-
-    private static int xOffset;
-    private static int yOffset;
-
     protected static boolean messageReceived = false;
     protected static boolean haveMessageToSend = false;
+    static final int[][] translateCoordinates = {
+        {-(1 << NBITS),0}, 
+        {(1 << NBITS), 0}, 
+        {0, -(1 << NBITS)}, 
+        {0, (1 << NBITS)}};
 
-    static final int MIDDLE_GAME_ROUND_START = 100;
 
-    // Max bit is 16|77|72|16
+    static final int MIDDLE_GAME_ROUND_START = 300;
+
+    // Max bit is 2^24
     // 10000 to 30000    
+    // Signals
     static final int ENEMY_ENLIGHTENMENT_CENTER_FOUND = 11;
-    static final int ENEMY_ENLIGHTENMENT_CENTER_FOUND_X_COORDINATE = 112;
-    static final int ENEMY_ENLIGHTENMENT_CENTER_FOUND_Y_COORDINATE = 113;
+    static final int KILL_ENEMY_TARGET = 12;
     static final int RECEIVED_MESSAGE = 99;
+
+    // POLITICIAN
+    static final int MIN_NORMAL_POLITICIAN = 12;
+    static final int MAX_NORMAL_POLITICIAN = 20;
+
+    // TODO: ROLES in Flags? 
 
     /**
      * run() is the method that is called when a robot is instantiated in the Battlecode world.
@@ -72,15 +132,14 @@ public strictfp class RobotPlayer {
         turnCount = 0;
 
         if (debug) {
-            System.out.println("I'm a " + robotController.getType() + " and I just got created!");
+            // System.out.println("I'm a " + robotController.getType() + " and I just got created!");
         }
         
         switch (robotController.getType()) 
         {
             case ENLIGHTENMENT_CENTER: EnlightenmentCenterTest01.setup(); break;
             case POLITICIAN:           PoliticianTest01.setup();          break;
-            case SLANDERER:             //runSlanderer();                  
-            break;
+            case SLANDERER:            Slanderer.setup();                 break;
             case MUCKRAKER:            MuckrakerTest01.setup();           break;
         }
 
@@ -96,7 +155,7 @@ public strictfp class RobotPlayer {
                 switch (robotController.getType()) {
                     case ENLIGHTENMENT_CENTER: EnlightenmentCenterTest01.run(); break;
                     case POLITICIAN:           PoliticianTest01.run();          break;
-                    case SLANDERER:            runSlanderer();           break;
+                    case SLANDERER:            Slanderer.run();                 break;
                     case MUCKRAKER:            MuckrakerTest01.run();           break;
                 }
 
@@ -109,12 +168,6 @@ public strictfp class RobotPlayer {
             }
         }
     }
-
-    static void runSlanderer() throws GameActionException {
-        tryMove(randomDirection());
-            //System.out.println("I moved!");
-    }
-
     /**
      * Returns a random Direction.
      *
@@ -140,59 +193,12 @@ public strictfp class RobotPlayer {
      * @return true if a move was performed
      * @throws GameActionException
      */
-    static boolean tryMove(Direction dir) throws GameActionException {
-        // System.out.println("I am trying to move " + dir + 
-        // "; IsReady:" + robotController.isReady() + 
-        // " Cooldown" + robotController.getCooldownTurns() + 
-        // " canMove:" + robotController.canMove(dir));
-
+    static boolean tryMove(Direction dir) throws GameActionException 
+    {
         if (robotController.canMove(dir)) {
             robotController.move(dir);
             return true;
         } else return false;
-    }
-
-    static void checkIfSpawnEnlightenmentCenterHasEnemyLocation(int flag) throws GameActionException
-    {
-        if(robotController.canGetFlag(spawnEnlightenmentCenterRobotId))
-        {
-            currentEnlightenmentCenterFlag = robotController.getFlag(spawnEnlightenmentCenterRobotId);
-
-            if(checkIfEnemeyEnlightenmentCenterHasBeenFound(currentEnlightenmentCenterFlag))
-            {
-                MapLocation enemyCenterLocation = getLocationFromFlag(flag);
-            }
-            //checkIfSpawnEnlightenmentCenterHasEnemyLocation(currentEnlightenmentCenterFlag);
-        }
-        String flagOfEnlightenmentCenter = String.valueOf(flag);
-
-        char[] arrayOfTheFlag = flagOfEnlightenmentCenter.toCharArray();
-
-        int tryingThis = arrayOfTheFlag[0] + arrayOfTheFlag[1];
-
-        if (tryingThis == ENEMY_ENLIGHTENMENT_CENTER_FOUND) {
-
-            int x = arrayOfTheFlag[2] + arrayOfTheFlag[3];
-            int y = arrayOfTheFlag[4] + arrayOfTheFlag[5];            
-            MapLocation enemyEnlightenmentCenterLocation = new MapLocation(x, y);
-            int iterator = enemyEnlightenmentCenterMapLocation.size()+1;
-
-            enemyEnlightenmentCenterMapLocation.put(iterator, enemyEnlightenmentCenterLocation);
-        }
-
-    }
-
-	protected static boolean checkIfEnemeyEnlightenmentCenterHasBeenFound(int flag) throws GameActionException
-    {
-        boolean foundTheCenter = false;
-        int extraInformation = flag / 128 / 128;
-
-        if (extraInformation == ENEMY_ENLIGHTENMENT_CENTER_FOUND) 
-        {
-            foundTheCenter = true;
-        }
-
-        return foundTheCenter;
     }
 
     static void assignHomeEnlightenmentCenterLocation()
@@ -206,11 +212,43 @@ public strictfp class RobotPlayer {
         }
     }
 
+    static void checkIfSpawnEnlightenmentCenterHasEnemyLocation() throws GameActionException
+    {
+        if(robotController.canGetFlag(spawnEnlightenmentCenterRobotId))
+        {
+            currentEnlightenmentCenterFlag = robotController.getFlag(spawnEnlightenmentCenterRobotId);
+
+            if(currentEnlightenmentCenterFlag != 0 && checkIfEnemeyEnlightenmentCenterHasBeenFound(currentEnlightenmentCenterFlag))
+            {
+                MapLocation enemyEnlightenmentCenterLocation = getLocationFromFlag(currentEnlightenmentCenterFlag);
+                if (!enemyEnlightenmentCenterMapLocation.containsValue(enemyEnlightenmentCenterLocation)) 
+                {
+                    enemyEnlightenmentCenterMapLocation.put(enemyEnlightenmentCenterMapLocation.size() + 1, enemyEnlightenmentCenterLocation);
+                    enemyEnlightenmentCenterFound = true; // TODO:see if this is a good idea...
+                }
+                
+            }
+        }
+    }
+
+	protected static boolean checkIfEnemeyEnlightenmentCenterHasBeenFound(int flag) throws GameActionException
+    {
+        boolean foundTheCenter = false;
+        int extraInformation = flag >> (2*NBITS);
+        
+        if (extraInformation == ENEMY_ENLIGHTENMENT_CENTER_FOUND) 
+        {
+            foundTheCenter = true;
+        }
+
+        return foundTheCenter;
+    }
+
     static void sendLocation(MapLocation location, int extraInformation) throws GameActionException
     {
         int x = location.x;
         int y = location.y;
-        int encodedLocation = ((x & BITMASK) << NBITS) + (y & BITMASK) + (extraInformation * 128 * 128);
+        int encodedLocation = (extraInformation << (2*NBITS)) + ((x & BITMASK) << NBITS) + (y & BITMASK);
 
         if (robotController.canSetFlag(encodedLocation)) 
         {
@@ -224,12 +262,11 @@ public strictfp class RobotPlayer {
         int x = (flag >> NBITS) & BITMASK;
         MapLocation currentLocation = robotController.getLocation();
 
-        int offsetX128 = currentLocation.x / 128; // TODO: Test, can I put bitmask here?
-        int offsetY128 = currentLocation.y / 128;
+        int offsetX128 = currentLocation.x >> NBITS;
+        int offsetY128 = currentLocation.y >> NBITS;
 
-        MapLocation actualLocation = new MapLocation(offsetX128 * 128 + x, offsetY128 * 128 + y);
-
-        MapLocation alternative = actualLocation.translate(-128, 0);
+        MapLocation actualLocation = new MapLocation((offsetX128 << NBITS) + x, (offsetY128 << NBITS)  + y);
+        MapLocation alternative = actualLocation;
 
         for (int iterator = 0; iterator < translateCoordinates.length; ++iterator) 
         {
@@ -238,7 +275,6 @@ public strictfp class RobotPlayer {
 
                 if (currentLocation.distanceSquaredTo(alternative) < currentLocation.distanceSquaredTo(actualLocation)) {
                     actualLocation = alternative;
-                    break;
                 }
             }            
         }

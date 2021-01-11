@@ -1,5 +1,6 @@
 package testPlayerv01;
 import battlecode.common.*;
+import testPlayerv01.Service.Movement;
 
 public class MuckrakerTest01 extends RobotPlayer
 {
@@ -37,37 +38,43 @@ public class MuckrakerTest01 extends RobotPlayer
         if (haveMessageToSend && !messageReceived) 
         {
             announceEnemyEnlightenmentCenterLocation();
+            haveMessageToSend = false;
         }
 
-        if (tryMove(Direction.EAST))//randomDirection()))
+        // Scout Role
+        if (robotRole == RobotRoles.Scout) 
         {
-            //System.out.println("MUCKRAKER! I moved!"); 
+            Movement.scoutAction();
         }
-        // if (true)//positionOfEnemyEnlightenmentCenterFound()) 
-        // {
+        else
+        {
+            tryMove(randomDirection());
+        }
 
-        //     Direction directionTowardsEnemyEnlightenmentCenter = Direction.NORTH;//getDirectionTowardsEnemyEnlightenmentCenter();
 
-        //     if (tryMove(directionTowardsEnemyEnlightenmentCenter)) {
-        //         System.out.println("MASON! MUCKRAKER! I MOVED");
-        //     }
-        // }
+        // TODO:
+        /*
+            So these guys are mostly the scouts since they can sense. what should they scout for?
+            1. enemy EC
+            2. enemy slanderer... though they will probably run away
+            3. big Polis?
+            4. large groups of enemies.
+            5. Map edge & corners.
+        */
     }
 
     private static void checkIfRobotCanSenseEnemyEnlightenmentCenter()
     {
         Team enemy = robotController.getTeam().opponent();
-        int actionRadius = robotController.getType().actionRadiusSquared;
+        int sensorRadiusSquared = robotController.getType().sensorRadiusSquared;
 
-        // System.out.println("checking for the enemey center....");
-        RobotInfo[] robots = robotController.senseNearbyRobots(actionRadius, enemy);
+        RobotInfo[] robots = robotController.senseNearbyRobots(sensorRadiusSquared, enemy);
 
         for (RobotInfo robotInfo : robots) 
         {
             if (robotInfo.getType() == RobotType.ENLIGHTENMENT_CENTER 
             && (!enemyEnlightenmentCenterMapLocation.containsValue(robotInfo.getLocation()) || enemyEnlightenmentCenterMapLocation.size() < 1)) 
             {
-                System.out.println("FOUND ENEMEY CENTER....");
                 enemyEnlightenmentCenterMapLocation.put(enemyEnlightenmentCenterMapLocation.size() + 1, robotInfo.getLocation());
                 haveMessageToSend = true;
                 messageReceived = false;
@@ -84,6 +91,24 @@ public class MuckrakerTest01 extends RobotPlayer
 	public static void setup() throws GameActionException
     {
         //checkIfEnemeyEnlightenmentCenterHasBeenFound();
-        assignHomeEnlightenmentCenterLocation();        
+        assignHomeEnlightenmentCenterLocation();       
+        setRobotRole(); 
+        enemy = robotController.getTeam().opponent();
+        friendly = robotController.getTeam();
+    }
+
+    private static void setRobotRole()
+    {
+        if (robotController.getInfluence() == 1) {
+            robotRole = RobotRoles.Scout;
+        }
+        else if (robotController.getInfluence() == 2) 
+        {
+            robotRole = RobotRoles.DefendHomeEnlightenmentCenter;
+        }
+        else
+        {
+            robotRole = RobotRoles.Follower;
+        }
     }
 }
