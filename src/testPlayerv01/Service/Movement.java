@@ -16,6 +16,7 @@ public class Movement extends RobotPlayer
         Direction.NORTHWEST,
     };
 
+    private static int stuckCount = 0;
     private static List<MapLocation> stuckLocations = new ArrayList<>();
     
     public static void basicBugMovement(MapLocation target) throws GameActionException
@@ -25,18 +26,19 @@ public class Movement extends RobotPlayer
 
         if(!currentLocation.equals(target) && robotController.isReady())
         {
-            if (canRobotMoveThroughTile(direction, currentLocation))
+            if (canRobotMoveThroughTile(direction, currentLocation) && stuckCount <= 10)
             {
                 robotController.move(direction);
                 bugDirection = null;
             }
-            else if (robotController.onTheMap(robotController.adjacentLocation(direction)))
+            else if (robotController.onTheMap(robotController.adjacentLocation(direction))&& stuckCount <= 10)
             {
                 if (bugDirection == null) {
                     bugDirection = direction;
                 }
 
                 stuckLocations.add(robotController.getLocation());                
+                stuckCount++;
 
                 for (MapLocation stuckLocation : stuckLocations) 
                 {               
@@ -55,22 +57,26 @@ public class Movement extends RobotPlayer
                             bugDirection = bugDirection.rotateLeft();
                         }
                     }                
-                    else
-                    {
-                        // Rotate Right
-                        for (int i = 0; i < 8; ++i) 
-                        {
-                            if (canRobotMoveThroughTile(bugDirection, currentLocation)) 
-                            {
-                                robotController.move(bugDirection);
-                                bugDirection = bugDirection.rotateLeft();
-                                break;
-                            }       
+                    // else
+                    // {
+                    //     // Rotate Right
+                    //     for (int i = 0; i < 8; ++i) 
+                    //     {
+                    //         if (canRobotMoveThroughTile(bugDirection, currentLocation)) 
+                    //         {
+                    //             robotController.move(bugDirection);
+                    //             bugDirection = bugDirection.rotateLeft();
+                    //             break;
+                    //         }       
     
-                            bugDirection = bugDirection.rotateRight();
-                        }
-                    }    
+                    //         bugDirection = bugDirection.rotateRight();
+                    //     }
+                    // }    
                 }            
+            }
+            else if (robotController.canMove(direction)) 
+            {
+                robotController.move(direction);
             }
             else
             {
@@ -95,6 +101,7 @@ public class Movement extends RobotPlayer
         else if(robotController.isReady())
         {
             targetInSight = true;
+            stuckCount = 0;
             // run BFS pathfinding
         }
     }
@@ -153,8 +160,9 @@ public class Movement extends RobotPlayer
     public static void mirrorDirection() throws GameActionException
     {
         MapLocation currentLocation = robotController.getLocation();
+        int randomNum = randomInteger.nextInt(1 - 0 + 1) + 0;
 
-        if (currentLocation.y % 2 == 0) 
+        if (randomNum == 0) 
         {
             locationToScout = currentLocation.translate(32, 0);
         }
@@ -166,30 +174,23 @@ public class Movement extends RobotPlayer
 
     public static void flipDirection() throws GameActionException
     {
-        MapLocation currentLocation = robotController.getLocation();
+        int randomNum = randomInteger.nextInt((flipDirections.length -1)  - 0 + 1) + 0;
 
-        Direction directionToScout = flipDirections[(int) (Math.random() * flipDirections.length)];
-        locationToScout = currentLocation.add(directionToScout);
-
-        for (int i = 0; i < 32; i++) {
-            locationToScout = locationToScout.add(directionToScout);
-        }
-
-        // if (currentLocation.y % 2 == 0) 
-        // {
-        //     locationToScout = currentLocation.translate(-32, -32);
-        // }
-        // else
-        // {
-        //     locationToScout = currentLocation.translate(32, 32);
-        // } 
+        directionToScout = flipDirections[randomNum]; 
     }   
 
     public static void moveAwayFromLocation(MapLocation locationToMoveAwayFrom) throws GameActionException
     {
         Direction directionToMoveAway = robotController.getLocation().directionTo(locationToMoveAwayFrom);
-        MapLocation locationToMoveAwayTo = locationToMoveAwayFrom.subtract(directionToMoveAway);
+        MapLocation locationToMoveTo = robotController.getLocation().subtract(directionToMoveAway);     
 
-        basicBugMovement(locationToMoveAwayTo);
+        if (robotController.canMove(directionToMoveAway)) {
+            robotController.move(directionToMoveAway);
+        }
+    }
+
+    public static void moveToEnemyEnlightenmentCenter(MapLocation enemyCenterLocation) throws GameActionException
+    {
+        Movement.basicBugMovement(enemyCenterLocation);
     }
 }

@@ -1,6 +1,7 @@
 package testPlayerv01;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import javax.print.attribute.standard.PrinterLocation;
 
@@ -46,7 +47,9 @@ public strictfp class RobotPlayer {
     }    
 
     static int turnCount;
-    static boolean debug = true;
+    static boolean debug = false;
+
+    protected static Random randomInteger;
 
     static Team enemy;
     static Team friendly;
@@ -74,7 +77,7 @@ public strictfp class RobotPlayer {
 
     // Movement
     protected static boolean targetInSight = false;
-    protected static final double passabilityThreshold = 0.4;
+    protected static final double passabilityThreshold = 0.3;
     protected static Direction bugDirection = null;
     protected static MapLocation locationToScout = null;
     protected static MapLocation targetLocation = null;
@@ -87,7 +90,7 @@ public strictfp class RobotPlayer {
     static MapLocation currentEnemyEnlightenmentCenterGoingFor;
 
     // Home Enlightenment Center
-    private static MapLocation enlightenmentCenterHomeLocation;
+    public static MapLocation enlightenmentCenterHomeLocation;
     public static int spawnEnlightenmentCenterRobotId;
     private static int currentEnlightenmentCenterFlag;
 
@@ -103,13 +106,14 @@ public strictfp class RobotPlayer {
         {0, (1 << NBITS)}};
 
 
-    static final int MIDDLE_GAME_ROUND_START = 300;
+    static final int MIDDLE_GAME_ROUND_START = 400;
 
     // Max bit is 2^24
     // 10000 to 30000    
     // Signals
     static final int ENEMY_ENLIGHTENMENT_CENTER_FOUND = 11;
     static final int KILL_ENEMY_TARGET = 12;
+    static final int ENEMY_ENLIGHTENMENT_CENTER_CONVERTED = 13;
     static final int RECEIVED_MESSAGE = 99;
 
     // POLITICIAN
@@ -130,10 +134,6 @@ public strictfp class RobotPlayer {
         RobotPlayer.robotController = robotController;
         
         turnCount = 0;
-
-        if (debug) {
-            // System.out.println("I'm a " + robotController.getType() + " and I just got created!");
-        }
         
         switch (robotController.getType()) 
         {
@@ -149,8 +149,6 @@ public strictfp class RobotPlayer {
             try {
                 // Here, we've separated the controls into a different method for each RobotType.
                 // You may rewrite this into your own control structure if you wish.
-                
-                //---System.out.println("I'm a " + robotController.getType() + "! Location " + robotController.getLocation());
 
                 switch (robotController.getType()) {
                     case ENLIGHTENMENT_CENTER: EnlightenmentCenterTest01.run(); break;
@@ -163,7 +161,7 @@ public strictfp class RobotPlayer {
                 Clock.yield();
 
             } catch (Exception e) {
-                System.out.println(robotController.getType() + " Exception");
+                println(robotController.getType() + " Exception");
                 e.printStackTrace();
             }
         }
@@ -225,6 +223,7 @@ public strictfp class RobotPlayer {
                 {
                     enemyEnlightenmentCenterMapLocation.put(enemyEnlightenmentCenterMapLocation.size() + 1, enemyEnlightenmentCenterLocation);
                     enemyEnlightenmentCenterFound = true; // TODO:see if this is a good idea...
+                    currentEnemyEnlightenmentCenterGoingFor = enemyEnlightenmentCenterLocation;
                 }
                 
             }
@@ -242,6 +241,39 @@ public strictfp class RobotPlayer {
         }
 
         return foundTheCenter;
+    }
+
+    protected static boolean checkIfEnemeyEnlightenmentCenterHasBeenConverted(int flag) throws GameActionException
+    {
+        boolean hasBeenConverted = false;
+        int extraInformation = flag >> (2*NBITS);
+
+        if (extraInformation == ENEMY_ENLIGHTENMENT_CENTER_CONVERTED) 
+        {
+            hasBeenConverted = true;
+        }
+
+        return hasBeenConverted;
+    }
+
+    protected static boolean enemyEnlightenmentCenterHasBeenConverted() throws GameActionException
+    {
+        boolean hasBennConverted = false;
+        if (robotController.canSenseLocation(currentEnemyEnlightenmentCenterGoingFor)) 
+        {
+            RobotInfo[] robots = robotController.senseNearbyRobots();
+            for (RobotInfo robotInfo : robots) 
+            {
+                if (robotInfo.getType() == RobotType.ENLIGHTENMENT_CENTER 
+                && robotInfo.getTeam() != enemy
+                && robotInfo.getLocation() == currentEnemyEnlightenmentCenterGoingFor) 
+                {
+                    hasBennConverted = true;
+                }
+            }
+        }
+
+        return hasBennConverted;
     }
 
     static void sendLocation(MapLocation location, int extraInformation) throws GameActionException
