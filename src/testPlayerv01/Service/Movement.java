@@ -16,6 +16,14 @@ public class Movement extends RobotPlayer
         Direction.NORTHWEST,
     };
 
+    static final Direction[] mirrorDirections = 
+    {
+        Direction.EAST,
+        Direction.WEST,
+        Direction.NORTH,
+        Direction.SOUTH,
+    };
+
     private static int stuckCount = 0;
     private static List<MapLocation> stuckLocations = new ArrayList<>();
     
@@ -26,57 +34,75 @@ public class Movement extends RobotPlayer
 
         if(!currentLocation.equals(target) && robotController.isReady())
         {
-            if (canRobotMoveThroughTile(direction, currentLocation) && stuckCount <= 10)
+            if (canRobotMoveThroughTile(direction, currentLocation))
             {
                 robotController.move(direction);
                 bugDirection = null;
             }
-            else if (robotController.onTheMap(robotController.adjacentLocation(direction))&& stuckCount <= 10)
+            else if (robotController.onTheMap(robotController.adjacentLocation(direction)))
             {
                 if (bugDirection == null) {
                     bugDirection = direction;
                 }
 
                 stuckLocations.add(robotController.getLocation());                
-                stuckCount++;
+                // stuckCount++;
+                // TODO: Do BFS for getting around stuff...
 
-                for (MapLocation stuckLocation : stuckLocations) 
-                {               
-                    if (stuckLocation == robotController.getLocation()) 
+                for (int i = 0; i < 8; ++i) 
+                {
+                    if (canRobotMoveThroughTile(bugDirection, currentLocation) 
+                    && !stuckLocation.contains(currentLocation.add(bugDirection))) // TODO: Test stuck location..
                     {
-                        // Rotate Left
-                        for (int i = 0; i < 8; ++i) 
-                        {
-                            if (canRobotMoveThroughTile(bugDirection, currentLocation)) 
-                            {
-                                robotController.move(bugDirection);
-                                bugDirection = bugDirection.rotateRight();
-                                break;
-                            }    
+                        robotController.move(bugDirection);
+                        bugDirection = bugDirection.rotateLeft();
+                        robotController.setIndicatorDot(robotController.getLocation().add(bugDirection), 0, 255, 255);
+                        break;
+                    }
 
-                            bugDirection = bugDirection.rotateLeft();
-                        }
-                    }                
-                    // else
-                    // {
-                    //     // Rotate Right
-                    //     for (int i = 0; i < 8; ++i) 
-                    //     {
-                    //         if (canRobotMoveThroughTile(bugDirection, currentLocation)) 
-                    //         {
-                    //             robotController.move(bugDirection);
-                    //             bugDirection = bugDirection.rotateLeft();
-                    //             break;
-                    //         }       
+                    robotController.setIndicatorDot(robotController.getLocation().add(bugDirection), 255, 0, 0);
+                    bugDirection = bugDirection.rotateRight();
+                }
+
+                // for (MapLocation stuckLocation : stuckLocations) 
+                // {               
+                //     // if (stuckLocation == robotController.getLocation()) 
+                //     // {
+                //         // Rotate Left
+                //         for (int i = 0; i < 8; ++i) 
+                //         {
+                //             if (canRobotMoveThroughTile(bugDirection, currentLocation)) 
+                //             {
+                //                 robotController.move(bugDirection);
+                //                 bugDirection = bugDirection.rotateLeft();
+                //                 robotController.setIndicatorDot(robotController.getLocation().add(bugDirection), 0, 255, 255);
+                //                 break;
+                //             }    
+                //             robotController.setIndicatorDot(robotController.getLocation().add(bugDirection), 255, 0, 0);
+                //             bugDirection = bugDirection.rotateRight();
+                //         }
+                //     //}                
+                //     // else
+                //     // {
+                //     //     // Rotate Right
+                //     //     for (int i = 0; i < 8; ++i) 
+                //     //     {
+                //     //         if (canRobotMoveThroughTile(bugDirection, currentLocation)) 
+                //     //         {
+                //     //             robotController.move(bugDirection);
+                //     //             bugDirection = bugDirection.rotateLeft();
+                //     //             break;
+                //     //         }       
     
-                    //         bugDirection = bugDirection.rotateRight();
-                    //     }
-                    // }    
-                }            
+                //     //         bugDirection = bugDirection.rotateRight();
+                //     //     }
+                //     // }    
+                // }            
             }
             else if (robotController.canMove(direction)) 
             {
                 robotController.move(direction);
+                stuckCount = 0;
             }
             else
             {
@@ -110,8 +136,7 @@ public class Movement extends RobotPlayer
     {
         if(robotController.canSenseLocation(currentLocation.add(direction)))
         {
-            return robotController.canMove(direction) && robotController.sensePassability(currentLocation.add(direction)) >= passabilityThreshold;
-        }
+            return robotController.canMove(direction) && robotController.sensePassability(currentLocation.add(direction)) >= passabilityThreshold; // TODO: Need to fix movement still.
         else
         {
             return false;
@@ -120,30 +145,30 @@ public class Movement extends RobotPlayer
 
     static void scoutTheDirection(Direction direction) throws GameActionException
     {
-        if (robotController.canMove(direction)) 
-        {
-            robotController.move(direction);
-        }
-        else
-        {
-            basicBugMovement(robotController.getLocation().add(direction));
-        }
+        basicBugMovement(robotController.getLocation().add(direction));
     }
 
     public static void scoutAction() throws GameActionException
     {
-        if(targetLocation != null)
-        {
-            Movement.basicBugMovement(targetLocation);
-        }
-        else if (directionToScout != null) 
+        int randomNum = randomInteger.nextInt(1 - 0 + 1) + 0;
+
+        // if(targetLocation != null)
+        // {
+        //     Movement.basicBugMovement(targetLocation);
+        // }
+        // else
+        if (directionToScout != null) 
         {
             scoutTheDirection(directionToScout);
         }
-        else if (locationToScout == null) 
+        else if (locationToScout != null) 
+        {
+            basicBugMovement(locationToScout);            
+        }
+        else
         {
             // TODO: What's a better way of randomizing this?
-            if (robotController.getLocation().x % 2 == 0) {
+            if (randomNum == 0) {
                 Movement.mirrorDirection();
             }
             else
@@ -151,42 +176,70 @@ public class Movement extends RobotPlayer
                 Movement.flipDirection();
             }
         }
-        else
-        {
-            Movement.basicBugMovement(locationToScout);
-        }
     }
 
     public static void mirrorDirection() throws GameActionException
     {
-        MapLocation currentLocation = robotController.getLocation();
-        int randomNum = randomInteger.nextInt(1 - 0 + 1) + 0;
+        int randomNum = randomInteger.nextInt((mirrorDirections.length - 1) - 0 + 1) + 0;
 
-        if (randomNum == 0) 
-        {
-            locationToScout = currentLocation.translate(32, 0);
-        }
-        else
-        {
-            locationToScout = currentLocation.translate(-32, 0);
-        } 
+        directionToScout = mirrorDirections[randomNum];
     }
 
     public static void flipDirection() throws GameActionException
     {
-        int randomNum = randomInteger.nextInt((flipDirections.length -1)  - 0 + 1) + 0;
+        int randomNum = randomInteger.nextInt((flipDirections.length - 1) - 0 + 1) + 0;
 
         directionToScout = flipDirections[randomNum]; 
     }   
 
     public static void moveAwayFromLocation(MapLocation locationToMoveAwayFrom) throws GameActionException
     {
-        Direction directionToMoveAway = robotController.getLocation().directionTo(locationToMoveAwayFrom);
-        MapLocation locationToMoveTo = robotController.getLocation().subtract(directionToMoveAway);     
+        Direction directionTowardsTarget = robotController.getLocation().directionTo(locationToMoveAwayFrom);
+        Direction directionToMoveAway = getOppositeDirection(directionTowardsTarget);
 
         if (robotController.canMove(directionToMoveAway)) {
             robotController.move(directionToMoveAway);
         }
+    }
+
+    protected static Direction getOppositeDirection(Direction directionTowardsTarget)
+    {
+        Direction oppositeDirection = Direction.CENTER;
+
+        if(directionTowardsTarget == Direction.NORTH)
+        {
+            oppositeDirection = Direction.SOUTH;
+        }
+        else if (directionTowardsTarget == Direction.NORTHWEST)
+        {
+            oppositeDirection = Direction.SOUTHEAST;
+        }
+        else if (directionTowardsTarget == Direction.NORTHEAST)
+        {
+            oppositeDirection = Direction.SOUTHWEST;
+        }
+        else if (directionTowardsTarget == Direction.EAST)
+        {
+            oppositeDirection = Direction.WEST;
+        }
+        else if (directionTowardsTarget == Direction.WEST)
+        {
+            oppositeDirection = Direction.EAST;
+        }
+        else if (directionTowardsTarget == Direction.SOUTHWEST)
+        {
+            oppositeDirection = Direction.NORTHEAST;
+        }
+        else if (directionTowardsTarget == Direction.SOUTHEAST)
+        {
+            oppositeDirection = Direction.NORTHWEST;
+        }
+        else if (directionTowardsTarget == Direction.SOUTH)
+        {
+            oppositeDirection = Direction.NORTH;
+        }
+
+        return oppositeDirection;
     }
 
     public static void moveToEnemyEnlightenmentCenter(MapLocation enemyCenterLocation) throws GameActionException

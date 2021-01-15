@@ -2,9 +2,6 @@ package testPlayerv01;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
-
-import javax.print.attribute.standard.PrinterLocation;
-
 import battlecode.common.*;
 
  @SuppressWarnings("unused")
@@ -47,13 +44,13 @@ public strictfp class RobotPlayer {
     }    
 
     static int turnCount;
-    static boolean debug = false;
+    static boolean debug = true;
 
     protected static Random randomInteger;
 
-    static Team enemy;
-    static Team friendly;
-    static double empowerFactor = 1;
+    protected static Team enemy;
+    protected static Team friendly;
+    protected static double empowerFactor = 1;
     static final int POLITICIAN_TAX = 10;
 
     static boolean moveRobot;
@@ -63,6 +60,9 @@ public strictfp class RobotPlayer {
     static int robotCurrentConviction;
     static boolean lowestRobotIdOfFriendlies;
     static final int ACTION_RADIUS_POLITICIAN = 9;
+
+    // Enemy
+    protected static int enemyEnlightenmentCenterCurrentInfluence;
 
     // Roles
     protected static RobotRoles robotRole;
@@ -77,7 +77,7 @@ public strictfp class RobotPlayer {
 
     // Movement
     protected static boolean targetInSight = false;
-    protected static final double passabilityThreshold = 0.3;
+    protected static final double passabilityThreshold = 0.15;
     protected static Direction bugDirection = null;
     protected static MapLocation locationToScout = null;
     protected static MapLocation targetLocation = null;
@@ -94,10 +94,12 @@ public strictfp class RobotPlayer {
     public static int spawnEnlightenmentCenterRobotId;
     private static int currentEnlightenmentCenterFlag;
 
+    static final int MIDDLE_GAME_ROUND_START = 400;
+    static final int END_GAME_ROUND_STRAT = 800;
+
     // Sending Flags
     static final int NBITS = 7;
     static final int BITMASK = (1 << NBITS) - 1;
-    protected static boolean messageReceived = false;
     protected static boolean haveMessageToSend = false;
     static final int[][] translateCoordinates = {
         {-(1 << NBITS),0}, 
@@ -105,15 +107,13 @@ public strictfp class RobotPlayer {
         {0, -(1 << NBITS)}, 
         {0, (1 << NBITS)}};
 
-
-    static final int MIDDLE_GAME_ROUND_START = 400;
-
     // Max bit is 2^24
     // 10000 to 30000    
     // Signals
     static final int ENEMY_ENLIGHTENMENT_CENTER_FOUND = 11;
     static final int KILL_ENEMY_TARGET = 12;
     static final int ENEMY_ENLIGHTENMENT_CENTER_CONVERTED = 13;
+    static final int ENEMY_ENLIGHTENMENT_CENTER_INFLUENCE = 14;
     static final int RECEIVED_MESSAGE = 99;
 
     // POLITICIAN
@@ -243,6 +243,14 @@ public strictfp class RobotPlayer {
         return foundTheCenter;
     }
 
+    protected static int getEnemyEnlightenmentCenterInfluenceFromFlag(int flag) throws GameActionException
+    {
+        int enemyEnlightenmentCenterCurrentInfluence = flag - (flag >> 2*NBITS);
+        println("Current Influence ENEMY: " + enemyEnlightenmentCenterCurrentInfluence);
+
+        return enemyEnlightenmentCenterCurrentInfluence;
+    }
+
     protected static boolean checkIfEnemeyEnlightenmentCenterHasBeenConverted(int flag) throws GameActionException
     {
         boolean hasBeenConverted = false;
@@ -258,25 +266,37 @@ public strictfp class RobotPlayer {
 
     protected static boolean enemyEnlightenmentCenterHasBeenConverted() throws GameActionException
     {
-        boolean hasBennConverted = false;
+        boolean hasBeenConverted = false;
         if (robotController.canSenseLocation(currentEnemyEnlightenmentCenterGoingFor)) 
         {
             RobotInfo[] robots = robotController.senseNearbyRobots();
             for (RobotInfo robotInfo : robots) 
             {
                 if (robotInfo.getType() == RobotType.ENLIGHTENMENT_CENTER 
-                && robotInfo.getTeam() != enemy
+                && robotInfo.getTeam() == friendly
                 && robotInfo.getLocation() == currentEnemyEnlightenmentCenterGoingFor) 
                 {
-                    hasBennConverted = true;
+                    hasBeenConverted = true;
                 }
             }
         }
 
-        return hasBennConverted;
+        return hasBeenConverted;
     }
 
-    static void sendLocation(MapLocation location, int extraInformation) throws GameActionException
+    static void sendLocation(MapLocation location,  int extraInformation) throws GameActionException
+    {
+        int x = location.x;
+        int y = location.y;
+        int encodedLocation = (extraInformation << (2*NBITS)) + ((x & BITMASK) << NBITS) + (y & BITMASK);
+
+        if (robotController.canSetFlag(encodedLocation)) 
+        {
+            robotController.setFlag(encodedLocation);    
+        }
+    }
+
+    static void sendLocationWithoutInfluence(MapLocation location, int extraInformation) throws GameActionException
     {
         int x = location.x;
         int y = location.y;

@@ -6,34 +6,23 @@ import testPlayerv01.Service.Movement;
 
 public class MuckrakerTest01 extends RobotPlayer
 {
+    static boolean enemyEnlightenmentCenterIsAround;
+
+    static boolean enemyEnlightenmentCenterHasBeenConverted;    
+
     @SuppressWarnings("unused")
     public static void run() throws GameActionException
     {
         tryExpose();
+        senseNearbyRobots();
 
-        if (enemyEnlightenmentCenterMapLocation.size() <= 3) {
+        if (!enemyEnlightenmentCenterFound) {
             checkIfRobotCanSenseEnemyEnlightenmentCenter();
         }
         
-        // Turn off flag announcement
-        // if (robotController.canGetFlag(spawnEnlightenmentCenterRobotId)) {
-        //     int enlightenmentCenterFlag = robotController.getFlag(spawnEnlightenmentCenterRobotId);
-        // }
-
         if (haveMessageToSend) 
         {
-            if (enemyEnlightenmentCenterFound) 
-            {
-                announceEnemyEnlightenmentCenterLocation();
-                haveMessageToSend = false;
-            }
-            else if (enemyEnlightenmentCenterHasBeenConverted()) 
-            {
-                announceEnemyEnlightenmentCenterHasBeenConverted();
-                enemyEnlightenmentCenterMapLocation.clear();
-                haveMessageToSend = false;
-            }
-            
+            setFlagMessage();            
         }
 
         // Scout Role
@@ -43,7 +32,14 @@ public class MuckrakerTest01 extends RobotPlayer
         }
         else if (enemyEnlightenmentCenterFound) 
         {
-            Movement.moveToEnemyEnlightenmentCenter(currentEnemyEnlightenmentCenterGoingFor);
+            if (politicianECBombNearby) 
+            {
+                Movement.moveAwayFromLocation(currentEnemyEnlightenmentCenterGoingFor);
+            }
+            else if (!robotController.getLocation().isAdjacentTo(currentEnemyEnlightenmentCenterGoingFor))
+            {
+                Movement.moveToEnemyEnlightenmentCenter(currentEnemyEnlightenmentCenterGoingFor);
+            }
         }
         else
         {
@@ -62,7 +58,41 @@ public class MuckrakerTest01 extends RobotPlayer
         */
     }
 
-    private static void tryExpose() throws GameActionException
+    private static void setFlagMessage()
+    {
+        if (enemyEnlightenmentCenterFound) 
+        {
+            announceEnemyEnlightenmentCenterLocation();
+            haveMessageToSend = false;
+        }
+        else if (enemyEnlightenmentCenterIsAround)
+        {
+            announceEnemyEnlightenmentCenterCurrentInfluence(ENEMY_ENLIGHTENMENT_CENTER_INFLUENCE);
+            haveMessageToSend = false;   
+        }
+        else if (enemyEnlightenmentCenterHasBeenConverted) 
+        {
+            announceEnemyEnlightenmentCenterHasBeenConverted();
+            enemyEnlightenmentCenterMapLocation.clear();
+            enemyEnlightenmentCenterFound = false;
+            enemyEnlightenmentCenterIsAround = false;
+            haveMessageToSend = false;
+        }
+    }
+
+    private static void announceEnemyEnlightenmentCenterCurrentInfluence(int extraInformation) throws GameActionException 
+    {
+        int encodedflag = (extraInformation << (2*NBITS)) + enemyEnlightenmentCenterCurrentInfluence;
+
+        if (robotController.canSetFlag(encodedflag)) 
+        {
+            robotController.setFlag(encodedflag);    
+        }
+
+        println("Enemy Influence from muckraker: " +  enemyEnlightenmentCenterCurrentInfluence);
+	}
+
+	private static void tryExpose() throws GameActionException
     {
         Team enemy = robotController.getTeam().opponent();
         int actionRadius = robotController.getType().actionRadiusSquared;
@@ -70,7 +100,6 @@ public class MuckrakerTest01 extends RobotPlayer
         
         for (RobotInfo robotInfo : enemyRobots) {
             if (robotInfo.type.canBeExposed()) {
-                
                 if (robotController.canExpose(robotInfo.location)) {
                     println("MASON I EXPOSED A SLANDERER");
                     robotController.expose(robotInfo.location);
@@ -82,7 +111,6 @@ public class MuckrakerTest01 extends RobotPlayer
 
     private static void checkIfRobotCanSenseEnemyEnlightenmentCenter()
     {
-        Team enemy = robotController.getTeam().opponent();
         int sensorRadiusSquared = robotController.getType().sensorRadiusSquared;
 
         RobotInfo[] robots = robotController.senseNearbyRobots(sensorRadiusSquared, enemy);
@@ -100,10 +128,69 @@ public class MuckrakerTest01 extends RobotPlayer
         }
     }
 
+    private static void senseNearbyRobots() throws GameActionException
+    {
+        int sensorRadiusSquared = robotController.getType().sensorRadiusSquared;
+        RobotInfo[] robots = robotController.senseNearbyRobots(sensorRadiusSquared);
+        politicianECBombNearby = false;
+        enemyEnlightenmentCenterIsAround = false;
+
+        for (RobotInfo robotInfo : robots) 
+        {
+            if (robotInfo.getType() == RobotType.ENLIGHTENMENT_CENTER) 
+            {
+                if (robotInfo.getTeam() == enemy) 
+                {
+                    enemyEnlightenmentCenterCurrentInfluence = robotInfo.getInfluence();
+                    enemyEnlightenmentCenterIsAround = true;
+
+                    if (currentEnemyEnlightenmentCenterGoingFor != null 
+                        && robotController.getLocation().distanceSquaredTo(currentEnemyEnlightenmentCenterGoingFor) <= ACTION_RADIUS_POLITICIAN)
+                    {
+                         
+                    }                      
+                }
+                else if (robotInfo.getTeam() == friendly
+                && robotInfo.getLocation() == currentEnemyEnlightenmentCenterGoingFor)
+                {
+                    enemyEnlightenmentCenterFound = false;
+                    haveMessageToSend = true;
+                }
+                else if (robotInfo.getTeam() != enemy && robotInfo.getTeam() != friendly)
+                {
+                    // haveMessageToSend = true;
+                    // neturalEnlightenmentCenter();
+                }              
+            }
+            else if(checkIfPoliticianBombNearby(robotInfo))
+            {
+                politicianECBombNearby = true;
+            }
+        }
+    }
+
+    private static boolean checkIfPoliticianBombNearby(RobotInfo robotInfo)
+    {   
+        if (robotInfo.getType() == RobotType.POLITICIAN
+        && robotInfo.getConviction() >= POLITICIAN_EC_BOMB
+        && enemyEnlightenmentCenterIsAround
+        && (currentEnemyEnlightenmentCenterGoingFor != null && currentEnemyEnlightenmentCenterGoingFor.distanceSquaredTo(robotInfo.getLocation()) <= 9)
+        ) 
+        {
+            return true;
+        }
+        else 
+        {
+            return false;
+        }
+        
+    }
+
     private static void announceEnemyEnlightenmentCenterLocation() throws GameActionException 
     {
         MapLocation enemyCenterLocation = enemyEnlightenmentCenterMapLocation.get(enemyEnlightenmentCenterMapLocation.size());
         currentEnemyEnlightenmentCenterGoingFor = enemyCenterLocation;
+        println("Muckraker ENemy Influence:" + enemyEnlightenmentCenterCurrentInfluence);
         sendLocation(enemyCenterLocation, ENEMY_ENLIGHTENMENT_CENTER_FOUND);
     }
     

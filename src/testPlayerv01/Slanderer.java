@@ -52,6 +52,11 @@ public class Slanderer extends RobotPlayer
             nextDirection = robotController.getLocation().directionTo(enlightenmentCenterHomeLocation);
         }
     }
+
+    private static void checkNearbyFlagsForEnemy()
+    {
+        
+    }
  
     public static void setup()
     {
