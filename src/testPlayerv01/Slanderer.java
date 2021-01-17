@@ -15,26 +15,30 @@ public class Slanderer extends RobotPlayer {
         senseRobotsNearby();
         checkNearbyFlagsForEnemy();
 
-        if (!enemyEnlightenmentCenterFound && !enemyMuckrakersNearby) {
-            checkIfEnemeyEnlightenmentCenterHasBeenFound(spawnEnlightenmentCenterRobotId);
+        if(!enemyEnlightenmentCenterFound)
+        {
+            checkIfSpawnEnlightenmentCenterHasEnemyLocation();
+        }
+
+        if (!enemyMuckrakersNearby && !enemyEnlightenmentCenterFound) 
+        {  
             stayNearHomeBase();
 
             if (nextDirection == null) {
-                println("SLANDERER HERE1:");
                 Movement.scoutTheDirection(Movement.getRandomDirection());
             } else {
-                println("SLANDERER HERE2:" + nextDirection);
                 Movement.scoutTheDirection(nextDirection);
             }
 
-        } else if (enemyMuckrakersNearby) {
-
+        } 
+        else if (enemyMuckrakersNearby) 
+        {
             Movement.moveAwayFromLocation(closestEnemyMuckraker);
-
-        } else if (enemyEnlightenmentCenterFound) {
-
+        } 
+        else if (enemyEnlightenmentCenterFound) 
+        {
+            println("HERE 2 SLANDERER");
             Movement.moveAwayFromLocation(currentEnemyEnlightenmentCenterGoingFor);
-
         }
 
         // TODO: Make Slanderer stuff
@@ -55,9 +59,12 @@ public class Slanderer extends RobotPlayer {
             if (robotInfo.getTeam() == enemy && robotInfo.getType() == RobotType.MUCKRAKER) {
                 enemyMuckrakersNearby = true;
 
-                if (closestEnemyMuckraker != null
-                        && robotController.getLocation().distanceSquaredTo(closestEnemyMuckraker) >= robotController
-                                .getLocation().distanceSquaredTo(robotInfo.getLocation())) {
+                if (closestEnemyMuckraker != null 
+                && robotController.getLocation().distanceSquaredTo(closestEnemyMuckraker) >= robotController.getLocation().distanceSquaredTo(robotInfo.getLocation())) {
+                    closestEnemyMuckraker = robotInfo.getLocation();
+                }
+                else if(closestEnemyMuckraker == null)
+                {
                     closestEnemyMuckraker = robotInfo.getLocation();
                 }
             }
@@ -70,21 +77,21 @@ public class Slanderer extends RobotPlayer {
 
     private static void stayNearHomeBase() {
         int sensorRadiusSquared = robotController.getType().sensorRadiusSquared;
-        if (robotController.getLocation().isWithinDistanceSquared(enlightenmentCenterHomeLocation,
-                sensorRadiusSquared)) {
+        if (robotController.getLocation().isWithinDistanceSquared(spawnEnlightenmentCenterHomeLocation, sensorRadiusSquared)) {
             nextDirection = null;
         } else {
-            nextDirection = robotController.getLocation().directionTo(enlightenmentCenterHomeLocation);
+            nextDirection = robotController.getLocation().directionTo(spawnEnlightenmentCenterHomeLocation);
         }
     }
 
     public static void setup() {
-        assignHomeEnlightenmentCenterLocation();
-        robotCurrentInfluence = robotController.getInfluence();
-        assignRobotRole();
         enemy = robotController.getTeam().opponent();
         friendly = robotController.getTeam();
         randomInteger = new Random();
+        assignHomeEnlightenmentCenterLocation();
+        robotCurrentInfluence = robotController.getInfluence();
+        assignRobotRole();
+        
     }
 
     private static void assignRobotRole() {

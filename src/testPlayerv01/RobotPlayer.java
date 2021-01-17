@@ -1,6 +1,8 @@
 package testPlayerv01;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import battlecode.common.*;
@@ -53,10 +55,10 @@ public strictfp class RobotPlayer {
 
     // Roles
     protected static RobotRoles robotRole;
-    protected static final int POLITICIAN_EC_BOMB = 100;
+    protected static final int POLITICIAN_EC_BOMB = 30;
     protected static final int POLITICIAN_LEADER = 20;
     protected static final int POLITICIAN_FOLLOWER = 12;
-    public static final int INFLUENCE_FOR_SCOUT = 1;
+    protected static final int INFLUENCE_FOR_SCOUT = 1;
     protected static final int INFLUENCE_FOR_DEFEND_SLANDERER_MUCKRAKER = 3;
 
     // Troops
@@ -72,17 +74,17 @@ public strictfp class RobotPlayer {
     protected static MapLocation stuckLocation = null;
 
     // Enemy Enlightenment Center
-    protected static Map<Integer, MapLocation> enemyEnlightenmentCenterMapLocation = new HashMap<Integer, MapLocation>();
+    protected static List<MapLocation> enemyEnlightenmentCenterMapLocation = new ArrayList<>();
     protected static boolean enemyEnlightenmentCenterFound = false;
     protected static MapLocation currentEnemyEnlightenmentCenterGoingFor;
 
     // Home Enlightenment Center
-    public static MapLocation enlightenmentCenterHomeLocation;
+    public static MapLocation spawnEnlightenmentCenterHomeLocation;
     public static int spawnEnlightenmentCenterRobotId;
     private static int currentEnlightenmentCenterFlag;
 
     protected static final int MIDDLE_GAME_ROUND_START = 700;
-    static final int END_GAME_ROUND_STRAT = 1000;
+    protected static final int END_GAME_ROUND_STRAT = 1000;
 
     // Sending Flags
     static final int NBITS = 7;
@@ -97,7 +99,7 @@ public strictfp class RobotPlayer {
     static final int ENEMY_ENLIGHTENMENT_CENTER_FOUND = 11;
     static final int KILL_ENEMY_TARGET = 12;
     static final int ENEMY_ENLIGHTENMENT_CENTER_CONVERTED = 13;
-    static final int ENEMY_ENLIGHTENMENT_CENTER_INFLUENCE = 14;
+    protected static final int ENEMY_ENLIGHTENMENT_CENTER_INFLUENCE = 14;
     static final int RECEIVED_MESSAGE = 99;
 
     // POLITICIAN
@@ -203,26 +205,29 @@ public strictfp class RobotPlayer {
     }
 
     static void assignHomeEnlightenmentCenterLocation() {
-        RobotInfo[] robots = robotController.senseNearbyRobots();
+        RobotInfo[] robots = robotController.senseNearbyRobots(robotController.getType().sensorRadiusSquared);
         for (RobotInfo robotInfo : robots) {
-            if (robotInfo.getType() == RobotType.ENLIGHTENMENT_CENTER) {
-                enlightenmentCenterHomeLocation = robotInfo.getLocation();
+            if (robotInfo.getType() == RobotType.ENLIGHTENMENT_CENTER && robotInfo.getTeam() == friendly) {
+                spawnEnlightenmentCenterHomeLocation = robotInfo.getLocation();
                 spawnEnlightenmentCenterRobotId = robotInfo.getID();
             }
         }
     }
 
     protected static void checkIfSpawnEnlightenmentCenterHasEnemyLocation() throws GameActionException {
-        if (robotController.canGetFlag(spawnEnlightenmentCenterRobotId)) {
+        if (robotController.canGetFlag(spawnEnlightenmentCenterRobotId)) 
+        {
             currentEnlightenmentCenterFlag = robotController.getFlag(spawnEnlightenmentCenterRobotId);
 
-            if (currentEnlightenmentCenterFlag != 0
-                    && checkIfEnemeyEnlightenmentCenterHasBeenFound(currentEnlightenmentCenterFlag)) {
+            if (currentEnlightenmentCenterFlag != 0 && checkIfEnemeyEnlightenmentCenterHasBeenFound(currentEnlightenmentCenterFlag)) 
+            {
                 MapLocation enemyEnlightenmentCenterLocation = getLocationFromFlag(currentEnlightenmentCenterFlag);
-                if (!enemyEnlightenmentCenterMapLocation.containsValue(enemyEnlightenmentCenterLocation)) {
-                    enemyEnlightenmentCenterMapLocation.put(enemyEnlightenmentCenterMapLocation.size() + 1,
-                            enemyEnlightenmentCenterLocation);
-                    enemyEnlightenmentCenterFound = true; // TODO:see if this is a good idea...
+
+                if (!enemyEnlightenmentCenterMapLocation.contains(enemyEnlightenmentCenterLocation) 
+                    || enemyEnlightenmentCenterMapLocation.isEmpty()) 
+                {
+                    enemyEnlightenmentCenterMapLocation.add(enemyEnlightenmentCenterLocation);
+                    enemyEnlightenmentCenterFound = true;
                     currentEnemyEnlightenmentCenterGoingFor = enemyEnlightenmentCenterLocation;
                 }
 
@@ -241,10 +246,18 @@ public strictfp class RobotPlayer {
         return foundTheCenter;
     }
 
+    protected static void announceEnemyEnlightenmentCenterCurrentInfluence(int extraInformation)
+            throws GameActionException {
+        int encodedflag = (extraInformation << (2 * NBITS)) + enemyEnlightenmentCenterCurrentInfluence;
+
+        if (robotController.canSetFlag(encodedflag)) {
+            robotController.setFlag(encodedflag);
+        }
+    }
+
     // TODO: Still nee dto use this
     protected static int getEnemyEnlightenmentCenterInfluenceFromFlag(int flag) throws GameActionException {
-        int enemyEnlightenmentCenterCurrentInfluence = flag - (ENEMY_ENLIGHTENMENT_CENTER_INFLUENCE >> (2 * NBITS));
-        println("Current Influence ENEMY: " + enemyEnlightenmentCenterCurrentInfluence);
+        int enemyEnlightenmentCenterCurrentInfluence = flag - (ENEMY_ENLIGHTENMENT_CENTER_INFLUENCE << (2 * NBITS));
 
         return enemyEnlightenmentCenterCurrentInfluence;
     }

@@ -129,7 +129,14 @@ public class Movement extends RobotPlayer {
     }
 
     public static void scoutTheDirection(Direction direction) throws GameActionException {
-        basicBugMovement(robotController.getLocation().add(direction));
+        if (robotController.onTheMap(robotController.adjacentLocation(direction))) {
+            basicBugMovement(robotController.getLocation().add(direction));
+        }
+        else
+        {
+            directionToScout = getRandomDirection();
+            basicBugMovement(robotController.getLocation().add(directionToScout));
+        }        
     }
 
     public static void scoutAction() throws GameActionException {
@@ -159,20 +166,6 @@ public class Movement extends RobotPlayer {
 
         return directions[randomNum];
     }
-
-    // public static void mirrorDirection() throws GameActionException {
-    // int randomNum = randomInteger.nextInt((mirrorDirections.length - 1) - 0 + 1)
-    // + 0;
-
-    // directionToScout = mirrorDirections[randomNum];
-    // }
-
-    // public static void flipDirection() throws GameActionException {
-    // int randomNum = randomInteger.nextInt((flipDirections.length - 1) - 0 + 1) +
-    // 0;
-
-    // directionToScout = flipDirections[randomNum];
-    // }
 
     public static void moveAwayFromLocation(MapLocation locationToMoveAwayFrom) throws GameActionException {
         Direction directionTowardsTarget = robotController.getLocation().directionTo(locationToMoveAwayFrom);
