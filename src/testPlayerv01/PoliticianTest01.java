@@ -1,7 +1,5 @@
 package testPlayerv01;
 
-import java.util.Random;
-
 import battlecode.common.*;
 import testPlayerv01.Service.Communication;
 import testPlayerv01.Service.Movement;
@@ -16,14 +14,14 @@ public class PoliticianTest01 extends RobotPlayer
     protected static int friendlyEnlightenmentCenterInfluence;
     
     // Enemy
-    protected static int enemyEnlightenmentCenterDistanceSquared;
+    protected static int distanceToEnemyEnlightenmentCenter;
     static boolean enemyPoliticianIsAround;
     protected static boolean enemyEnlightenmentCenterIsAround;
     protected static int enemyEnlightenmentCenterConviction;
 
     // Target Following
     static boolean hasTarget;
-    protected static int distanceToclosestRobotMapLocation;
+    protected static int distanceToClosestRobotMapLocation;
     static MapLocation closestRobotMapLocation;
 
     // Counting robots
@@ -33,7 +31,7 @@ public class PoliticianTest01 extends RobotPlayer
     static int countOfFriendliesInActionRadius;
     static int countOfEnemyMuckrakerInActionRadius;
     protected static int countOfEnemiesInActionRadiusAroundEnemyEnlightenmentcenter;
-    protected static int countOfFrienliesInActionRadiusAroundEnemyEnlightenmentcenter;
+    protected static int countOfFriendliesInActionRadiusAroundEnemyEnlightenmentcenter;
 
     protected static int turnsNearEnemyEnlightenmentCenter = 0;
 
@@ -41,55 +39,46 @@ public class PoliticianTest01 extends RobotPlayer
     static int sumOfEnemyConvictionNearby;
     static int sumOfEnemyConviciontInActionRadiusAroundEnemyEnlightenmentcenter;
 
-    static void run() throws GameActionException {
-        if (robotRole == RobotRoles.PoliticianEnlightenmentCenterBomb) {
+    static void run() throws GameActionException 
+    {
+        resetVariablesForSensing();
+
+        checkForCommunications();
+        
+        senseAreaForRobots();
+        senseActionRadiusForRobots();        
+
+        if (robotRole == RobotRoles.PoliticianEnlightenmentCenterBomb) 
+        {
             PoliticianECBomb.run();
-        } else {
+        } 
+        else if (robotRole != RobotRoles.Converted)
+        {
             runThis();
         }
-
+        else if (robotRole == RobotRoles.Converted) 
+        {
+            attackOrScoutAround();
+        }
     }
 
-    protected static void runThis() throws GameActionException {
-        enemyEnlightenmentCenterConviction = 0;
-        robotCurrentConviction = robotController.getConviction();
-        empowerFactor = robotController.getEmpowerFactor(friendly, 0);
-        moveRobot = true;
-
-        if (!enemyEnlightenmentCenterFound) 
-        {
-            Communication.checkIfSpawnEnlightenmentCenterHasEnemyLocation();
-            setCurrentEnemyEnlightenmentCenterGoingFor();
-        }
-
-        if (!neutralEnlightenmentCenterFound) 
-        {
-            Communication.checkIfSpawnEnlightenmentCenterHasNeutralLocation();
-            setCurrentNeutralEnlightenmentCenterGoingFor();
-        }
-
-        resetVariablesForSensing();
-        senseAreaForRobots();
-        senseActionRadiusForRobots();
-
-        // TODO: Make a check for if the EC has been converted.
+    protected static void runThis() throws GameActionException 
+    {
         // TODO: Make a check for attacking enemies even with allies around
-
-        // TODO: Make a check for if the home base is surrounded! 
 
         decideIfEmpowerForNonEnlightenmentCenterBombs();
 
         if (hasTarget) 
         {
-            if (countOfEnemiesInActionRadius >= 2 && robotController.canEmpower(distanceToclosestRobotMapLocation)) 
+            if (countOfEnemiesInActionRadius >= 2 && robotController.canEmpower(distanceToClosestRobotMapLocation)) 
             {
-                robotController.empower(distanceToclosestRobotMapLocation);
+                robotController.empower(distanceToClosestRobotMapLocation);
                 return;
             } 
             else if (robotController.getRoundNum() >= END_GAME_ROUND_STRAT
-                && robotController.canEmpower(distanceToclosestRobotMapLocation)) 
+                && robotController.canEmpower(distanceToClosestRobotMapLocation)) 
             {
-                robotController.empower(distanceToclosestRobotMapLocation);
+                robotController.empower(distanceToClosestRobotMapLocation);
                 return;
             } 
             else if (robotController.getRoundNum() >= END_GAME_ROUND_STRAT
@@ -130,10 +119,61 @@ public class PoliticianTest01 extends RobotPlayer
         // Defender Role
 
         // Scout Role
-        if (robotRole == RobotRoles.Scout) {
-            Movement.scoutAction();
-        }
+        // if (robotRole == RobotRoles.Scout) {
+        //     Movement.scoutAction();
+        // }
         // Testing
+    }
+
+    protected static void resetVariablesForSensing()
+    {
+        enemyEnlightenmentCenterConviction = 0;
+        robotCurrentConviction = robotController.getConviction();
+        empowerFactor = robotController.getEmpowerFactor(friendly, 0);
+        moveRobot = true;
+        enemyEnlightenmentCenterIsAround = false;
+        countOfEnemies = 0;
+        countOfFriendlies = 0;
+        hasTarget = false; //TODO: This should be handeled better. The target stuff.
+        sumOfEnemyConvictionNearby = 0;
+        countOfEnemiesInActionRadius = 0;
+        countOfFriendliesInActionRadius = 0;
+        countOfEnemyMuckrakerInActionRadius = 0;
+        politicianECBombNearby = false;
+        nearFriendlyEnlightenmentCenter = false;
+        distanceToClosestRobotMapLocation = 0;
+        lowestRobotIdOfFriendlies = true;
+    }
+
+    protected static void checkForCommunications() throws GameActionException
+    {
+        if (!enemyEnlightenmentCenterFound) 
+        {
+            Communication.checkIfSpawnEnlightenmentCenterHasEnemyLocation();
+            setCurrentEnemyEnlightenmentCenterGoingFor();
+        }
+
+        if (!enemyEnlightenmentCenterHasBeenConverted && enemyEnlightenmentCenterFound) 
+        {
+            Communication.checkIfSpawnEnlightenmentCenterHasEnemyLocationConverted();
+        }
+
+        if (!neutralEnlightenmentCenterFound) 
+        {
+            Communication.checkIfSpawnEnlightenmentCenterHasNeutralLocation();
+            setCurrentNeutralEnlightenmentCenterGoingFor();
+        }
+
+        if (enemyEnlightenmentCenterIsAround && !enemyEnlightenmentCenterHasBeenConverted) 
+        {
+            Communication.announceEnemyEnlightenmentCenterCurrentInfluence(Communication.ENEMY_ENLIGHTENMENT_CENTER_INFLUENCE);
+        }
+        else if (enemyEnlightenmentCenterHasBeenConverted)
+        {
+            Communication.processEnemyEnlightenmentCenterHasBeenConverted();
+            Communication.announceEnemyEnlightenmentCenterHasBeenConverted();            
+            enemyEnlightenmentCenterHasBeenConverted = false;
+        }
     }
 
     protected static void senseAreaForRobots() throws GameActionException {
@@ -154,11 +194,11 @@ public class PoliticianTest01 extends RobotPlayer
             && robotInfo.getTeam() == enemy) 
             {
                 enemyEnlightenmentCenterIsAround = true;
-                enemyEnlightenmentCenterDistanceSquared = robotInfo.getLocation().distanceSquaredTo(robotController.getLocation());
+                distanceToEnemyEnlightenmentCenter = robotInfo.getLocation().distanceSquaredTo(robotController.getLocation());
                 enemyEnlightenmentCenterConviction = robotInfo.getConviction();
                 enemyEnlightenmentCenterCurrentInfluence = robotInfo.getInfluence();
                 countOfEnemies++;
-                if (enemyEnlightenmentCenterDistanceSquared <= ACTION_RADIUS_POLITICIAN) 
+                if (distanceToEnemyEnlightenmentCenter <= ACTION_RADIUS_POLITICIAN) 
                 {
                     turnsNearEnemyEnlightenmentCenter++;
                 }                
@@ -171,27 +211,12 @@ public class PoliticianTest01 extends RobotPlayer
             // If enemy enlightenment center has been converted.
             if (Communication.hasEnemyEnlightenmentCenterBeenConverted(robotInfo)) 
             {
-                enemyEnlightenmentCenterFound = false;
                 enemyEnlightenmentCenterHasBeenConverted = true;
-                enemyEnlightenmentCenterMapLocation.remove(0);
+                Communication.processEnemyEnlightenmentCenterHasBeenConverted();
+                println("HERE $$$$" + robotController.getType());
             }
         }
-    }
-
-    protected static void resetVariablesForSensing()
-    {
-        enemyEnlightenmentCenterIsAround = false;
-        countOfEnemies = 0;
-        countOfFriendlies = 0;
-        hasTarget = false; //TODO: This should be handeled better. The target stuff.
-        sumOfEnemyConvictionNearby = 0;
-        countOfEnemiesInActionRadius = 0;
-        countOfFriendliesInActionRadius = 0;
-        countOfEnemyMuckrakerInActionRadius = 0;
-        politicianECBombNearby = false;
-        nearFriendlyEnlightenmentCenter = false;
-        distanceToclosestRobotMapLocation = 0;
-    }
+    }        
 
     protected static void senseActionRadiusForRobots() {
         int actionRadiusSquared = robotController.getType().actionRadiusSquared;
@@ -212,16 +237,21 @@ public class PoliticianTest01 extends RobotPlayer
                 countOfEnemiesInActionRadius++;
             }
             else if (robotInfo.getTeam() == friendly && robotInfo.getType() == RobotType.POLITICIAN
-                && robotInfo.getConviction() >= POLITICIAN_EC_BOMB && enemyEnlightenmentCenterIsAround) 
+                && robotInfo.getInfluence() >= POLITICIAN_EC_BOMB && enemyEnlightenmentCenterIsAround) 
             {
                 
                 politicianECBombNearby = true;
-                if (robotInfo.getID() > robotController.getID()
-                        && robotRole == RobotRoles.PoliticianEnlightenmentCenterBomb) {
-                    lowestRobotIdOfFriendlies = true;
+
+                if (robotInfo.getID() < robotController.getID()
+                        && robotRole == RobotRoles.PoliticianEnlightenmentCenterBomb
+                        && robotController.getLocation().distanceSquaredTo(currentEnemyEnlightenmentCenterGoingFor) >= robotInfo.getLocation().distanceSquaredTo(currentEnemyEnlightenmentCenterGoingFor))
+                {
+                    lowestRobotIdOfFriendlies = false;
                 }
+                
             }
-            else if (robotInfo.getTeam() == friendly && robotInfo.getType() == RobotType.ENLIGHTENMENT_CENTER) {
+            else if (robotInfo.getTeam() == friendly && robotInfo.getType() == RobotType.ENLIGHTENMENT_CENTER) 
+            {
                 nearFriendlyEnlightenmentCenter = true;
                 friendlyEnlightenmentCenterInfluence = robotInfo.getInfluence();
                 distanceToFriendlyEnlightenmentCenter = robotController.getLocation().distanceSquaredTo(robotInfo.getLocation());
@@ -233,20 +263,20 @@ public class PoliticianTest01 extends RobotPlayer
     }
 
     private static void getClosestEnemyRobot(RobotInfo robotInfo) {
-        if (robotController.getLocation().distanceSquaredTo(robotInfo.getLocation()) <= distanceToclosestRobotMapLocation
-            || distanceToclosestRobotMapLocation == 0) 
+        if (robotController.getLocation().distanceSquaredTo(robotInfo.getLocation()) <= distanceToClosestRobotMapLocation
+            || distanceToClosestRobotMapLocation == 0) 
         {
             closestRobotMapLocation = robotInfo.getLocation();
-            distanceToclosestRobotMapLocation = robotController.getLocation().distanceSquaredTo(robotInfo.getLocation());
+            distanceToClosestRobotMapLocation = robotController.getLocation().distanceSquaredTo(robotInfo.getLocation());
         }
     }
 
     protected static void getSumOfEnemyConvictionInEnemyEnlightenmentRadiusSquared() {
         countOfEnemiesInActionRadiusAroundEnemyEnlightenmentcenter = 0;
         sumOfEnemyConviciontInActionRadiusAroundEnemyEnlightenmentcenter = 0;
-        countOfFrienliesInActionRadiusAroundEnemyEnlightenmentcenter = 0;
+        countOfFriendliesInActionRadiusAroundEnemyEnlightenmentcenter = 0;
 
-        RobotInfo[] allRobotInfos = robotController.senseNearbyRobots(enemyEnlightenmentCenterDistanceSquared);
+        RobotInfo[] allRobotInfos = robotController.senseNearbyRobots(distanceToEnemyEnlightenmentCenter);
         for (RobotInfo robotInfo : allRobotInfos) 
         {
             if (robotInfo.getTeam() == enemy && robotInfo.getType() != RobotType.ENLIGHTENMENT_CENTER) 
@@ -256,7 +286,7 @@ public class PoliticianTest01 extends RobotPlayer
             } 
             else if (robotInfo.getTeam() == friendly) 
             {
-                countOfFrienliesInActionRadiusAroundEnemyEnlightenmentcenter++;
+                countOfFriendliesInActionRadiusAroundEnemyEnlightenmentcenter++;
             }
         }
     }
@@ -339,13 +369,40 @@ public class PoliticianTest01 extends RobotPlayer
         && friendlyEnlightenmentCenterInfluence < AMOUNT_OF_INFLUENCE_TO_NOT_EMPOWER_SELF;
     }
 
+    // RobotRole == Converted
+    protected static void attackOrScoutAround() throws GameActionException
+    {
+        if (enemyEnlightenmentCenterIsAround && robotController.canEmpower(distanceToEnemyEnlightenmentCenter)) 
+        {
+            robotController.empower(distanceToEnemyEnlightenmentCenter);
+            return;
+        }
+        else if (countOfEnemiesInActionRadius != 0 && robotController.canEmpower(distanceToClosestRobotMapLocation)) 
+        {
+            robotController.empower(distanceToClosestRobotMapLocation);
+            return;
+        }
+        else 
+        {
+            Movement.scoutTheDirection(Movement.getRandomDirection());
+        }
+    }
+
     static void setup() 
     {
         setConstants();
         assignHomeEnlightenmentCenterLocation();
-        setSquaresAroundEnlightenmentCenter();        
+        if (spawnEnlightenmentCenterHomeLocation != null) 
+        {
+            setSquaresAroundEnlightenmentCenter(); 
+            assignRobotRole();
+        }
+        else
+        {
+            robotRole = RobotRoles.Converted;
+        }
+               
         robotCurrentInfluence = robotController.getInfluence();
-        assignRobotRole();        
     }
 
     static void assignRobotRole() {

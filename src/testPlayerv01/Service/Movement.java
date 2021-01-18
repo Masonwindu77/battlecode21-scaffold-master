@@ -99,8 +99,7 @@ public class Movement extends RobotPlayer {
 
                 for (Direction randomDirection : directions) {
                     if (robotController.onTheMap(currentLocation.add(randomDirection))) {
-                        if (robotController.canMove(randomDirection) && !robotController
-                                .isLocationOccupied(robotController.getLocation().add(randomDirection))) {
+                        if (robotController.canMove(randomDirection) && !robotController.isLocationOccupied(robotController.getLocation().add(randomDirection))) {
                             robotController.move(randomDirection);
                         }
 
@@ -179,7 +178,7 @@ public class Movement extends RobotPlayer {
         }
     }
 
-    protected static Direction getOppositeDirection(Direction directionTowardsTarget) {
+    public static Direction getOppositeDirection(Direction directionTowardsTarget) {
         Direction oppositeDirection = Direction.CENTER;
 
         if (directionTowardsTarget == Direction.NORTH) {

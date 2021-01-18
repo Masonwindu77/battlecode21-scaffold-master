@@ -36,8 +36,15 @@ public class Slanderer extends RobotPlayer {
         } 
         else if (enemyEnlightenmentCenterFound) 
         {
-            println("HERE 2 SLANDERER");
-            Movement.moveAwayFromLocation(currentEnemyEnlightenmentCenterGoingFor);
+            // if the next move places it on the adjacent square around the EC. Don't move there.
+            if (!robotController.getLocation().add(Movement.getOppositeDirection(robotController.getLocation().directionTo(currentEnemyEnlightenmentCenterGoingFor))).isAdjacentTo(spawnEnlightenmentCenterHomeLocation))
+            {
+                Movement.moveAwayFromLocation(currentEnemyEnlightenmentCenterGoingFor);
+            }
+            else
+            {
+                Movement.scoutTheDirection(Movement.getRandomDirection());
+            }
         }
 
         // TODO: Make Slanderer stuff
@@ -78,7 +85,9 @@ public class Slanderer extends RobotPlayer {
         int sensorRadiusSquared = robotController.getType().sensorRadiusSquared;
         if (robotController.getLocation().isWithinDistanceSquared(spawnEnlightenmentCenterHomeLocation, sensorRadiusSquared)) {
             nextDirection = null;
-        } else {
+        } 
+        else 
+        {
             nextDirection = robotController.getLocation().directionTo(spawnEnlightenmentCenterHomeLocation);
         }
     }

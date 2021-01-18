@@ -23,6 +23,8 @@ public class EnlightenmentCenterTest01 extends RobotPlayer {
     private static double empowerFactorInThirtyTurns = 1;
     private static final int AMOUNT_OF_VOTES_NEEDED_TO_WIN = 750;
 
+    private static int convertedMessageSent = 0;
+
     // Count of My robots
     private static int countOfPoliticianBomb = 0;
     private static int countOfSlanderer = 0;
@@ -102,7 +104,7 @@ public class EnlightenmentCenterTest01 extends RobotPlayer {
             RobotBuilder.robotTypeToBuild = firstBuild;
             RobotBuilder.directionToSpawn = getAvailableDirectionToSpawn();
             RobotBuilder.influenceToUse = firstInfluence;
-            // countOfSlanderer++;
+            countOfSlanderer++;
         }       
         else if (robotCurrentInfluence < AMOUNT_OF_INFLUENCE_TO_NOT_EMPOWER_SELF && empowerFactor > 5 && isItSafe())
         {
@@ -167,6 +169,7 @@ public class EnlightenmentCenterTest01 extends RobotPlayer {
                 RobotBuilder.influenceToUse = amountNeededForSlanderer;
                 countOfSlanderer++;
                 stockUp = false;
+                amountNeededForSlanderer = 0;
             }
         } 
         else if (enemyEnlightenmentCenterFound) 
@@ -261,22 +264,9 @@ public class EnlightenmentCenterTest01 extends RobotPlayer {
         }
 
         decideIfShouldBuildSlanderer();
+        
+        decideToSetFlags();
 
-        // send location of the enemey EC every 2 turns
-        // TODO: add in clause about needing to protect or kill enemy
-        if (enemyEnlightenmentCenterMapLocation.size() > 0 && robotController.getRoundNum() % 2 == 0) 
-        {
-            Communication.sendLocation(enemyEnlightenmentCenterMapLocation.get(0), ENEMY_ENLIGHTENMENT_CENTER_FOUND);
-            enemyEnlightenmentCenterFound = true;
-        }
-        else if (!neutralEnlightenmentCenterMapLocation.isEmpty())
-        {
-            Communication.sendLocation(neutralEnlightenmentCenterMapLocation.get(0), NUETRAL_ENLIGHTENMENT_CENTER_FOUND);
-        }
-        else if (enemyEnlightenmentCenterMapLocation.isEmpty())
-        {
-            robotController.setFlag(0);
-        }
 
         // figure out high priority locations
         // decide the priority and who is going to attack there
@@ -345,35 +335,41 @@ public class EnlightenmentCenterTest01 extends RobotPlayer {
     }
 
     private static void checkFlagsFromRobots() throws GameActionException {
-        for (int iterator = robotIds.size() - 1; iterator >= 0; --iterator) {
+        for (int iterator = robotIds.size() - 1; iterator >= 0; --iterator) 
+        {
             int robotId = robotIds.get(iterator);
             if (robotController.canGetFlag(robotId)) {
                 int flag = robotController.getFlag(robotId);
 
-                if (flag != 0) {
+                if (flag != 0) 
+                {
                     checkIfRobotSignallingTheyFoundEnemyEnlightenmentCenter(flag);
                     checkIfRobotSignallingEnemyECInfluence(flag);
                     checkIfRobotSignallingEnlightenmentCenterConverted(flag);
                 }
-            } else {
+            } 
+            else 
+            {
                 robotIds.remove(iterator); // TODO: this could be where you count the # of robots alive.
             }
         }
     }
 
     private static void checkIfRobotSignallingTheyFoundEnemyEnlightenmentCenter(int flag) throws GameActionException {
-        if (Communication.checkIfEnemeyEnlightenmentCenterHasBeenFound(flag)) {
+        if (Communication.checkIfEnemeyEnlightenmentCenterHasBeenFound(flag)) 
+        {
             setEnemyEnlightenmentCenter(flag);
         }
     }
 
     private static void checkIfRobotSignallingEnlightenmentCenterConverted(int flag) throws GameActionException {
-        checkRobotForAllClearSignal(flag);
+        checkRobotForConvertedEnemyEnlightenmentCenterSignal(flag);
     }
 
-    private static void checkRobotForAllClearSignal(int flag) throws GameActionException {
-        if (Communication.checkIfEnemeyEnlightenmentCenterHasBeenConverted(flag)) {
-            processEnemyEnlightenmentCenterHasBeenConverted();
+    private static void checkRobotForConvertedEnemyEnlightenmentCenterSignal(int flag) throws GameActionException {
+        if (Communication.checkIfEnemeyEnlightenmentCenterHasBeenConverted(flag)) 
+        {
+            Communication.processEnemyEnlightenmentCenterHasBeenConverted();
         }
     }
 
@@ -383,24 +379,48 @@ public class EnlightenmentCenterTest01 extends RobotPlayer {
         }
     }
 
-    private static void processEnemyEnlightenmentCenterHasBeenConverted() throws GameActionException {
-        if (robotController.canSetFlag(0)) 
+    private static void decideToSetFlags() throws GameActionException
+    {
+        if (!enemyEnlightenmentCenterMapLocation.isEmpty() && robotController.getRoundNum() % 2 == 0) 
+        {
+            Communication.sendLocation(enemyEnlightenmentCenterMapLocation.get(0), Communication.ENEMY_ENLIGHTENMENT_CENTER_FOUND);
+        }
+        else if(!convertedEnemyEnlightenmentCenterMapLocation.isEmpty() 
+            && robotController.getRoundNum() % 2 != 0
+            && enemyEnlightenmentCenterHasBeenConverted)
+        {
+            Communication.announceEnemyEnlightenmentCenterHasBeenConverted();
+            if (convertedMessageSent > 5) 
+            {
+                enemyEnlightenmentCenterHasBeenConverted = false; // reset this so it doesn't keep spamming the message
+                convertedMessageSent = 0;
+            }
+            else
+            {
+                convertedMessageSent++;
+            }
+            
+            println("EC: SENDING OUT CONVERTED " + convertedEnemyEnlightenmentCenterMapLocation.get(0));
+        }
+        else if (!neutralEnlightenmentCenterMapLocation.isEmpty())
+        {
+            Communication.sendLocation(neutralEnlightenmentCenterMapLocation.get(0), Communication.NUETRAL_ENLIGHTENMENT_CENTER_FOUND);
+        }
+        else if (enemyEnlightenmentCenterMapLocation.isEmpty())
         {
             robotController.setFlag(0);
         }
-        convertedEnemyEnlightenmentCenterMapLocation.add(enemyEnlightenmentCenterMapLocation.get(0));
-        enemyEnlightenmentCenterMapLocation.remove(0);
-        enemyEnlightenmentCenterFound = false;
     }
 
     private static void setEnemyEnlightenmentCenter(int flag) throws GameActionException {
-        MapLocation enemyCenterLocation = Communication.getLocationFromFlag(flag);
+        MapLocation enemyEnlightenmentCenterLocation = Communication.getLocationFromFlag(flag);
 
-        if ((!convertedEnemyEnlightenmentCenterMapLocation.contains(enemyCenterLocation) 
-        || convertedEnemyEnlightenmentCenterMapLocation.size() == 0) 
-        && (enemyEnlightenmentCenterMapLocation.isEmpty() || !convertedEnemyEnlightenmentCenterMapLocation.contains(enemyCenterLocation))) 
+        if ((!enemyEnlightenmentCenterMapLocation.contains(enemyEnlightenmentCenterLocation) || enemyEnlightenmentCenterMapLocation.isEmpty())
+            && (convertedEnemyEnlightenmentCenterMapLocation.isEmpty() || !convertedEnemyEnlightenmentCenterMapLocation.contains(enemyEnlightenmentCenterLocation))
+        )
         {
-            enemyEnlightenmentCenterMapLocation.add(enemyCenterLocation);
+            enemyEnlightenmentCenterMapLocation.add(enemyEnlightenmentCenterLocation);
+            enemyEnlightenmentCenterFound = true;
         }
     }
 
@@ -466,7 +486,7 @@ public class EnlightenmentCenterTest01 extends RobotPlayer {
     private static int getAmountToMakePoliticianBomb() {
         int currentInfluence = robotController.getInfluence();
 
-        if (enemyEnlightenmentCenterCurrentInfluence != 0) 
+        if (enemyEnlightenmentCenterCurrentInfluence != 0 && enemyEnlightenmentCenterCurrentInfluence > POLITICIAN_EC_BOMB) 
         {
             currentInfluence = enemyEnlightenmentCenterCurrentInfluence;
         }       
@@ -513,7 +533,7 @@ public class EnlightenmentCenterTest01 extends RobotPlayer {
 
         for (MapLocation possibleLocation : squaresAroundEnlightenmentCenter) 
         {
-            if (!robotController.isLocationOccupied(possibleLocation) && robotController.onTheMap(possibleLocation)) 
+            if (robotController.onTheMap(possibleLocation) && !robotController.isLocationOccupied(possibleLocation)) 
             {
                 directionToSpawn = robotController.getLocation().directionTo(possibleLocation);
                 break;

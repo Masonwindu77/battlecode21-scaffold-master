@@ -2,7 +2,6 @@ package testPlayerv01.Roles;
 
 import battlecode.common.*;
 import testPlayerv01.PoliticianTest01;
-import testPlayerv01.Service.Communication;
 import testPlayerv01.Service.Movement;
 
 public class PoliticianECBomb extends PoliticianTest01 {
@@ -20,29 +19,8 @@ public class PoliticianECBomb extends PoliticianTest01 {
     // If enemies found, get close and empower if can convert
     /// or if there are more than 1 enemies nearby.
 
-    public static void run() throws GameActionException {
-        robotCurrentConviction = robotController.getConviction();
-        empowerFactor = robotController.getEmpowerFactor(friendly, 0);
-        moveRobot = true;
-
-        if (!enemyEnlightenmentCenterFound) {
-            Communication.checkIfSpawnEnlightenmentCenterHasEnemyLocation();
-            setCurrentEnemyEnlightenmentCenterGoingFor();
-        }
-
-        senseAreaForRobots();
-        senseActionRadiusForRobots();
-
-        if (enemyEnlightenmentCenterIsAround) 
-        {
-            Communication.announceEnemyEnlightenmentCenterCurrentInfluence(ENEMY_ENLIGHTENMENT_CENTER_INFLUENCE);
-        }
-        else if (enemyEnlightenmentCenterHasBeenConverted)
-        {
-            Communication.announceEnemyEnlightenmentCenterHasBeenConverted();
-            currentEnemyEnlightenmentCenterGoingFor = null;
-        }
-
+    public static void run() throws GameActionException 
+    {
         if ((enemyEnlightenmentCenterFound || enemyEnlightenmentCenterIsAround) 
             && !homeEnlightenmentCenterSurrounded() && !empowerTheHomeBase()) 
         {
@@ -63,8 +41,8 @@ public class PoliticianECBomb extends PoliticianTest01 {
         else if (robotController.getRoundNum() >= MIDDLE_GAME_ROUND_START 
             && checkIfPoliticianShouldEmpower()) 
         {
-            if (robotController.canEmpower(distanceToclosestRobotMapLocation)) {
-                robotController.empower(distanceToclosestRobotMapLocation);
+            if (robotController.canEmpower(distanceToClosestRobotMapLocation)) {
+                robotController.empower(distanceToClosestRobotMapLocation);
             }
             return;
         }        
@@ -102,27 +80,27 @@ public class PoliticianECBomb extends PoliticianTest01 {
 
     // TODO: Make a check for closest
     protected static void decideIfEmpowerForEnlightenmentCenterBombs() throws GameActionException {
-        if (robotController.canEmpower(enemyEnlightenmentCenterDistanceSquared) 
+        if (robotController.canEmpower(distanceToEnemyEnlightenmentCenter) 
             && enemyEnlightenmentCenterIsAround) 
         {
             // If it has enough, convert it.
             if (hasEnoughConvictionToConvertEnlightenmentCenter()) 
             {
-                robotController.empower(enemyEnlightenmentCenterDistanceSquared);
+                robotController.empower(distanceToEnemyEnlightenmentCenter);
                 return;
             }
             // If adjacent to it, empower
             else if (robotController.getLocation().isAdjacentTo(currentEnemyEnlightenmentCenterGoingFor)
-            && countOfFrienliesInActionRadiusAroundEnemyEnlightenmentcenter < 1 )
+            && countOfFriendliesInActionRadiusAroundEnemyEnlightenmentcenter < 1 )
             {
-                robotController.empower(enemyEnlightenmentCenterDistanceSquared);
+                robotController.empower(distanceToEnemyEnlightenmentCenter);
                 return;
             }
             // If it is the first in line and it's been stuck near it, attack.
             else if (lowestRobotIdOfFriendlies 
-            && (enemyEnlightenmentCenterDistanceSquared <= 5 && turnsNearEnemyEnlightenmentCenter >= 10))
+            && (distanceToEnemyEnlightenmentCenter <= 5 && turnsNearEnemyEnlightenmentCenter >= 15))
             {
-                robotController.empower(enemyEnlightenmentCenterDistanceSquared);
+                robotController.empower(distanceToEnemyEnlightenmentCenter);
                 return;
             }
             // Movement
@@ -131,7 +109,9 @@ public class PoliticianECBomb extends PoliticianTest01 {
                 moveAwayFromEnemyEnlightenmentCenter();
                 moveRobot = false;
             } 
-        } else {
+        } 
+        else 
+        {
             moveRobot = true;
         }
     }
@@ -140,13 +120,15 @@ public class PoliticianECBomb extends PoliticianTest01 {
     {
         getSumOfEnemyConvictionInEnemyEnlightenmentRadiusSquared();
         int countOfAllRobotsNearby = countOfEnemiesInActionRadiusAroundEnemyEnlightenmentcenter
-                + countOfFrienliesInActionRadiusAroundEnemyEnlightenmentcenter;
+                + countOfFriendliesInActionRadiusAroundEnemyEnlightenmentcenter;
         int remainderOfEnemyConviction = 0;
         boolean hasEnoughToEmpower = false;
 
-        if (countOfEnemiesInActionRadiusAroundEnemyEnlightenmentcenter > 0) {
+        if (countOfAllRobotsNearby > 0) {
             remainderOfEnemyConviction = (int) (enemyEnlightenmentCenterConviction - (getCurrentConviction() / countOfAllRobotsNearby));
-        } else {
+        } 
+        else 
+        {
             remainderOfEnemyConviction = enemyEnlightenmentCenterConviction - robotCurrentConviction;
         }
 

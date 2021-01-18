@@ -24,6 +24,7 @@ public strictfp class RobotPlayer {
         Leader, // Polis w/ 20 influence
         Follower, // Polis w/ < 20
         DefendSlanderer, // Muckraker will scout
+        Converted,
     }
 
     public static void println(String string) {
@@ -33,7 +34,7 @@ public strictfp class RobotPlayer {
     }
 
     static int turnCount;
-    static boolean debug = false;
+    static boolean debug = true;
 
     protected static Random randomInteger;
 
@@ -95,16 +96,6 @@ public strictfp class RobotPlayer {
 
     protected static final int MIDDLE_GAME_ROUND_START = 700;
     protected static final int END_GAME_ROUND_STRAT = 1000;
-
-    // Max bit is 2^24
-    // 10000 to 30000
-    // Signals
-    protected static final int ENEMY_ENLIGHTENMENT_CENTER_FOUND = 11;
-    static final int KILL_ENEMY_TARGET = 12;
-    protected static final int ENEMY_ENLIGHTENMENT_CENTER_CONVERTED = 13;
-    protected static final int ENEMY_ENLIGHTENMENT_CENTER_INFLUENCE = 14;
-    protected static final int NUETRAL_ENLIGHTENMENT_CENTER_FOUND = 15;
-    static final int RECEIVED_MESSAGE = 99;
 
     // POLITICIAN
     static final int MIN_NORMAL_POLITICIAN = 12;
@@ -211,6 +202,7 @@ public strictfp class RobotPlayer {
     protected static void setConstants()
     {
         enemy = robotController.getTeam().opponent();
+        robotCurrentInfluence = robotController.getInfluence();
         friendly = robotController.getTeam();
         randomInteger = new Random();
     }
@@ -228,7 +220,8 @@ public strictfp class RobotPlayer {
         }
     }  
 
-    protected static void setSquaresAroundEnlightenmentCenter() {
+    protected static void setSquaresAroundEnlightenmentCenter() 
+    {
         int iterator = 0;
         for (Direction direction : directions) 
         {

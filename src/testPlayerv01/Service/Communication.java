@@ -15,6 +15,16 @@ public class Communication extends RobotPlayer
         ,{ 0, -(1 << NBITS) }
         ,{ 0, (1 << NBITS) } };
 
+    // Max bit is 2^24
+    // 10000 to 30000
+    // Signals
+    public static final int ENEMY_ENLIGHTENMENT_CENTER_FOUND = 11;
+    public static final int KILL_ENEMY_TARGET = 12;
+    public static final int ENEMY_ENLIGHTENMENT_CENTER_CONVERTED = 13;
+    public static final int ENEMY_ENLIGHTENMENT_CENTER_INFLUENCE = 14;
+    public static final int NUETRAL_ENLIGHTENMENT_CENTER_FOUND = 15;
+    static final int RECEIVED_MESSAGE = 99;
+
     public static void announceEnemyEnlightenmentCenterCurrentInfluence(int extraInformation) throws GameActionException 
     {
         int encodedflag = (extraInformation << (2 * NBITS)) + enemyEnlightenmentCenterCurrentInfluence;
@@ -33,8 +43,8 @@ public class Communication extends RobotPlayer
             {
                 MapLocation enemyEnlightenmentCenterLocation = getLocationFromFlag(currentEnlightenmentCenterFlag);
 
-                if (!enemyEnlightenmentCenterMapLocation.contains(enemyEnlightenmentCenterLocation) 
-                    || enemyEnlightenmentCenterMapLocation.isEmpty()) 
+                if ((!enemyEnlightenmentCenterMapLocation.contains(enemyEnlightenmentCenterLocation) || enemyEnlightenmentCenterMapLocation.isEmpty())
+                && (convertedEnemyEnlightenmentCenterMapLocation.isEmpty() || !convertedEnemyEnlightenmentCenterMapLocation.contains(enemyEnlightenmentCenterLocation))) 
                 {
                     enemyEnlightenmentCenterMapLocation.add(enemyEnlightenmentCenterLocation);
                     enemyEnlightenmentCenterFound = true;
@@ -88,13 +98,8 @@ public class Communication extends RobotPlayer
         return foundNeutralCenter;
     }
 
-    
-
-    public static void announceEnemyEnlightenmentCenterHasBeenConverted() throws GameActionException {
-        sendLocation(currentEnemyEnlightenmentCenterGoingFor, ENEMY_ENLIGHTENMENT_CENTER_CONVERTED);
-    }
-
-    public static boolean checkRobotFlagForEnemyECInfluence(int flag) {
+    public static boolean checkRobotFlagForEnemyECInfluence(int flag) 
+    {
         boolean sentEnlightenmentInfluence = false;
         int extraInformation = flag >> (2 * Communication.NBITS);
 
@@ -105,11 +110,31 @@ public class Communication extends RobotPlayer
         return sentEnlightenmentInfluence;
     }
 
-    // TODO: Still nee dto use this
-    public static int getEnemyEnlightenmentCenterInfluenceFromFlag(int flag) throws GameActionException {
+    public static int getEnemyEnlightenmentCenterInfluenceFromFlag(int flag) throws GameActionException 
+    {
         int enemyEnlightenmentCenterCurrentInfluence = flag - (ENEMY_ENLIGHTENMENT_CENTER_INFLUENCE << (2 * NBITS));
 
         return enemyEnlightenmentCenterCurrentInfluence;
+    }
+
+    public static void checkIfSpawnEnlightenmentCenterHasEnemyLocationConverted() throws GameActionException
+    {
+        if (robotController.canGetFlag(spawnEnlightenmentCenterRobotId)) 
+        {
+            currentEnlightenmentCenterFlag = robotController.getFlag(spawnEnlightenmentCenterRobotId);
+
+            if (currentEnlightenmentCenterFlag != 0 && checkIfEnemeyEnlightenmentCenterHasBeenConverted(currentEnlightenmentCenterFlag)) 
+            {
+                MapLocation convertedEnemyLocation = getLocationFromFlag(currentEnlightenmentCenterFlag);
+
+                if ((convertedEnemyEnlightenmentCenterMapLocation.isEmpty() 
+                    || !convertedEnemyEnlightenmentCenterMapLocation.contains(convertedEnemyLocation)) 
+                    && currentEnemyEnlightenmentCenterGoingFor.equals(convertedEnemyLocation)) 
+                {
+                    processEnemyEnlightenmentCenterHasBeenConverted();
+                }
+            }
+        }
     }
 
     public static boolean checkIfEnemeyEnlightenmentCenterHasBeenConverted(int flag) throws GameActionException {
@@ -132,7 +157,7 @@ public class Communication extends RobotPlayer
             for (RobotInfo robotInfo : robots) 
             {
                 if (robotInfo.getType() == RobotType.ENLIGHTENMENT_CENTER && robotInfo.getTeam() == friendly
-                        && robotInfo.getLocation() == currentEnemyEnlightenmentCenterGoingFor) 
+                        && robotInfo.getLocation().equals(currentEnemyEnlightenmentCenterGoingFor)) 
                 {
                     hasBeenConverted = true;
                 }
@@ -145,13 +170,31 @@ public class Communication extends RobotPlayer
     public static boolean hasEnemyEnlightenmentCenterBeenConverted(RobotInfo robotInfo) throws GameActionException
     {
         boolean hasBeenConverted = false;
-        if (currentEnemyEnlightenmentCenterGoingFor == robotInfo.getLocation() 
+        if (currentEnemyEnlightenmentCenterGoingFor.equals(robotInfo.getLocation())
             && robotInfo.getTeam() == friendly
             && robotInfo.getType() == RobotType.ENLIGHTENMENT_CENTER) 
             {
                 hasBeenConverted = true;
             }
         return hasBeenConverted;
+    }
+
+    public static void processEnemyEnlightenmentCenterHasBeenConverted() throws GameActionException 
+    {
+        if (!enemyEnlightenmentCenterMapLocation.isEmpty() 
+            && !convertedEnemyEnlightenmentCenterMapLocation.contains(enemyEnlightenmentCenterMapLocation.get(0))) 
+        {
+            convertedEnemyEnlightenmentCenterMapLocation.add(enemyEnlightenmentCenterMapLocation.get(0));
+            enemyEnlightenmentCenterMapLocation.remove(0);
+            enemyEnlightenmentCenterFound = false; 
+            enemyEnlightenmentCenterHasBeenConverted = true;      
+            currentEnemyEnlightenmentCenterGoingFor = null;      
+        }              
+    }
+
+    public static void announceEnemyEnlightenmentCenterHasBeenConverted() throws GameActionException 
+    {
+        sendLocation(convertedEnemyEnlightenmentCenterMapLocation.get(0), ENEMY_ENLIGHTENMENT_CENTER_CONVERTED);
     }
 
     public static void sendLocation(MapLocation location, int extraInformation) throws GameActionException {
@@ -180,8 +223,7 @@ public class Communication extends RobotPlayer
                 alternative = actualLocation.translate(translateCoordinates[iterator][innerIterator],
                         translateCoordinates[iterator][innerIterator + 1]);
 
-                if (currentLocation.distanceSquaredTo(alternative) < currentLocation
-                        .distanceSquaredTo(actualLocation)) {
+                if (currentLocation.distanceSquaredTo(alternative) < currentLocation.distanceSquaredTo(actualLocation)) {
                     actualLocation = alternative;
                 }
             }
