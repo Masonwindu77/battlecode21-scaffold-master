@@ -2,6 +2,7 @@ package testPlayerv01.Roles;
 
 import battlecode.common.*;
 import testPlayerv01.PoliticianTest01;
+import testPlayerv01.Service.Communication;
 import testPlayerv01.Service.Movement;
 
 public class PoliticianECBomb extends PoliticianTest01 {
@@ -25,23 +26,38 @@ public class PoliticianECBomb extends PoliticianTest01 {
         moveRobot = true;
 
         if (!enemyEnlightenmentCenterFound) {
-            checkIfSpawnEnlightenmentCenterHasEnemyLocation();
+            Communication.checkIfSpawnEnlightenmentCenterHasEnemyLocation();
             setCurrentEnemyEnlightenmentCenterGoingFor();
         }
 
         senseAreaForRobots();
         senseActionRadiusForRobots();
-        if (enemyEnlightenmentCenterIsAround) {
-            announceEnemyEnlightenmentCenterCurrentInfluence(ENEMY_ENLIGHTENMENT_CENTER_INFLUENCE);
+
+        if (enemyEnlightenmentCenterIsAround) 
+        {
+            Communication.announceEnemyEnlightenmentCenterCurrentInfluence(ENEMY_ENLIGHTENMENT_CENTER_INFLUENCE);
+        }
+        else if (enemyEnlightenmentCenterHasBeenConverted)
+        {
+            Communication.announceEnemyEnlightenmentCenterHasBeenConverted();
+            currentEnemyEnlightenmentCenterGoingFor = null;
         }
 
-        if (enemyEnlightenmentCenterFound || enemyEnlightenmentCenterIsAround) {
+        if ((enemyEnlightenmentCenterFound || enemyEnlightenmentCenterIsAround) 
+            && !homeEnlightenmentCenterSurrounded() && !empowerTheHomeBase()) 
+        {
             decideIfEmpowerForEnlightenmentCenterBombs();
         }
-        else if (empowerFactor > 3 && nearFriendlyEnlightenmentCenter)
+        else if (empowerTheHomeBase())
         {
             if (robotController.canEmpower(distanceToFriendlyEnlightenmentCenter)) {
                 robotController.empower(distanceToFriendlyEnlightenmentCenter);
+            }
+        }
+        else if (homeEnlightenmentCenterSurrounded()) 
+        {
+            if (robotController.canEmpower(ACTION_RADIUS_POLITICIAN)) {
+                robotController.empower(ACTION_RADIUS_POLITICIAN);
             }
         }
         else if (robotController.getRoundNum() >= MIDDLE_GAME_ROUND_START 

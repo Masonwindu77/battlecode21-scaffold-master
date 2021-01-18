@@ -41,6 +41,8 @@ public strictfp class RobotPlayer {
     protected static Team friendly;
     protected static double empowerFactor = 1;
     static final int POLITICIAN_TAX = 10;
+    protected static final int AMOUNT_OF_INFLUENCE_TO_NOT_EMPOWER_SELF = 1000000;
+    protected static boolean haveMessageToSend = false;
 
     protected static boolean moveRobot;
 
@@ -48,7 +50,7 @@ public strictfp class RobotPlayer {
     static int robotCurrentInfluence;
     protected static int robotCurrentConviction;
     protected static boolean lowestRobotIdOfFriendlies;
-    static final int ACTION_RADIUS_POLITICIAN = 9;
+    protected static final int ACTION_RADIUS_POLITICIAN = 9;
 
     // Enemy
     protected static int enemyEnlightenmentCenterCurrentInfluence;
@@ -75,31 +77,33 @@ public strictfp class RobotPlayer {
 
     // Enemy Enlightenment Center
     protected static List<MapLocation> enemyEnlightenmentCenterMapLocation = new ArrayList<>();
+    protected static List<MapLocation> convertedEnemyEnlightenmentCenterMapLocation = new ArrayList<>();
     protected static boolean enemyEnlightenmentCenterFound = false;
     protected static MapLocation currentEnemyEnlightenmentCenterGoingFor;
+    protected static boolean enemyEnlightenmentCenterHasBeenConverted = false;
 
     // Home Enlightenment Center
     public static MapLocation spawnEnlightenmentCenterHomeLocation;
     public static int spawnEnlightenmentCenterRobotId;
-    private static int currentEnlightenmentCenterFlag;
+    protected static int currentEnlightenmentCenterFlag;
+    protected static MapLocation[] squaresAroundEnlightenmentCenter = new MapLocation[8];
+
+    // Neutral Enlightenment Center
+    protected static boolean neutralEnlightenmentCenterFound = false;
+    protected static List<MapLocation> neutralEnlightenmentCenterMapLocation = new ArrayList<>();
+    protected static MapLocation currentNeutralEnlightenmentCenterGoingFor;
 
     protected static final int MIDDLE_GAME_ROUND_START = 700;
     protected static final int END_GAME_ROUND_STRAT = 1000;
 
-    // Sending Flags
-    static final int NBITS = 7;
-    static final int BITMASK = (1 << NBITS) - 1;
-    protected static boolean haveMessageToSend = false;
-    static final int[][] translateCoordinates = { { -(1 << NBITS), 0 }, { (1 << NBITS), 0 }, { 0, -(1 << NBITS) },
-            { 0, (1 << NBITS) } };
-
     // Max bit is 2^24
     // 10000 to 30000
     // Signals
-    static final int ENEMY_ENLIGHTENMENT_CENTER_FOUND = 11;
+    protected static final int ENEMY_ENLIGHTENMENT_CENTER_FOUND = 11;
     static final int KILL_ENEMY_TARGET = 12;
-    static final int ENEMY_ENLIGHTENMENT_CENTER_CONVERTED = 13;
+    protected static final int ENEMY_ENLIGHTENMENT_CENTER_CONVERTED = 13;
     protected static final int ENEMY_ENLIGHTENMENT_CENTER_INFLUENCE = 14;
+    protected static final int NUETRAL_ENLIGHTENMENT_CENTER_FOUND = 15;
     static final int RECEIVED_MESSAGE = 99;
 
     // POLITICIAN
@@ -204,124 +208,32 @@ public strictfp class RobotPlayer {
             return false;
     }
 
-    static void assignHomeEnlightenmentCenterLocation() {
+    protected static void setConstants()
+    {
+        enemy = robotController.getTeam().opponent();
+        friendly = robotController.getTeam();
+        randomInteger = new Random();
+    }
+
+    static void assignHomeEnlightenmentCenterLocation() 
+    {
         RobotInfo[] robots = robotController.senseNearbyRobots(robotController.getType().sensorRadiusSquared);
-        for (RobotInfo robotInfo : robots) {
-            if (robotInfo.getType() == RobotType.ENLIGHTENMENT_CENTER && robotInfo.getTeam() == friendly) {
+        for (RobotInfo robotInfo : robots) 
+        {
+            if (robotInfo.getType() == RobotType.ENLIGHTENMENT_CENTER && robotInfo.getTeam() == friendly) 
+            {
                 spawnEnlightenmentCenterHomeLocation = robotInfo.getLocation();
                 spawnEnlightenmentCenterRobotId = robotInfo.getID();
             }
         }
-    }
+    }  
 
-    protected static void checkIfSpawnEnlightenmentCenterHasEnemyLocation() throws GameActionException {
-        if (robotController.canGetFlag(spawnEnlightenmentCenterRobotId)) 
+    protected static void setSquaresAroundEnlightenmentCenter() {
+        int iterator = 0;
+        for (Direction direction : directions) 
         {
-            currentEnlightenmentCenterFlag = robotController.getFlag(spawnEnlightenmentCenterRobotId);
-
-            if (currentEnlightenmentCenterFlag != 0 && checkIfEnemeyEnlightenmentCenterHasBeenFound(currentEnlightenmentCenterFlag)) 
-            {
-                MapLocation enemyEnlightenmentCenterLocation = getLocationFromFlag(currentEnlightenmentCenterFlag);
-
-                if (!enemyEnlightenmentCenterMapLocation.contains(enemyEnlightenmentCenterLocation) 
-                    || enemyEnlightenmentCenterMapLocation.isEmpty()) 
-                {
-                    enemyEnlightenmentCenterMapLocation.add(enemyEnlightenmentCenterLocation);
-                    enemyEnlightenmentCenterFound = true;
-                    currentEnemyEnlightenmentCenterGoingFor = enemyEnlightenmentCenterLocation;
-                }
-
-            }
+            squaresAroundEnlightenmentCenter[iterator] = spawnEnlightenmentCenterHomeLocation.add(direction);
+            ++iterator;
         }
     }
-
-    protected static boolean checkIfEnemeyEnlightenmentCenterHasBeenFound(int flag) throws GameActionException {
-        boolean foundTheCenter = false;
-        int extraInformation = flag >> (2 * NBITS);
-
-        if (extraInformation == ENEMY_ENLIGHTENMENT_CENTER_FOUND) {
-            foundTheCenter = true;
-        }
-
-        return foundTheCenter;
-    }
-
-    protected static void announceEnemyEnlightenmentCenterCurrentInfluence(int extraInformation)
-            throws GameActionException {
-        int encodedflag = (extraInformation << (2 * NBITS)) + enemyEnlightenmentCenterCurrentInfluence;
-
-        if (robotController.canSetFlag(encodedflag)) {
-            robotController.setFlag(encodedflag);
-        }
-    }
-
-    // TODO: Still nee dto use this
-    protected static int getEnemyEnlightenmentCenterInfluenceFromFlag(int flag) throws GameActionException {
-        int enemyEnlightenmentCenterCurrentInfluence = flag - (ENEMY_ENLIGHTENMENT_CENTER_INFLUENCE << (2 * NBITS));
-
-        return enemyEnlightenmentCenterCurrentInfluence;
-    }
-
-    protected static boolean checkIfEnemeyEnlightenmentCenterHasBeenConverted(int flag) throws GameActionException {
-        boolean hasBeenConverted = false;
-        int extraInformation = flag >> (2 * NBITS);
-
-        if (extraInformation == ENEMY_ENLIGHTENMENT_CENTER_CONVERTED) {
-            hasBeenConverted = true;
-        }
-
-        return hasBeenConverted;
-    }
-
-    protected static boolean enemyEnlightenmentCenterHasBeenConverted() throws GameActionException {
-        boolean hasBeenConverted = false;
-        if (robotController.canSenseLocation(currentEnemyEnlightenmentCenterGoingFor)) {
-            RobotInfo[] robots = robotController.senseNearbyRobots();
-            for (RobotInfo robotInfo : robots) {
-                if (robotInfo.getType() == RobotType.ENLIGHTENMENT_CENTER && robotInfo.getTeam() == friendly
-                        && robotInfo.getLocation() == currentEnemyEnlightenmentCenterGoingFor) {
-                    hasBeenConverted = true;
-                }
-            }
-        }
-
-        return hasBeenConverted;
-    }
-
-    static void sendLocation(MapLocation location, int extraInformation) throws GameActionException {
-        int x = location.x;
-        int y = location.y;
-        int encodedLocation = (extraInformation << (2 * NBITS)) + ((x & BITMASK) << NBITS) + (y & BITMASK);
-
-        if (robotController.canSetFlag(encodedLocation)) {
-            robotController.setFlag(encodedLocation);
-        }
-    }
-
-    static MapLocation getLocationFromFlag(int flag) throws GameActionException {
-        int y = flag & BITMASK;
-        int x = (flag >> NBITS) & BITMASK;
-        MapLocation currentLocation = robotController.getLocation();
-
-        int offsetX128 = currentLocation.x >> NBITS;
-        int offsetY128 = currentLocation.y >> NBITS;
-
-        MapLocation actualLocation = new MapLocation((offsetX128 << NBITS) + x, (offsetY128 << NBITS) + y);
-        MapLocation alternative = actualLocation;
-
-        for (int iterator = 0; iterator < translateCoordinates.length; ++iterator) {
-            for (int innerIterator = 0; innerIterator < 1; ++innerIterator) {
-                alternative = actualLocation.translate(translateCoordinates[iterator][innerIterator],
-                        translateCoordinates[iterator][innerIterator + 1]);
-
-                if (currentLocation.distanceSquaredTo(alternative) < currentLocation
-                        .distanceSquaredTo(actualLocation)) {
-                    actualLocation = alternative;
-                }
-            }
-        }
-
-        return actualLocation;
-    }
-
 }

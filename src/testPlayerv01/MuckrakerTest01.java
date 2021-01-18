@@ -4,6 +4,7 @@ import java.util.Random;
 
 import battlecode.common.*;
 import testPlayerv01.Service.Movement;
+import testPlayerv01.Service.Communication;
 
 public class MuckrakerTest01 extends RobotPlayer {
     static boolean enemyEnlightenmentCenterIsAround;
@@ -33,10 +34,12 @@ public class MuckrakerTest01 extends RobotPlayer {
         if (robotRole == RobotRoles.Scout && !enemyEnlightenmentCenterFound) {
 
             // This is so that the robot will go the direction it spawns. Hopefully this will make it go all over.
-            if (turnCount < 5) {
+            if (robotController.getRoundNum() < 15) 
+            {
                 directionToScout = spawnEnlightenmentCenterHomeLocation.directionTo(robotController.getLocation());
                 // directionTo can be from a different location. Like the enemyEC to where you are.
             }
+            
             Movement.scoutAction();
         } else if (enemyEnlightenmentCenterFound) {
             if (politicianECBombNearby) {
@@ -121,11 +124,11 @@ public class MuckrakerTest01 extends RobotPlayer {
             haveMessageToSend = false;
         } else if (enemyEnlightenmentCenterIsAround) {
 
-            announceEnemyEnlightenmentCenterCurrentInfluence(ENEMY_ENLIGHTENMENT_CENTER_INFLUENCE);
+            Communication.announceEnemyEnlightenmentCenterCurrentInfluence(ENEMY_ENLIGHTENMENT_CENTER_INFLUENCE);
             haveMessageToSend = false;
         } else if (enemyEnlightenmentCenterHasBeenConverted) {
 
-            announceEnemyEnlightenmentCenterHasBeenConverted();
+            Communication.announceEnemyEnlightenmentCenterHasBeenConverted();
             enemyEnlightenmentCenterMapLocation.remove(0);
             enemyEnlightenmentCenterFound = false;
             enemyEnlightenmentCenterIsAround = false;
@@ -142,10 +145,10 @@ public class MuckrakerTest01 extends RobotPlayer {
         for (RobotInfo robotInfo : robots) {
             if (robotInfo.getType() == RobotType.ENLIGHTENMENT_CENTER
                     && (!enemyEnlightenmentCenterMapLocation.contains(robotInfo.getLocation())
-                            || enemyEnlightenmentCenterMapLocation.size() < 1)) {
+                    || enemyEnlightenmentCenterMapLocation.size() < 1)) 
+            {
 
                 enemyEnlightenmentCenterMapLocation.add(robotInfo.getLocation());
-
                 haveMessageToSend = true;
                 enemyEnlightenmentCenterFound = true;
                 currentEnemyEnlightenmentCenterGoingFor = robotInfo.getLocation();
@@ -153,21 +156,18 @@ public class MuckrakerTest01 extends RobotPlayer {
         }
     }
 
-    private static void announceEnemyEnlightenmentCenterLocation() throws GameActionException {
+    private static void announceEnemyEnlightenmentCenterLocation() throws GameActionException 
+    {
         MapLocation enemyCenterLocation = enemyEnlightenmentCenterMapLocation.get(0);
         currentEnemyEnlightenmentCenterGoingFor = enemyCenterLocation;
-        sendLocation(enemyCenterLocation, ENEMY_ENLIGHTENMENT_CENTER_FOUND);
+        Communication.sendLocation(enemyCenterLocation, ENEMY_ENLIGHTENMENT_CENTER_FOUND);
     }
 
-    private static void announceEnemyEnlightenmentCenterHasBeenConverted() throws GameActionException {
-        sendLocation(currentEnemyEnlightenmentCenterGoingFor, ENEMY_ENLIGHTENMENT_CENTER_CONVERTED);
-    }
-
-    public static void setup() throws GameActionException {
-        enemy = robotController.getTeam().opponent();
-        friendly = robotController.getTeam();
-        randomInteger = new Random();
+    public static void setup() throws GameActionException 
+    {
+        setConstants();
         assignHomeEnlightenmentCenterLocation();
+        setSquaresAroundEnlightenmentCenter();
         setRobotRole();        
     }
 

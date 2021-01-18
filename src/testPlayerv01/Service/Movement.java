@@ -145,15 +145,16 @@ public class Movement extends RobotPlayer {
         // Movement.basicBugMovement(targetLocation);
         // }
         // else
-        if (directionToScout != null) {
-
+        if (directionToScout != null) 
+        {
             scoutTheDirection(directionToScout);
 
-        } else if (locationToScout != null) {
-
+        } else if (locationToScout != null) 
+        {
             basicBugMovement(locationToScout);
 
-        } else {
+        } else 
+        {
             // TODO: What's a better way of randomizing this?
             directionToScout = getRandomDirection();
         }

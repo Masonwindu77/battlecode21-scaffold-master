@@ -1,8 +1,7 @@
 package testPlayerv01;
 
-import java.util.Random;
-
 import battlecode.common.*;
+import testPlayerv01.Service.Communication;
 import testPlayerv01.Service.Movement;
 
 public class Slanderer extends RobotPlayer {
@@ -17,7 +16,7 @@ public class Slanderer extends RobotPlayer {
 
         if(!enemyEnlightenmentCenterFound)
         {
-            checkIfSpawnEnlightenmentCenterHasEnemyLocation();
+            Communication.checkIfSpawnEnlightenmentCenterHasEnemyLocation();
         }
 
         if (!enemyMuckrakersNearby && !enemyEnlightenmentCenterFound) 
@@ -84,11 +83,11 @@ public class Slanderer extends RobotPlayer {
         }
     }
 
-    public static void setup() {
-        enemy = robotController.getTeam().opponent();
-        friendly = robotController.getTeam();
-        randomInteger = new Random();
+    public static void setup() 
+    {
+        setConstants();
         assignHomeEnlightenmentCenterLocation();
+        setSquaresAroundEnlightenmentCenter();   
         robotCurrentInfluence = robotController.getInfluence();
         assignRobotRole();
         
