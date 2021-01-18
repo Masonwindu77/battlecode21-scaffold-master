@@ -20,9 +20,9 @@ public strictfp class RobotPlayer {
         PoliticianEnlightenmentCenterBomb, // influence >= 100
         SlandererAttacker, // Muckraker & Polis team
         Scout, // Muckraker OR Polis
-        DefendHomeEnlightenmentCenter, // Muckraker w/influence > 1
-        Leader, // Polis w/ 20 influence
-        Follower, // Polis w/ < 20
+        //DefendHomeEnlightenmentCenter, // Muckraker w/influence > 1
+        //Leader, // Polis w/ 20 influence
+        //Follower, // Polis w/ < 20
         DefendSlanderer, // Muckraker will scout
         Converted,
     }
@@ -37,6 +37,8 @@ public strictfp class RobotPlayer {
     static boolean debug = true;
 
     protected static Random randomInteger;
+    protected static boolean rightBugMovement = true;
+    protected static boolean leftBugMovement;
 
     protected static Team enemy;
     protected static Team friendly;
@@ -68,8 +70,8 @@ public strictfp class RobotPlayer {
     // Roles
     protected static RobotRoles robotRole;
     protected static final int POLITICIAN_EC_BOMB = 30;
-    protected static final int POLITICIAN_LEADER = 20;
-    protected static final int POLITICIAN_FOLLOWER = 12;
+    protected static final int POLITICIAN_DEFEND_SLANDERER = 20;
+    protected static final int POLITICIAN_SCOUT = 15;
     protected static final int INFLUENCE_FOR_SCOUT = 1;
     protected static final int INFLUENCE_FOR_DEFEND_SLANDERER_MUCKRAKER = 3;
 
@@ -220,6 +222,15 @@ public strictfp class RobotPlayer {
         robotCurrentInfluence = robotController.getInfluence();
         friendly = robotController.getTeam();
         randomInteger = new Random();
+        if (randomInteger.nextInt(1) == 0) 
+        {
+            rightBugMovement = true;  
+            println("RIGHT!");  
+        }
+        else 
+        {
+            leftBugMovement = true; 
+        }
     }
 
     static void assignHomeEnlightenmentCenterLocation() 

@@ -59,11 +59,24 @@ public class EnlightenmentCenterHelper extends EnlightenmentCenterTest01
     }
     //#endregion
 
+    /** 
+     * 1. Build slandere at 130 if not spawned next to enemy
+     * 2. If empowerfactor is higher than 5 than selfempower at 90% what currentInfluence is
+     * 3. Create Polis if over 400 round and greater than 50 robots and not stocking up
+     * 4. If count of muckrakers is less than what I want in the beginning and we didn't spawn next to enemy && less than mid game, build more.
+     * 5. If safe for slanderer and I want to build it, build it.
+     * 6. If enlightenmentcenterFound -> start building for capturing it
+     * 7. If friendlySlanderer around and not enough defender polis -> Build more
+     * 8. If Neutral enlightenmentcenter found => build things to get it.
+     * 9. Spawn random Polis if not stocking up and the count of Polis is less than mucks...
+     * 10. If stocking up, use .01 of current influence to build a muck scout.
+    */
     public static void decideWhatToBuild() throws GameActionException
     {
-        if (robotController.getRoundNum() < 2 && !weSpawnedRightNextToEnemy) {
+        if (robotController.getRoundNum() < 5 && !weSpawnedRightNextToEnemy) 
+        {
             RobotType firstBuild = RobotType.SLANDERER;
-            int firstInfluence = 130;
+            int firstInfluence = getAmountNeededForSlandererInBeginning();
 
             turnsNotBuilding = 0;
             buildThisTurn = true;
@@ -72,7 +85,7 @@ public class EnlightenmentCenterHelper extends EnlightenmentCenterTest01
             RobotBuilder.influenceToUse = firstInfluence;
             countOfSlanderer++;
         }       
-        else if (robotCurrentInfluence < AMOUNT_OF_INFLUENCE_TO_NOT_EMPOWER_SELF && empowerFactor > 5 && isItSafe())
+        else if (robotCurrentInfluence < AMOUNT_OF_INFLUENCE_TO_NOT_EMPOWER_SELF && empowerFactor > 10 && isItSafe())
         {
             RobotBuilder.directionToSpawn = getAvailableDirectionToSpawn();
             RobotBuilder.influenceToUse = (int) (robotController.getInfluence() * .90);
@@ -81,7 +94,7 @@ public class EnlightenmentCenterHelper extends EnlightenmentCenterTest01
             turnsNotBuilding = 0;
             buildThisTurn = true;
         }  
-        else if (robotController.getRoundNum() >= END_GAME_ROUND_STRAT 
+        else if (robotController.getRoundNum() >= MIDDLE_GAME_ROUND_START 
             && robotController.getRobotCount() > 50
             && !stockUp) 
         {
@@ -107,7 +120,8 @@ public class EnlightenmentCenterHelper extends EnlightenmentCenterTest01
             {
                 turnsNotBuilding++;
             }
-        } else if (countOfMuckrakers <= numberOfMuckrakersToCreateInBeginning
+        } 
+        else if (countOfMuckrakers <= numberOfMuckrakersToCreateInBeginning
                 && robotController.getRoundNum() <= MIDDLE_GAME_ROUND_START 
                 && !weSpawnedRightNextToEnemy) 
         {
@@ -119,8 +133,8 @@ public class EnlightenmentCenterHelper extends EnlightenmentCenterTest01
             buildThisTurn = true;
             builtScoutLastTurn = true;
             countOfMuckrakers++; // TODO: need actual count...
-        } 
-        else if (buildSlanderer && isItSafeForSlanderer()) 
+        }         
+        else if (buildSlanderer && isItSafeForSlanderer() && notEnoughDefenderPoliticianNearby()) 
         {
             if (robotCurrentInfluence < amountNeededForSlanderer) 
             {
@@ -138,6 +152,19 @@ public class EnlightenmentCenterHelper extends EnlightenmentCenterTest01
                 amountNeededForSlanderer = 0;
             }
         } 
+        else if (friendlySlandererNearby && !notEnoughDefenderPoliticianNearby())
+        {
+            RobotBuilder.directionToSpawn = getAvailableDirectionToSpawn();
+            int min = POLITICIAN_SCOUT + 1;
+            int max = POLITICIAN_DEFEND_SLANDERER;
+            int influence = randomInteger.nextInt(max - min + 1) + min;
+            RobotBuilder.influenceToUse = influence;
+            RobotBuilder.robotTypeToBuild = RobotType.POLITICIAN;
+
+            turnsNotBuilding = 0;
+            buildThisTurn = true;
+            countOfDefenderPolitician++;
+        }
         else if (enemyEnlightenmentCenterFound) 
         {
             if (isThereEnoughForBomb() && isItSafe()) 
@@ -183,7 +210,6 @@ public class EnlightenmentCenterHelper extends EnlightenmentCenterTest01
         }
         else if (!stockUp && countOfPoliticians < countOfMuckrakers) 
         {
-            // These are for the follower and leader groups stuff
             RobotType toBuild = RobotType.POLITICIAN;
             int influence = 0;
             if (lastTurnInfluence >= MIN_NORMAL_POLITICIAN) {
@@ -199,7 +225,44 @@ public class EnlightenmentCenterHelper extends EnlightenmentCenterTest01
                     RobotBuilder.robotTypeToBuild = toBuild;
                     countOfPoliticians++;
                 }
+
+                if (influence <= POLITICIAN_DEFEND_SLANDERER && influence >= POLITICIAN_SCOUT) 
+                {
+                    countOfDefenderPolitician++;    
+                }
             }
         }
+
+        // Build a scout if stocking up
+        if (stockUp || !buildThisTurn)
+        {
+            RobotBuilder.directionToSpawn = getAvailableDirectionToSpawn();
+            RobotBuilder.influenceToUse =  (int) (robotController.getInfluence() * .01) >= 1 ? (int) (robotController.getInfluence() * .01) : INFLUENCE_FOR_SCOUT;
+            RobotBuilder.robotTypeToBuild = RobotType.MUCKRAKER;
+
+            builtScoutLastTurn = true;
+            turnsNotBuilding = 0;
+            buildThisTurn = true;
+            countOfMuckrakers++;
+        }
+    }
+
+    protected static int getAmountNeededForSlandererInBeginning()
+    {
+        for (int iterator = 0; iterator < (slandererInfluenceAmount.length - 1); iterator++) 
+        {
+            if (slandererInfluenceAmount[iterator] < robotCurrentInfluence 
+            && slandererInfluenceAmount[iterator + 1] > robotCurrentInfluence) 
+            {
+                amountNeededForSlanderer = slandererInfluenceAmount[iterator];
+                break;
+            } 
+            else if (slandererInfluenceAmount[iterator] > robotCurrentInfluence)
+            {
+                amountNeededForSlanderer = slandererInfluenceAmount[iterator];
+                break;
+            }
+        }
+        return amountNeededForSlanderer;
     }
 }

@@ -17,7 +17,11 @@ public class PoliticianTest01 extends RobotPlayer
     
     // Enemy
     protected static int distanceToEnemyEnlightenmentCenter;
-    protected static boolean enemyPoliticianIsAround;
+    //// Muckraker
+    protected static boolean enemyMuckrakersNearby;
+    protected static int distanceToNearestMuckraker;
+    protected static MapLocation closestEnemyMuckrakerMapLocation;
+    protected static int enemyMuckrakerConviction;
 
     // Nuetral
     protected static int distanceToNeutralEnlightenmentCenter;
@@ -28,14 +32,24 @@ public class PoliticianTest01 extends RobotPlayer
     protected static int distanceToClosestRobotMapLocation;
     protected static MapLocation closestRobotMapLocation;
 
+    // Defend Slanderer
+    protected static MapLocation closestMapLocationSlandererToDefend;
+    protected static boolean friendlySlandererNearby;
+
     // Counting robots
     protected static int countOfEnemies;
     protected static int countOfFriendlies;
     protected static int countOfEnemiesInActionRadius;
     protected static int countOfFriendliesInActionRadius;
     protected static int countOfEnemyMuckrakerInActionRadius;
+    // ENEMY MUCKRAKER
+    protected static int countOfEnemiesInActionRadiusAroundEnemyMuckraker;
+    protected static int sumOfEnemyConviciontInActionRadiusAroundEnemyMuckraker;
+    protected static int countOfFriendliesInActionRadiusAroundEnemyMuckraker;
+    // ENEMY EC
     protected static int countOfEnemiesInActionRadiusAroundEnemyEnlightenmentcenter;
     protected static int countOfFriendliesInActionRadiusAroundEnemyEnlightenmentcenter;
+    // NEUTRAL EC
     protected static int countOfEnemiesInActionRadiusAroundNeutralEnlightenmentcenter;
     protected static int sumOfEnemyConviciontInActionRadiusAroundNeutralEnlightenmentcenter;
     protected static int countOfFriendliesInActionRadiusAroundNeutralEnlightenmentcenter;
@@ -49,10 +63,19 @@ public class PoliticianTest01 extends RobotPlayer
     static void run() throws GameActionException 
     {
         resetVariablesForSensing();
-
+        
         SenseRobots.checkForCommunications();        
         senseAreaForRobots();
         senseActionRadiusForRobots(); 
+
+        if (countOfEnemies == 0) 
+        {
+            distanceToClosestRobotMapLocation = 0;
+            
+            
+            distanceToNearestMuckraker = 0;  
+            hasTarget = false;  
+        }
                 
         if (haveMessageToSend) 
         {
@@ -92,9 +115,16 @@ public class PoliticianTest01 extends RobotPlayer
         countOfEnemyMuckrakerInActionRadius = 0;
         politicianECBombNearby = false;
         nearFriendlyEnlightenmentCenter = false;
-        distanceToClosestRobotMapLocation = 0;
         lowestRobotIdOfFriendlies = true;
         turnsNearNeutralEnlightenmentCenter= 0;
+        closestRobotMapLocation = null;
+        // Defend From Muckraker
+        enemyMuckrakersNearby = false;
+        friendlySlandererNearby = false;
+        closestEnemyMuckrakerMapLocation = null;
+        closestMapLocationSlandererToDefend = null;
+        enemyMuckrakerConviction = 0;
+        
 
         if (messageLastTwoTurnsForConverted == 0) 
         {
@@ -112,18 +142,9 @@ public class PoliticianTest01 extends RobotPlayer
         int sensorRadiusSquared = robotController.getType().sensorRadiusSquared;        
         RobotInfo[] allRobotInfos = robotController.senseNearbyRobots(sensorRadiusSquared);
 
-        for (RobotInfo robotInfo : allRobotInfos) {
-            if (robotInfo.getType() == RobotType.POLITICIAN && robotInfo.getTeam() == enemy) 
-            {
-                enemyPoliticianIsAround = true;
-                countOfEnemies++;
-                if (!hasTarget || robotRole == RobotRoles.PoliticianEnlightenmentCenterBomb) 
-                {
-                    getClosestEnemyRobot(robotInfo);
-                }
-
-            }
-            else if (robotInfo.getType() == RobotType.ENLIGHTENMENT_CENTER) 
+        for (RobotInfo robotInfo : allRobotInfos) 
+        {
+            if (robotInfo.getType() == RobotType.ENLIGHTENMENT_CENTER) 
             {
                 SenseRobots.processEnlightenmentCenterFinding(robotInfo);
 
@@ -144,10 +165,31 @@ public class PoliticianTest01 extends RobotPlayer
                         turnsNearNeutralEnlightenmentCenter++;
                     } 
                 }
-            }                           
+            }                     
+            else if (robotInfo.getTeam() == enemy) 
+            {
+                countOfEnemies++;
+                hasTarget = true; // for scout role
+                getClosestEnemyRobot(robotInfo);                
+
+                if (robotInfo.getType() == RobotType.MUCKRAKER) 
+                {
+                    enemyMuckrakersNearby = true;
+                    getClosestEnemyMuckraker(robotInfo);                    
+                }
+            }     
             else if (robotInfo.getTeam() == friendly) 
             {
                 countOfFriendlies++;
+                if (robotController.getFlag(robotInfo.ID) == Communication.SLANDERER_FLAG) 
+                {
+                    friendlySlandererNearby = true;
+                    if (closestMapLocationSlandererToDefend == null || robotController.getLocation().distanceSquaredTo(robotInfo.getLocation()) <=
+                        robotController.getLocation().distanceSquaredTo(closestMapLocationSlandererToDefend)) 
+                    {
+                        closestMapLocationSlandererToDefend = robotInfo.getLocation();
+                    }                    
+                }
             }
         }
     }        
@@ -195,8 +237,7 @@ public class PoliticianTest01 extends RobotPlayer
                     {
                         lowestRobotIdOfFriendlies = false;
                     }
-                }                
-                
+                }              
             }
             else if (robotInfo.getTeam() == friendly && robotInfo.getType() == RobotType.ENLIGHTENMENT_CENTER) 
             {
@@ -210,12 +251,24 @@ public class PoliticianTest01 extends RobotPlayer
         }
     }
 
-    private static void getClosestEnemyRobot(RobotInfo robotInfo) {
-        if (robotController.getLocation().distanceSquaredTo(robotInfo.getLocation()) <= distanceToClosestRobotMapLocation
-            || distanceToClosestRobotMapLocation == 0) 
+    private static void getClosestEnemyRobot(RobotInfo robotInfo) 
+    {
+        if (closestRobotMapLocation == null ||
+        robotController.getLocation().distanceSquaredTo(robotInfo.getLocation()) <= robotController.getLocation().distanceSquaredTo(closestRobotMapLocation)) 
         {
             closestRobotMapLocation = robotInfo.getLocation();
             distanceToClosestRobotMapLocation = robotController.getLocation().distanceSquaredTo(robotInfo.getLocation());
+        }
+    }
+
+    private static void getClosestEnemyMuckraker(RobotInfo robotInfo) 
+    {
+        if (closestEnemyMuckrakerMapLocation == null || 
+        robotController.getLocation().distanceSquaredTo(robotInfo.getLocation()) <= robotController.getLocation().distanceSquaredTo(closestEnemyMuckrakerMapLocation)) 
+        {
+            enemyMuckrakerConviction = robotInfo.getConviction();
+            closestEnemyMuckrakerMapLocation = robotInfo.getLocation();
+            distanceToNearestMuckraker = robotController.getLocation().distanceSquaredTo(robotInfo.getLocation());
         }
     }
 
@@ -259,6 +312,27 @@ public class PoliticianTest01 extends RobotPlayer
         }
     }
 
+    protected static void getSumOfConvictionInEnemyMuckrakerRadiusSquared()
+    {
+        countOfEnemiesInActionRadiusAroundEnemyMuckraker = 0;
+        sumOfEnemyConviciontInActionRadiusAroundEnemyMuckraker = 0;
+        countOfFriendliesInActionRadiusAroundEnemyMuckraker = 0;
+
+        RobotInfo[] allRobotInfos = robotController.senseNearbyRobots(distanceToNearestMuckraker);
+        for (RobotInfo robotInfo : allRobotInfos) 
+        {
+            if (robotInfo.getTeam() == enemy) 
+            {
+                countOfEnemiesInActionRadiusAroundEnemyMuckraker++;
+                sumOfEnemyConviciontInActionRadiusAroundEnemyMuckraker += robotInfo.getConviction();
+            } 
+            else if (robotInfo.getTeam() == friendly) 
+            {
+                countOfFriendliesInActionRadiusAroundEnemyMuckraker++;
+            }
+        }
+    }
+
     protected static boolean homeEnlightenmentCenterSurrounded() throws GameActionException
     {
         boolean homeSurrounded = false;
@@ -271,9 +345,11 @@ public class PoliticianTest01 extends RobotPlayer
         return homeSurrounded;
     }
 
-    protected static boolean checkIfPoliticianShouldEmpower() {
+    protected static boolean checkIfPoliticianShouldEmpower() 
+    {
         return ((countOfEnemiesInActionRadius >= 2) || (countOfEnemiesInActionRadius != 0))
-                && robotController.canEmpower(ACTION_RADIUS_POLITICIAN);
+                && robotController.canEmpower(ACTION_RADIUS_POLITICIAN)
+                && empowerCanConvertEnemyAtMaxRadius();
     }
 
     protected static void moveAwayFromEnemyEnlightenmentCenter() throws GameActionException {
@@ -345,12 +421,16 @@ public class PoliticianTest01 extends RobotPlayer
     }
 
     static void assignRobotRole() {
-        if (robotCurrentInfluence >= POLITICIAN_EC_BOMB) {
+        if (robotCurrentInfluence >= POLITICIAN_EC_BOMB) 
+        {
             robotRole = RobotRoles.PoliticianEnlightenmentCenterBomb;
-        } else if (robotCurrentInfluence == POLITICIAN_LEADER) {
-            robotRole = RobotRoles.Leader;
-        } else if (robotCurrentInfluence >= POLITICIAN_FOLLOWER) {
-            robotRole = RobotRoles.Follower;
+        } else if (robotCurrentInfluence <= POLITICIAN_SCOUT) 
+        {
+            robotRole = RobotRoles.Scout;
+        } 
+        else if (robotCurrentInfluence <= POLITICIAN_DEFEND_SLANDERER) 
+        {
+            robotRole = RobotRoles.DefendSlanderer;
         }
     }
 }

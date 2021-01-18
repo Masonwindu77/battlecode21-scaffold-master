@@ -6,8 +6,25 @@ import testPlayerv01.Service.Movement;
 
 public class PoliticianNormal extends PoliticianTest01
 {
+    static Direction nextDirection;
+
     public static void run() throws GameActionException 
     {        
+        
+        // Scouting Role
+        if (robotRole == RobotRoles.Scout) 
+        {
+            runScoutRole();
+        }
+        // Defender Role
+        else if (robotRole == RobotRoles.DefendSlanderer)
+        {
+            runDefendSlandererRole();    
+        }
+    }
+
+    protected static void runScoutRole() throws GameActionException
+    {
         decideIfEmpowerForNonEnlightenmentCenterBombs();
 
         if (hasTarget) 
@@ -52,22 +69,12 @@ public class PoliticianNormal extends PoliticianTest01
             if (enemyEnlightenmentCenterIsAround && politicianECBombNearby) 
             {
                 moveAwayFromEnemyEnlightenmentCenter();
-            } else 
+            } 
+            else 
             {
                 Movement.scoutAction();
             }
         }
-        // Follower Role
-
-        // Leader Role
-
-        // Defender Role
-
-        // Scout Role
-        // if (robotRole == RobotRoles.Scout) {
-        //     Movement.scoutAction();
-        // }
-        // Testing
     }
 
     protected static void decideIfEmpowerForNonEnlightenmentCenterBombs() throws GameActionException {
@@ -80,5 +87,111 @@ public class PoliticianNormal extends PoliticianTest01
         } else {
             moveRobot = true;
         }
+    }
+
+    protected static void runDefendSlandererRole() throws GameActionException
+    {
+        // TODO: Add in a check for the farthest muckraker and try to get 2?
+        stayNearSlanderers();
+
+        if (enemyMuckrakersNearby && friendlySlandererNearby) 
+        {
+            if (canConvertEnemyMuckraker() && countOfEnemiesInActionRadiusAroundEnemyMuckraker > 1) 
+            {
+                if (distanceToNearestMuckraker != 0 && robotController.canEmpower(distanceToNearestMuckraker)) 
+                {
+                    robotController.empower(distanceToNearestMuckraker);
+                    return;
+                }
+            }
+            else if(robotController.getLocation().isAdjacentTo(closestEnemyMuckrakerMapLocation))
+            {
+                if (distanceToNearestMuckraker != 0 && robotController.canEmpower(distanceToNearestMuckraker)) 
+                {
+                    robotController.empower(distanceToNearestMuckraker);
+                    return;
+                }
+            }
+            else if(closestMapLocationSlandererToDefend != null)
+            {
+                Movement.moveInFrontOfTarget(closestEnemyMuckrakerMapLocation, closestMapLocationSlandererToDefend);
+            }
+                        
+            // Move to the location that is closest to nearest Slander
+        }
+        else if (enemyMuckrakersNearby) 
+        {
+            if (canConvertEnemyMuckraker())
+            {
+                if (distanceToNearestMuckraker != 0 && robotController.canEmpower(distanceToNearestMuckraker)) 
+                {
+                    robotController.empower(distanceToNearestMuckraker);
+                    return;
+                }
+            }
+            else if(closestMapLocationSlandererToDefend != null)
+            {
+                Movement.moveInFrontOfTarget(closestEnemyMuckrakerMapLocation, closestMapLocationSlandererToDefend);
+            }
+        }
+        else if (nextDirection == null) 
+        {
+            Movement.scoutTheDirection(Movement.getRandomDirection());
+        } 
+        else 
+        {
+            Movement.scoutTheDirection(nextDirection);
+        }
+    }
+
+    // TODO: Once we know where enemy is at, we can move towards there
+    private static void stayNearSlanderers() 
+    {
+        int sensorRadiusSquared = robotController.getType().sensorRadiusSquared;
+
+        // Check that the slanderer to defend is within the radius
+        // Move randomly either towards enemy or back to slanderer
+        // Move to target if spot Muckraker
+        if (closestMapLocationSlandererToDefend != null) 
+        {
+            if (robotController.getLocation().isWithinDistanceSquared(closestMapLocationSlandererToDefend, 15)) 
+            {
+                nextDirection = null;
+            } 
+            else 
+            {
+                nextDirection = robotController.getLocation().directionTo(closestMapLocationSlandererToDefend);
+            }
+        }
+        else
+        {
+            if (robotController.getLocation().isWithinDistanceSquared(spawnEnlightenmentCenterHomeLocation, sensorRadiusSquared)) 
+            {
+                nextDirection = null;
+            } 
+            else 
+            {
+                nextDirection = robotController.getLocation().directionTo(spawnEnlightenmentCenterHomeLocation);
+            }
+        }        
+    }
+
+    private static boolean canConvertEnemyMuckraker()
+    {
+        boolean empowerCanConvertEnemy = false;
+        int countOfAllRobotsInActionRadius = countOfEnemiesInActionRadiusAroundEnemyMuckraker + countOfFriendliesInActionRadiusAroundEnemyMuckraker;
+        int remainderOfEnemyConviction = 0;
+
+        if (countOfAllRobotsInActionRadius > 0) 
+        {
+            remainderOfEnemyConviction = (int) (enemyMuckrakerConviction - (getCurrentConviction() / countOfAllRobotsInActionRadius));
+        }
+
+        if (remainderOfEnemyConviction < 0) 
+        {
+            empowerCanConvertEnemy = true;
+        }
+
+        return empowerCanConvertEnemy;
     }
 }

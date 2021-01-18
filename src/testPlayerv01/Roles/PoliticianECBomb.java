@@ -21,6 +21,7 @@ public class PoliticianECBomb extends PoliticianTest01 {
 
     static boolean goToNeutralEnlightenmentCenter;
     static boolean goToEnemyEnlightenmentCenter;
+    static boolean decisionMadeForWhichToGoFor;
 
     public static void run() throws GameActionException 
     {
@@ -28,36 +29,42 @@ public class PoliticianECBomb extends PoliticianTest01 {
         {
             goToEnemyEnlightenmentCenter = false;
             goToNeutralEnlightenmentCenter = true;
+            decisionMadeForWhichToGoFor = false;
         }
         else if (goToNeutralEnlightenmentCenter && neutralEnlightenmentCenterHasBeenConverted)
         {
             goToNeutralEnlightenmentCenter = false;
-            goToEnemyEnlightenmentCenter = true;          
+            goToEnemyEnlightenmentCenter = true;   
+            decisionMadeForWhichToGoFor = false;       
         }
 
-        if (enemyEnlightenmentCenterFound && neutralEnlightenmentCenterFound) 
+        if (enemyEnlightenmentCenterFound && neutralEnlightenmentCenterFound && !decisionMadeForWhichToGoFor) 
         {
             if (robotController.getLocation().distanceSquaredTo(currentEnemyEnlightenmentCenterGoingFor) 
             < robotController.getLocation().distanceSquaredTo(currentNeutralEnlightenmentCenterGoingFor)) 
             {
                 goToEnemyEnlightenmentCenter = true;
                 goToNeutralEnlightenmentCenter = false;
+                decisionMadeForWhichToGoFor = true;
             }
             else
             {
                 goToNeutralEnlightenmentCenter = true;
                 goToEnemyEnlightenmentCenter = false;
+                decisionMadeForWhichToGoFor = true;
             }
         }
-        else if (enemyEnlightenmentCenterFound && !neutralEnlightenmentCenterFound) 
+        else if (enemyEnlightenmentCenterFound && !neutralEnlightenmentCenterFound && !decisionMadeForWhichToGoFor) 
         {
             goToEnemyEnlightenmentCenter = true;
             goToNeutralEnlightenmentCenter = false;
+            decisionMadeForWhichToGoFor = true;
         }
-        else if (neutralEnlightenmentCenterFound)
+        else if (neutralEnlightenmentCenterFound && !decisionMadeForWhichToGoFor)
         {
             goToNeutralEnlightenmentCenter = true;
             goToEnemyEnlightenmentCenter = false;
+            decisionMadeForWhichToGoFor = true;
         }
 
         if (goToEnemyEnlightenmentCenter) 
@@ -86,6 +93,10 @@ public class PoliticianECBomb extends PoliticianTest01 {
                 && !robotController.getLocation().isAdjacentTo(currentNeutralEnlightenmentCenterGoingFor))
                 {
                     Movement.moveToNeutralEnlightenmentCenter(currentNeutralEnlightenmentCenterGoingFor);
+                }
+                else if (hasTarget && closestRobotMapLocation != null) 
+                {
+                    Movement.moveToTargetLocation(closestRobotMapLocation);
                 }
                 else if (currentNeutralEnlightenmentCenterGoingFor == null)
                 {
@@ -116,13 +127,13 @@ public class PoliticianECBomb extends PoliticianTest01 {
                 }
             }
             else if (robotController.getRoundNum() >= MIDDLE_GAME_ROUND_START 
-                && checkIfPoliticianShouldEmpower()) 
+                && checkIfPoliticianShouldEmpower() && distanceToClosestRobotMapLocation != 0) 
             {
                 if (robotController.canEmpower(distanceToClosestRobotMapLocation)) {
                     robotController.empower(distanceToClosestRobotMapLocation);
                 }
                 return;
-            }   
+            }
 
         if (moveRobot) 
         {   // Move closer if not adjacent even if other bomb nearby as long as you lowest.
@@ -146,6 +157,10 @@ public class PoliticianECBomb extends PoliticianTest01 {
             {
                 Movement.moveToEnemyEnlightenmentCenter(currentEnemyEnlightenmentCenterGoingFor);
             } 
+            else if (hasTarget && closestRobotMapLocation != null) 
+            {
+                Movement.moveToTargetLocation(closestRobotMapLocation);
+            }
             // Otherwise scout around
             else if (currentEnemyEnlightenmentCenterGoingFor == null)
             {

@@ -18,6 +18,7 @@ public class Communication extends RobotPlayer
     // Max bit is 2^24
     // 10000 to 30000
     // Signals
+    public static final int SLANDERER_FLAG = 10;
     public static final int ENEMY_ENLIGHTENMENT_CENTER_FOUND = 11;
     public static final int KILL_ENEMY_TARGET = 12;
     public static final int ENEMY_ENLIGHTENMENT_CENTER_CONVERTED = 13;
@@ -28,7 +29,9 @@ public class Communication extends RobotPlayer
 
     public static void setFlagMessageForScout() throws GameActionException 
     {
-        if (enemyEnlightenmentCenterFound && turnsAroundEnemyEnlightenmentCenter < 5) 
+        if (enemyEnlightenmentCenterFound 
+            && turnsAroundEnemyEnlightenmentCenter < 5
+            && enemyEnlightenmentCenterIsAround) 
         {
             Communication.announceEnemyEnlightenmentCenterLocation();
             if (turnsAroundEnemyEnlightenmentCenter < 5) 
@@ -247,7 +250,7 @@ public class Communication extends RobotPlayer
         boolean hasBeenConverted = false;
         if (currentNeutralEnlightenmentCenterGoingFor != null 
             && currentNeutralEnlightenmentCenterGoingFor.equals(robotInfo.getLocation())
-            && robotInfo.getTeam() == friendly
+            && (robotInfo.getTeam() == friendly || robotInfo.getTeam() == enemy)
             && robotInfo.getType() == RobotType.ENLIGHTENMENT_CENTER) 
             {
                 hasBeenConverted = true;

@@ -7,11 +7,18 @@ import testPlayerv01.Service.Communication;
 
 public class MuckrakerTest01 extends RobotPlayer 
 {
+    static MapLocation targetSlanderer;
+
     @SuppressWarnings("unused")
     public static void run() throws GameActionException 
     {
         tryExpose();
         senseNearbyRobots();
+
+        if (turnCount > 35 || robotRole == RobotRoles.SlandererAttacker) 
+        {
+            SenseRobots.checkForCommunications();    
+        }
 
         if (haveMessageToSend) 
         {
@@ -23,11 +30,13 @@ public class MuckrakerTest01 extends RobotPlayer
         }
 
         // Scout Role
-        if (robotRole == RobotRoles.Scout && !enemyEnlightenmentCenterFound) 
+        if (robotRole == RobotRoles.Scout 
+            && !enemyEnlightenmentCenterFound
+            && targetSlanderer == null) 
         {
 
             // This is so that the robot will go the direction it spawns. Hopefully this will make it go all over.
-            if (robotController.getRoundNum() < 15) 
+            if (robotController.getRoundNum() < 25) 
             {
                 directionToScout = spawnEnlightenmentCenterHomeLocation.directionTo(robotController.getLocation());
                 // directionTo can be from a different location. Like the enemyEC to where you are.
@@ -47,9 +56,19 @@ public class MuckrakerTest01 extends RobotPlayer
                 Movement.moveToEnemyEnlightenmentCenter(currentEnemyEnlightenmentCenterGoingFor);
             }
         } 
+        else if (targetSlanderer != null) 
+        {
+            Movement.moveToTargetLocation(targetSlanderer);    
+        }
+        // For the not scouts (Influence > 1)
         else 
         {
-            tryMove(randomDirection());
+            if (turnCount < 15) 
+            {
+                directionToScout = spawnEnlightenmentCenterHomeLocation.directionTo(robotController.getLocation());
+            }
+            
+            Movement.scoutAction();
         }
 
         // TODO:
@@ -66,11 +85,17 @@ public class MuckrakerTest01 extends RobotPlayer
         int actionRadius = robotController.getType().actionRadiusSquared;
         RobotInfo[] enemyRobots = robotController.senseNearbyRobots(actionRadius, enemy);
 
-        for (RobotInfo robotInfo : enemyRobots) {
-            if (robotInfo.type.canBeExposed()) {
+        for (RobotInfo robotInfo : enemyRobots) 
+        {
+            if (robotInfo.type.canBeExposed()) 
+            {
                 if (robotController.canExpose(robotInfo.location)) 
                 {
                     robotController.expose(robotInfo.location);
+                    if (targetSlanderer != null && targetSlanderer == robotInfo.location) 
+                    {
+                        targetSlanderer = null;
+                    }
                     return;
                 }
             }
@@ -94,6 +119,12 @@ public class MuckrakerTest01 extends RobotPlayer
             {
                 politicianECBombNearby = true;
             }
+            else if (robotInfo.getType() == RobotType.SLANDERER 
+                && robotInfo.getTeam() == enemy
+                && targetSlanderer == null) 
+            {
+                targetSlanderer = robotInfo.getLocation();    
+            }
         }
     }    
 
@@ -109,9 +140,10 @@ public class MuckrakerTest01 extends RobotPlayer
         if (robotController.getInfluence() == 1) {
             robotRole = RobotRoles.Scout;
         } else if (robotController.getInfluence() == 2) {
-            robotRole = RobotRoles.DefendHomeEnlightenmentCenter;
-        } else {
-            robotRole = RobotRoles.Follower;
+            robotRole = RobotRoles.DefendSlanderer;
+        } else 
+        {
+            robotRole = RobotRoles.SlandererAttacker;
         }
     }
 }

@@ -3,6 +3,7 @@ package testPlayerv01;
 import battlecode.common.*;
 import testPlayerv01.Service.Communication;
 import testPlayerv01.Service.Movement;
+import testPlayerv01.Service.SenseRobots;
 
 public class Slanderer extends RobotPlayer {
 
@@ -10,9 +11,27 @@ public class Slanderer extends RobotPlayer {
     static boolean enemyMuckrakersNearby = false;
     static MapLocation closestEnemyMuckraker;
 
-    public static void run() throws GameActionException {
+    public static void run() throws GameActionException 
+    {
         senseRobotsNearby();
         checkNearbyFlagsForEnemy();
+
+        if (robotController.getRoundNum() % 2 == 0) 
+        {
+            if (robotController.canSetFlag(Communication.SLANDERER_FLAG)) 
+            {
+                robotController.setFlag(Communication.SLANDERER_FLAG);    
+            }    
+        }
+        else
+        {
+            if (haveMessageToSend) 
+            {
+                Communication.setFlagMessageForScout();
+            }            
+        }
+
+        //TODO: How do I check for a corner / edge of map?
 
         if(!enemyEnlightenmentCenterFound)
         {
@@ -23,9 +42,17 @@ public class Slanderer extends RobotPlayer {
         {  
             stayNearHomeBase();
 
-            if (nextDirection == null) {
-                Movement.scoutTheDirection(Movement.getRandomDirection());
-            } else {
+            if (nextDirection == null) 
+            {
+                Direction randomDirection = Movement.getRandomDirection();
+                while (robotController.getLocation().add(randomDirection).isAdjacentTo(spawnEnlightenmentCenterHomeLocation)) 
+                {
+                    randomDirection = Movement.getRandomDirection();
+                }
+
+                Movement.scoutTheDirection(randomDirection);
+            } else 
+            {
                 Movement.scoutTheDirection(nextDirection);
             }
 
@@ -56,12 +83,13 @@ public class Slanderer extends RobotPlayer {
          */
     }
 
-    private static void senseRobotsNearby() {
+    private static void senseRobotsNearby() throws GameActionException {
         int sensorRadiusSquared = robotController.getType().sensorRadiusSquared;
         RobotInfo[] robots = robotController.senseNearbyRobots(sensorRadiusSquared);
         enemyMuckrakersNearby = false;
 
-        for (RobotInfo robotInfo : robots) {
+        for (RobotInfo robotInfo : robots) 
+        {
             if (robotInfo.getTeam() == enemy && robotInfo.getType() == RobotType.MUCKRAKER) {
                 enemyMuckrakersNearby = true;
 
@@ -73,6 +101,10 @@ public class Slanderer extends RobotPlayer {
                 {
                     closestEnemyMuckraker = robotInfo.getLocation();
                 }
+            }
+            else if (robotInfo.getType() == RobotType.ENLIGHTENMENT_CENTER) 
+            {
+                SenseRobots.processEnlightenmentCenterFinding(robotInfo);
             }
         }
     }
@@ -102,12 +134,8 @@ public class Slanderer extends RobotPlayer {
         
     }
 
-    private static void assignRobotRole() {
-        if (robotController.getInfluence() >= POLITICIAN_EC_BOMB) {
-            robotRole = RobotRoles.PoliticianEnlightenmentCenterBomb;
-        } else {
-            robotRole = RobotRoles.Follower;
-        }
-
+    private static void assignRobotRole() 
+    {
+        robotRole = RobotRoles.PoliticianEnlightenmentCenterBomb;
     }
 }

@@ -1,8 +1,5 @@
 package testPlayerv01.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import battlecode.common.*;
 import testPlayerv01.RobotPlayer;
 
@@ -12,45 +9,75 @@ public class Movement extends RobotPlayer {
 
     static final Direction[] mirrorDirections = { Direction.EAST, Direction.WEST, Direction.NORTH, Direction.SOUTH, };
 
-    private static int stuckCount = 0;
-    private static List<MapLocation> stuckLocations = new ArrayList<>();
+    //private static List<MapLocation> stuckLocations = new ArrayList<>();
 
-    public static void basicBugMovement(MapLocation target) throws GameActionException {
+    public static void basicBugMovement(MapLocation target) throws GameActionException 
+    {
         MapLocation currentLocation = robotController.getLocation();
         Direction direction = robotController.getLocation().directionTo(target);
 
-        if (!currentLocation.equals(target) && robotController.isReady()) {
-            if (canRobotMoveThroughTile(direction, currentLocation)) {
+        if (!currentLocation.equals(target) && robotController.isReady()) 
+        {
+            if (canRobotMoveThroughTile(direction, currentLocation)) 
+            {
                 robotController.move(direction);
                 bugDirection = null;
-            } else if (robotController.onTheMap(robotController.adjacentLocation(direction))) {
+                println("HERE 2: " + direction);
+            } 
+            else if (!canRobotMoveThroughTile(direction, currentLocation) && rightBugMovement) 
+            {
+                if (bugDirection == null) {
+                    bugDirection = direction;
+                }
+                for (int i = 0; i < 8; ++i) {
+                    if (robotController.canMove(bugDirection) && robotController.sensePassability(robotController.getLocation().add(bugDirection)) >= passabilityThreshold) 
+                    {
+                        robotController.setIndicatorDot(robotController.getLocation().add(bugDirection), 0, 255, 255);
+                        robotController.move(bugDirection);
+                        bugDirection = bugDirection.rotateRight();
+                        break;
+                    }
+                    robotController.setIndicatorDot(robotController.getLocation().add(bugDirection), 255, 0, 0);
+                    bugDirection = bugDirection.rotateLeft();
+                }
+            }
+            else if (!canRobotMoveThroughTile(direction, currentLocation) && leftBugMovement) 
+            {
                 if (bugDirection == null) {
                     bugDirection = direction;
                 }
 
-                stuckLocations.add(robotController.getLocation());
+                for (int i = 0; i < 8; ++i) {
+                    if (robotController.canMove(bugDirection) && robotController.sensePassability(robotController.getLocation().add(bugDirection)) >= passabilityThreshold) 
+                    {
+                        robotController.setIndicatorDot(robotController.getLocation().add(bugDirection), 0, 255, 255);
+                        robotController.move(bugDirection);
+                        bugDirection = bugDirection.rotateLeft();
+                        break;
+                    }
+                    robotController.setIndicatorDot(robotController.getLocation().add(bugDirection), 255, 0, 0);
+                    bugDirection = bugDirection.rotateRight();
+                }
+            }
+            else if (!robotController.onTheMap(robotController.adjacentLocation(direction))) 
+            {
+                if (bugDirection == null) {
+                    bugDirection = direction;
+                }
+                
                 // stuckCount++;
                 // TODO: Do BFS for getting around stuff...
 
-                for (MapLocation stuckLocation : stuckLocations) {
-                    if (!stuckLocation.equals(currentLocation.add(bugDirection))) {
-                        for (int i = 0; i < 8; ++i) {
-                            if (canRobotMoveThroughTile(bugDirection, currentLocation)) // TODO: Test stuck location..
-                            {
-                                robotController.move(bugDirection);
-                                bugDirection = bugDirection.rotateLeft();
-                                robotController.setIndicatorDot(robotController.getLocation().add(bugDirection), 0, 255,
-                                        255);
-                                break;
-                            }
-
-                            robotController.setIndicatorDot(robotController.getLocation().add(bugDirection), 255, 0, 0);
-                            bugDirection = bugDirection.rotateRight();
-                        }
-
+                while(bugDirection == direction || !canRobotMoveThroughTile(bugDirection, currentLocation))
+                {
+                    bugDirection = getRandomDirection();
+                    if (canRobotMoveThroughTile(bugDirection, currentLocation)) // TODO: Test stuck location..
+                    {
+                        robotController.move(bugDirection);
                         break;
                     }
-                }
+                }                   
+            }
 
                 // for (MapLocation stuckLocation : stuckLocations)
                 // {
@@ -88,54 +115,67 @@ public class Movement extends RobotPlayer {
                 // // }
                 // // }
                 // }
-            } else if (robotController.canMove(direction)) {
-                robotController.move(direction);
-                stuckCount = 0;
-            } else {
+            // else if (robotController.canMove(direction)) 
+            // {
+            //     robotController.move(direction);
+            // } 
+            else 
+            {
                 // Location is not on map. Reached an edge.
-                while (directionToScout == direction) {
-                    directionToScout = getRandomDirection();
-                }
-
-                for (Direction randomDirection : directions) {
-                    if (robotController.onTheMap(currentLocation.add(randomDirection))) {
-                        if (robotController.canMove(randomDirection) && !robotController.isLocationOccupied(robotController.getLocation().add(randomDirection))) {
+                while (directionToScout == direction) 
+                {
+                    Direction randomDirection = getRandomDirection();
+                    if (robotController.onTheMap(currentLocation.add(randomDirection))) 
+                    {
+                        if (robotController.canMove(randomDirection))                         
+                        {
                             robotController.move(randomDirection);
-                        }
-
-                        // change direction to scout
-                        directionToScout = randomDirection;
-                        break;
+                            // change direction to scout
+                            directionToScout = randomDirection;
+                            println("Direction to Scount HERE 1: " + directionToScout);
+                            break;
+                        }                    
                     }
                 }
             }
-        } else if (robotController.isReady()) {
+        } 
+        else if (robotController.isReady()) 
+        {
             targetInSight = true;
-            stuckCount = 0;
             // run BFS pathfinding
         }
     }
 
     static boolean canRobotMoveThroughTile(Direction direction, MapLocation currentLocation)
-            throws GameActionException {
-        if (robotController.canSenseLocation(currentLocation.add(direction))) {
-            return robotController.canMove(direction); // &&
-                                                       // robotController.sensePassability(currentLocation.add(direction))
-                                                       // >= passabilityThreshold; // TODO: Need to fix movement still.
-        } else {
-            return false;
-        }
+            throws GameActionException 
+        {
+            return robotController.canMove(direction) && robotController.sensePassability(currentLocation.add(direction)) >= passabilityThreshold;
+        // if (robotController.canSenseLocation(currentLocation.add(direction))) {
+        //      // &&
+        //                                                // robotController.sensePassability(currentLocation.add(direction))
+        //                                                // >= passabilityThreshold; // TODO: Need to fix movement still.
+        // } else {
+        //     return false;
+        // }
     }
 
     public static void scoutTheDirection(Direction direction) throws GameActionException {
-        if (robotController.onTheMap(robotController.adjacentLocation(direction))) {
+        if (robotController.onTheMap(robotController.adjacentLocation(direction))) 
+        {
             basicBugMovement(robotController.getLocation().add(direction));
         }
+        // Checking if still near home base and if found a wall.
         else
         {
             directionToScout = getRandomDirection();
+
+            if (robotController.canSenseLocation(spawnEnlightenmentCenterHomeLocation)) 
+            {
+                directionToScout = getOppositeDirection(direction);
+            }    
+            
             basicBugMovement(robotController.getLocation().add(directionToScout));
-        }        
+        }       
     }
 
     public static void scoutAction() throws GameActionException {
@@ -152,10 +192,12 @@ public class Movement extends RobotPlayer {
         {
             basicBugMovement(locationToScout);
 
-        } else 
+        } 
+        else 
         {
             // TODO: What's a better way of randomizing this?
             directionToScout = getRandomDirection();
+            scoutTheDirection(directionToScout);
         }
     }
 
@@ -208,5 +250,18 @@ public class Movement extends RobotPlayer {
 
     public static void moveToNeutralEnlightenmentCenter(MapLocation neutralCenterLocation) throws GameActionException {
         Movement.basicBugMovement(neutralCenterLocation);
+    }
+
+    public static void moveToTargetLocation(MapLocation targetLocation) throws GameActionException
+    {
+        Movement.basicBugMovement(targetLocation);
+    }
+
+    public static void moveInFrontOfTarget(MapLocation targetLocation, MapLocation defendLocation)
+            throws GameActionException
+    {
+        MapLocation adjacentMapLocation = targetLocation.subtract(targetLocation.directionTo(defendLocation));
+
+        basicBugMovement(adjacentMapLocation);
     }
 }
