@@ -43,18 +43,27 @@ public strictfp class RobotPlayer {
     protected static double empowerFactor = 1;
     static final int POLITICIAN_TAX = 10;
     protected static final int AMOUNT_OF_INFLUENCE_TO_NOT_EMPOWER_SELF = 1000000;
-    protected static boolean haveMessageToSend = false;
+    
+    protected static boolean haveMessageToSend = false;    
+    protected static int turnsAroundEnemyEnlightenmentCenter = 0;
+    protected static int turnsAroundNeutralEnlightenmentCenter = 0;    
+    protected static int messageLastTwoTurnsForConverted;
 
-    protected static boolean moveRobot;
+    // Saving Bytecode
+    protected static boolean convertedEnemyEnlightenmentCenterHasBeenProcessedThisTurn = false;
 
     // Robotinfo
-    static int robotCurrentInfluence;
+    protected static int robotCurrentInfluence;
     protected static int robotCurrentConviction;
     protected static boolean lowestRobotIdOfFriendlies;
     protected static final int ACTION_RADIUS_POLITICIAN = 9;
 
     // Enemy
     protected static int enemyEnlightenmentCenterCurrentInfluence;
+    protected static boolean enemyEnlightenmentCenterInfluenceHasBeenUpdated;
+    protected static int convertedEnemyIterator = 0;
+    protected static int convertedNeutralIterator = 0;
+
 
     // Roles
     protected static RobotRoles robotRole;
@@ -82,6 +91,7 @@ public strictfp class RobotPlayer {
     protected static boolean enemyEnlightenmentCenterFound = false;
     protected static MapLocation currentEnemyEnlightenmentCenterGoingFor;
     protected static boolean enemyEnlightenmentCenterHasBeenConverted = false;
+    protected static boolean enemyEnlightenmentCenterIsAround;
 
     // Home Enlightenment Center
     public static MapLocation spawnEnlightenmentCenterHomeLocation;
@@ -93,13 +103,18 @@ public strictfp class RobotPlayer {
     protected static boolean neutralEnlightenmentCenterFound = false;
     protected static List<MapLocation> neutralEnlightenmentCenterMapLocation = new ArrayList<>();
     protected static MapLocation currentNeutralEnlightenmentCenterGoingFor;
+    protected static List<MapLocation> convertedNeutralEnlightenmentCenterMapLocation = new ArrayList<>();
+    protected static boolean neutralEnlightenmentCenterHasBeenConverted;
+    protected static int neutralEnlightenmentCenterCurrentInfluence;
+    protected static boolean neutralEnlightenmentCenterIsAround;
 
     protected static final int MIDDLE_GAME_ROUND_START = 700;
     protected static final int END_GAME_ROUND_STRAT = 1000;
 
     // POLITICIAN
-    static final int MIN_NORMAL_POLITICIAN = 12;
+    public static final int MIN_NORMAL_POLITICIAN = 12;
     protected static final int MAX_NORMAL_POLITICIAN = 20;
+    protected static boolean moveRobot;
 
     // TODO: ROLES in Flags?
 

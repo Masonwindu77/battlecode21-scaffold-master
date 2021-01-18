@@ -205,4 +205,8 @@ public class Movement extends RobotPlayer {
     public static void moveToEnemyEnlightenmentCenter(MapLocation enemyCenterLocation) throws GameActionException {
         Movement.basicBugMovement(enemyCenterLocation);
     }
+
+    public static void moveToNeutralEnlightenmentCenter(MapLocation neutralCenterLocation) throws GameActionException {
+        Movement.basicBugMovement(neutralCenterLocation);
+    }
 }

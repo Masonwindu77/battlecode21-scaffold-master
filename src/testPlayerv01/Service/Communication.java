@@ -23,7 +23,50 @@ public class Communication extends RobotPlayer
     public static final int ENEMY_ENLIGHTENMENT_CENTER_CONVERTED = 13;
     public static final int ENEMY_ENLIGHTENMENT_CENTER_INFLUENCE = 14;
     public static final int NUETRAL_ENLIGHTENMENT_CENTER_FOUND = 15;
+    public static final int NUETRAL_ENLIGHTENMENT_CENTER_CONVERTED = 16;
     static final int RECEIVED_MESSAGE = 99;
+
+    public static void setFlagMessageForScout() throws GameActionException 
+    {
+        if (enemyEnlightenmentCenterFound && turnsAroundEnemyEnlightenmentCenter < 5) 
+        {
+            Communication.announceEnemyEnlightenmentCenterLocation();
+            if (turnsAroundEnemyEnlightenmentCenter < 5) 
+            {
+                haveMessageToSend = false;
+            }            
+        } 
+        else if (enemyEnlightenmentCenterIsAround) 
+        {
+            Communication.announceEnemyEnlightenmentCenterCurrentInfluence(Communication.ENEMY_ENLIGHTENMENT_CENTER_INFLUENCE);
+            haveMessageToSend = false;
+        } 
+        else if (enemyEnlightenmentCenterHasBeenConverted) 
+        {
+            Communication.announceEnemyEnlightenmentCenterHasBeenConverted();
+
+            messageLastTwoTurnsForConverted--;
+            if (messageLastTwoTurnsForConverted == 0) 
+            {
+                haveMessageToSend = false;
+            }
+           
+        }
+        else if (neutralEnlightenmentCenterFound && turnsAroundNeutralEnlightenmentCenter <=5) 
+        {
+            Communication.announceNeutralEnlightenmentCenterLocation(); 
+            haveMessageToSend = false;            
+        }
+        else if (neutralEnlightenmentCenterHasBeenConverted) 
+        {
+            Communication.announceNeutralEnlightenmentCenterHasBeenConverted();
+            messageLastTwoTurnsForConverted--;
+            if (messageLastTwoTurnsForConverted == 0) 
+            {
+                haveMessageToSend = false;  
+            } 
+        }
+    }
 
     public static void announceEnemyEnlightenmentCenterCurrentInfluence(int extraInformation) throws GameActionException 
     {
@@ -32,6 +75,28 @@ public class Communication extends RobotPlayer
         if (robotController.canSetFlag(encodedflag)) {
             robotController.setFlag(encodedflag);
         }
+    }
+
+    public static void announceEnemyEnlightenmentCenterLocation() throws GameActionException 
+    {
+        Communication.sendLocation(enemyEnlightenmentCenterMapLocation.get(0), Communication.ENEMY_ENLIGHTENMENT_CENTER_FOUND);
+    }
+
+    public static void announceEnemyEnlightenmentCenterHasBeenConverted() throws GameActionException 
+    {
+        // TODO: Make an iterator here
+        sendLocation(convertedEnemyEnlightenmentCenterMapLocation.get(convertedEnemyIterator - 1), ENEMY_ENLIGHTENMENT_CENTER_CONVERTED);
+    }
+
+    public static void announceNeutralEnlightenmentCenterHasBeenConverted() throws GameActionException 
+    {
+        // TODO: Make an iterator here
+        sendLocation(convertedNeutralEnlightenmentCenterMapLocation.get(convertedNeutralIterator - 1), NUETRAL_ENLIGHTENMENT_CENTER_CONVERTED);
+    }
+
+    private static void announceNeutralEnlightenmentCenterLocation() throws GameActionException 
+    {
+        sendLocation(neutralEnlightenmentCenterMapLocation.get(0), NUETRAL_ENLIGHTENMENT_CENTER_FOUND);
     }
 
     public static void checkIfSpawnEnlightenmentCenterHasEnemyLocation() throws GameActionException {
@@ -75,8 +140,8 @@ public class Communication extends RobotPlayer
             {
                 MapLocation neutralEnlightenmentCenterLocation = getLocationFromFlag(currentEnlightenmentCenterFlag);
 
-                if (!neutralEnlightenmentCenterMapLocation.contains(neutralEnlightenmentCenterLocation) 
-                    || neutralEnlightenmentCenterMapLocation.isEmpty()) 
+                if (neutralEnlightenmentCenterMapLocation.isEmpty() || 
+                    !neutralEnlightenmentCenterMapLocation.contains(neutralEnlightenmentCenterLocation)) 
                 {
                     neutralEnlightenmentCenterMapLocation.add(neutralEnlightenmentCenterLocation);
                     neutralEnlightenmentCenterFound = true;
@@ -84,6 +149,11 @@ public class Communication extends RobotPlayer
                 }
             }
         }
+    }
+
+    public static int getExtraInformationFromFlag(int flag)
+    {
+        return flag >> (2 * NBITS);
     }
 
     public static boolean checkIfNeutralEnlightenmentCenterHasBeenFound(int flag) 
@@ -110,6 +180,28 @@ public class Communication extends RobotPlayer
         return sentEnlightenmentInfluence;
     }
 
+    public static boolean checkIfEnemeyEnlightenmentCenterHasBeenConverted(int flag) throws GameActionException {
+        boolean hasBeenConverted = false;
+        int extraInformation = flag >> (2 * NBITS);
+
+        if (extraInformation == ENEMY_ENLIGHTENMENT_CENTER_CONVERTED) {
+            hasBeenConverted = true;
+        }
+
+        return hasBeenConverted;
+    }
+
+    public static boolean checkIfNeutralEnlightenmentCenterHasBeenConverted(int flag) throws GameActionException {
+        boolean hasBeenConverted = false;
+        int extraInformation = flag >> (2 * NBITS);
+
+        if (extraInformation == NUETRAL_ENLIGHTENMENT_CENTER_CONVERTED) {
+            hasBeenConverted = true;
+        }
+
+        return hasBeenConverted;
+    }
+
     public static int getEnemyEnlightenmentCenterInfluenceFromFlag(int flag) throws GameActionException 
     {
         int enemyEnlightenmentCenterCurrentInfluence = flag - (ENEMY_ENLIGHTENMENT_CENTER_INFLUENCE << (2 * NBITS));
@@ -131,46 +223,17 @@ public class Communication extends RobotPlayer
                     || !convertedEnemyEnlightenmentCenterMapLocation.contains(convertedEnemyLocation)) 
                     && currentEnemyEnlightenmentCenterGoingFor.equals(convertedEnemyLocation)) 
                 {
-                    processEnemyEnlightenmentCenterHasBeenConverted();
+                    processEnemyEnlightenmentCenterHasBeenConverted(convertedEnemyLocation);
                 }
             }
         }
-    }
-
-    public static boolean checkIfEnemeyEnlightenmentCenterHasBeenConverted(int flag) throws GameActionException {
-        boolean hasBeenConverted = false;
-        int extraInformation = flag >> (2 * NBITS);
-
-        if (extraInformation == ENEMY_ENLIGHTENMENT_CENTER_CONVERTED) {
-            hasBeenConverted = true;
-        }
-
-        return hasBeenConverted;
-    }
-
-    public static boolean hasEnemyEnlightenmentCenterBeenConverted() throws GameActionException 
-    {
-        boolean hasBeenConverted = false;
-        if (robotController.canSenseLocation(currentEnemyEnlightenmentCenterGoingFor)) 
-        {
-            RobotInfo[] robots = robotController.senseNearbyRobots();
-            for (RobotInfo robotInfo : robots) 
-            {
-                if (robotInfo.getType() == RobotType.ENLIGHTENMENT_CENTER && robotInfo.getTeam() == friendly
-                        && robotInfo.getLocation().equals(currentEnemyEnlightenmentCenterGoingFor)) 
-                {
-                    hasBeenConverted = true;
-                }
-            }
-        }
-
-        return hasBeenConverted;
     }
 
     public static boolean hasEnemyEnlightenmentCenterBeenConverted(RobotInfo robotInfo) throws GameActionException
     {
         boolean hasBeenConverted = false;
-        if (currentEnemyEnlightenmentCenterGoingFor.equals(robotInfo.getLocation())
+        if (currentEnemyEnlightenmentCenterGoingFor != null 
+            && currentEnemyEnlightenmentCenterGoingFor.equals(robotInfo.getLocation())
             && robotInfo.getTeam() == friendly
             && robotInfo.getType() == RobotType.ENLIGHTENMENT_CENTER) 
             {
@@ -179,22 +242,61 @@ public class Communication extends RobotPlayer
         return hasBeenConverted;
     }
 
-    public static void processEnemyEnlightenmentCenterHasBeenConverted() throws GameActionException 
+    public static boolean hasNeutralEnlightenmentCenterBeenConverted(RobotInfo robotInfo) throws GameActionException
+    {
+        boolean hasBeenConverted = false;
+        if (currentNeutralEnlightenmentCenterGoingFor != null 
+            && currentNeutralEnlightenmentCenterGoingFor.equals(robotInfo.getLocation())
+            && robotInfo.getTeam() == friendly
+            && robotInfo.getType() == RobotType.ENLIGHTENMENT_CENTER) 
+            {
+                hasBeenConverted = true;
+            }
+        return hasBeenConverted;
+    }
+
+    public static void processNeutralEnlightenmentCenterHasBeenFound(int flag) throws GameActionException
+    {
+        MapLocation neutralEnlightenmentCenterLocation = Communication.getLocationFromFlag(flag);
+
+        if ((!neutralEnlightenmentCenterMapLocation.contains(neutralEnlightenmentCenterLocation) || neutralEnlightenmentCenterMapLocation.isEmpty())
+        && (convertedNeutralEnlightenmentCenterMapLocation.isEmpty() || !convertedNeutralEnlightenmentCenterMapLocation.contains(neutralEnlightenmentCenterLocation))) 
+        {
+            neutralEnlightenmentCenterMapLocation.add(neutralEnlightenmentCenterLocation);
+            neutralEnlightenmentCenterFound = true;
+        }
+    }
+
+    public static void processEnemyEnlightenmentCenterHasBeenConverted(MapLocation convertedEnemyLocation) throws GameActionException 
     {
         if (!enemyEnlightenmentCenterMapLocation.isEmpty() 
-            && !convertedEnemyEnlightenmentCenterMapLocation.contains(enemyEnlightenmentCenterMapLocation.get(0))) 
+            && (convertedEnemyEnlightenmentCenterMapLocation.isEmpty()
+            || !convertedEnemyEnlightenmentCenterMapLocation.contains(convertedEnemyLocation))) 
         {
-            convertedEnemyEnlightenmentCenterMapLocation.add(enemyEnlightenmentCenterMapLocation.get(0));
-            enemyEnlightenmentCenterMapLocation.remove(0);
+            convertedEnemyEnlightenmentCenterMapLocation.add(convertedEnemyLocation);
+            enemyEnlightenmentCenterMapLocation.removeIf(n -> n.equals(convertedEnemyLocation));
+            convertedEnemyIterator++;
             enemyEnlightenmentCenterFound = false; 
             enemyEnlightenmentCenterHasBeenConverted = true;      
-            currentEnemyEnlightenmentCenterGoingFor = null;      
+            currentEnemyEnlightenmentCenterGoingFor = null; 
+            convertedEnemyEnlightenmentCenterHasBeenProcessedThisTurn = true;     
         }              
     }
 
-    public static void announceEnemyEnlightenmentCenterHasBeenConverted() throws GameActionException 
+    // TODO: Could have issues like enemy one with the location
+    public static void processNeutralEnlightenmentCenterHasBeenConverted() throws GameActionException 
     {
-        sendLocation(convertedEnemyEnlightenmentCenterMapLocation.get(0), ENEMY_ENLIGHTENMENT_CENTER_CONVERTED);
+        if (!neutralEnlightenmentCenterMapLocation.isEmpty() && 
+            (convertedNeutralEnlightenmentCenterMapLocation.isEmpty()
+            || !convertedNeutralEnlightenmentCenterMapLocation.contains(neutralEnlightenmentCenterMapLocation.get(0)))) 
+        {
+            convertedNeutralEnlightenmentCenterMapLocation.add(neutralEnlightenmentCenterMapLocation.get(0));
+            convertedNeutralIterator++;
+            neutralEnlightenmentCenterMapLocation.remove(0);
+            neutralEnlightenmentCenterFound = false; 
+            neutralEnlightenmentCenterHasBeenConverted = true;      
+            currentNeutralEnlightenmentCenterGoingFor = null;      
+        }              
     }
 
     public static void sendLocation(MapLocation location, int extraInformation) throws GameActionException {
