@@ -9,8 +9,6 @@ public class Movement extends RobotPlayer {
 
     static final Direction[] mirrorDirections = { Direction.EAST, Direction.WEST, Direction.NORTH, Direction.SOUTH, };
 
-    //private static List<MapLocation> stuckLocations = new ArrayList<>();
-
     public static void basicBugMovement(MapLocation target) throws GameActionException 
     {
         MapLocation currentLocation = robotController.getLocation();
@@ -22,7 +20,6 @@ public class Movement extends RobotPlayer {
             {
                 robotController.move(direction);
                 bugDirection = null;
-                println("HERE 2: " + direction);
             } 
             else if (!canRobotMoveThroughTile(direction, currentLocation) && rightBugMovement) 
             {
@@ -132,7 +129,6 @@ public class Movement extends RobotPlayer {
                             robotController.move(randomDirection);
                             // change direction to scout
                             directionToScout = randomDirection;
-                            println("Direction to Scount HERE 1: " + directionToScout);
                             break;
                         }                    
                     }

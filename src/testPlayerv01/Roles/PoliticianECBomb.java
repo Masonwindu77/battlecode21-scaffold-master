@@ -103,8 +103,7 @@ public class PoliticianECBomb extends PoliticianTest01 {
                     Movement.scoutAction();                
                 }
             }            
-        }
-        
+        }        
     }
 
     protected static void attackEnemyEnlightenmentCenterLocation() throws GameActionException

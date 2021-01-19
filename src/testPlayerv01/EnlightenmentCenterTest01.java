@@ -73,7 +73,7 @@ public class EnlightenmentCenterTest01 extends RobotPlayer
 
     // Bidding
     protected static int currentVoteCount = 0;
-    protected static int amountToBid = 1;
+    protected static int amountToBid = 2;
 
     // Influence
     protected static int lastTurnInfluence = 150;
@@ -135,6 +135,14 @@ public class EnlightenmentCenterTest01 extends RobotPlayer
                 amountToBid += 2;
             } else {
                 currentVoteCount = robotController.getTeamVotes();
+            }
+        }
+        else
+        {
+            int influenceToBid = amountToBid;
+            if (robotController.canBid(influenceToBid)) 
+            {
+                robotController.bid(influenceToBid);
             }
         }
 
@@ -385,7 +393,7 @@ public class EnlightenmentCenterTest01 extends RobotPlayer
             }
         }
         
-        if ((countOfDefenderPoliticianNearby * 1.2) >= countOfFriendlySlandererNearby) 
+        if ((countOfDefenderPoliticianNearby) >= (countOfFriendlySlandererNearby * 1.25)) 
         {
             enoughDefenderPoliticianNearby = true;
         }

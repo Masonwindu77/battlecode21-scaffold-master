@@ -34,7 +34,7 @@ public strictfp class RobotPlayer {
     }
 
     static int turnCount;
-    static boolean debug = true;
+    static boolean debug = false;
 
     protected static Random randomInteger;
     protected static boolean rightBugMovement = true;
@@ -110,7 +110,7 @@ public strictfp class RobotPlayer {
     protected static int neutralEnlightenmentCenterCurrentInfluence;
     protected static boolean neutralEnlightenmentCenterIsAround;
 
-    protected static final int MIDDLE_GAME_ROUND_START = 700;
+    protected static final int MIDDLE_GAME_ROUND_START = 600;
     protected static final int END_GAME_ROUND_STRAT = 1000;
 
     // POLITICIAN
@@ -225,7 +225,6 @@ public strictfp class RobotPlayer {
         if (randomInteger.nextInt(1) == 0) 
         {
             rightBugMovement = true;  
-            println("RIGHT!");  
         }
         else 
         {

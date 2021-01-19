@@ -94,6 +94,11 @@ public class PoliticianNormal extends PoliticianTest01
         // TODO: Add in a check for the farthest muckraker and try to get 2?
         stayNearSlanderers();
 
+        if(enemyMuckrakersNearby && distanceToNearestMuckraker != 0)
+        {
+            getSumOfConvictionInEnemyMuckrakerRadiusSquared();
+        }
+
         if (enemyMuckrakersNearby && friendlySlandererNearby) 
         {
             if (canConvertEnemyMuckraker() && countOfEnemiesInActionRadiusAroundEnemyMuckraker > 1) 
@@ -106,6 +111,7 @@ public class PoliticianNormal extends PoliticianTest01
             }
             else if(robotController.getLocation().isAdjacentTo(closestEnemyMuckrakerMapLocation))
             {
+                println("HERE 1 " + closestEnemyMuckrakerMapLocation + " distance" + distanceToNearestMuckraker);
                 if (distanceToNearestMuckraker != 0 && robotController.canEmpower(distanceToNearestMuckraker)) 
                 {
                     robotController.empower(distanceToNearestMuckraker);
@@ -123,6 +129,7 @@ public class PoliticianNormal extends PoliticianTest01
         {
             if (canConvertEnemyMuckraker())
             {
+                println("HERE 2 " + closestEnemyMuckrakerMapLocation + " distance" + distanceToNearestMuckraker);
                 if (distanceToNearestMuckraker != 0 && robotController.canEmpower(distanceToNearestMuckraker)) 
                 {
                     robotController.empower(distanceToNearestMuckraker);
@@ -132,6 +139,10 @@ public class PoliticianNormal extends PoliticianTest01
             else if(closestMapLocationSlandererToDefend != null)
             {
                 Movement.moveInFrontOfTarget(closestEnemyMuckrakerMapLocation, closestMapLocationSlandererToDefend);
+            }
+            else if(closestMapLocationSlandererToDefend == null)
+            {
+                Movement.moveInFrontOfTarget(closestEnemyMuckrakerMapLocation, spawnEnlightenmentCenterHomeLocation);
             }
         }
         else if (nextDirection == null) 
