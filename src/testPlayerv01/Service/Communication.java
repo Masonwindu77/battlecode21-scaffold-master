@@ -287,15 +287,15 @@ public class Communication extends RobotPlayer
     }
 
     // TODO: Could have issues like enemy one with the location
-    public static void processNeutralEnlightenmentCenterHasBeenConverted() throws GameActionException 
+    public static void processNeutralEnlightenmentCenterHasBeenConverted(MapLocation neutralConvertedMapLocation) throws GameActionException 
     {
         if (!neutralEnlightenmentCenterMapLocation.isEmpty() && 
             (convertedNeutralEnlightenmentCenterMapLocation.isEmpty()
-            || !convertedNeutralEnlightenmentCenterMapLocation.contains(neutralEnlightenmentCenterMapLocation.get(0)))) 
+            || !convertedNeutralEnlightenmentCenterMapLocation.contains(neutralConvertedMapLocation))) 
         {
-            convertedNeutralEnlightenmentCenterMapLocation.add(neutralEnlightenmentCenterMapLocation.get(0));
+            convertedNeutralEnlightenmentCenterMapLocation.add(neutralConvertedMapLocation);
             convertedNeutralIterator++;
-            neutralEnlightenmentCenterMapLocation.remove(0);
+            neutralEnlightenmentCenterMapLocation.removeIf(n -> n.equals(neutralConvertedMapLocation));
             neutralEnlightenmentCenterFound = false; 
             neutralEnlightenmentCenterHasBeenConverted = true;      
             currentNeutralEnlightenmentCenterGoingFor = null;      

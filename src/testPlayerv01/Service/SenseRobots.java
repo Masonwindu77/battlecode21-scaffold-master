@@ -55,25 +55,6 @@ public class SenseRobots extends RobotPlayer
             turnsAroundEnemyEnlightenmentCenter++;
             haveMessageToSend = true;
         }
-        else if (Communication.hasEnemyEnlightenmentCenterBeenConverted(robotInfo)
-            && (convertedEnemyEnlightenmentCenterMapLocation.isEmpty() 
-            || !convertedEnemyEnlightenmentCenterMapLocation.contains(robotInfo.getLocation())))
-        {
-            Communication.processEnemyEnlightenmentCenterHasBeenConverted(robotInfo.getLocation());
-            enemyEnlightenmentCenterHasBeenConverted = true;
-            messageLastTwoTurnsForConverted = 2;
-            turnsAroundEnemyEnlightenmentCenter = 0;
-            haveMessageToSend = true;
-        }
-        else if (Communication.hasNeutralEnlightenmentCenterBeenConverted(robotInfo)
-            && (convertedNeutralEnlightenmentCenterMapLocation.isEmpty() || !convertedNeutralEnlightenmentCenterMapLocation.contains(robotInfo.getLocation())))
-        {
-            Communication.processNeutralEnlightenmentCenterHasBeenConverted();
-            neutralEnlightenmentCenterHasBeenConverted = true;
-            messageLastTwoTurnsForConverted = 2;
-            turnsAroundNeutralEnlightenmentCenter = 0;
-            haveMessageToSend = true;
-        }
         else if (robotInfo.getTeam() == Team.NEUTRAL) 
         {
             if (neutralEnlightenmentCenterMapLocation.isEmpty() || !neutralEnlightenmentCenterMapLocation.contains(robotInfo.getLocation())) 
@@ -88,6 +69,34 @@ public class SenseRobots extends RobotPlayer
             neutralEnlightenmentCenterIsAround = true;
             turnsAroundNeutralEnlightenmentCenter++;
         }
+
+        if (Communication.hasEnemyEnlightenmentCenterBeenConverted(robotInfo)
+            && (convertedEnemyEnlightenmentCenterMapLocation.isEmpty() 
+            || !convertedEnemyEnlightenmentCenterMapLocation.contains(robotInfo.getLocation())))
+        {
+            Communication.processEnemyEnlightenmentCenterHasBeenConverted(robotInfo.getLocation());
+            enemyEnlightenmentCenterHasBeenConverted = true;
+            messageLastTwoTurnsForConverted = 2;
+            turnsAroundEnemyEnlightenmentCenter = 0;
+            haveMessageToSend = true;
+        }
+
+        if (Communication.hasNeutralEnlightenmentCenterBeenConverted(robotInfo)
+            && (convertedNeutralEnlightenmentCenterMapLocation.isEmpty() || !convertedNeutralEnlightenmentCenterMapLocation.contains(robotInfo.getLocation())))
+        {
+            Communication.processNeutralEnlightenmentCenterHasBeenConverted(robotInfo.getLocation());
+            neutralEnlightenmentCenterHasBeenConverted = true;
+            messageLastTwoTurnsForConverted = 2;
+            turnsAroundNeutralEnlightenmentCenter = 0;
+            haveMessageToSend = true;
+        }
+
+        if (spawnEnlightenmentCenterHomeLocation == null && robotInfo.getTeam() == friendly) 
+        {
+            spawnEnlightenmentCenterHomeLocation = robotInfo.getLocation();
+            spawnEnlightenmentCenterRobotId = robotInfo.getID();
+        }
+        
     }
 
     public static void checkForCommunications() throws GameActionException

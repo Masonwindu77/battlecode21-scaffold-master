@@ -180,8 +180,9 @@ public class PoliticianTest01 extends RobotPlayer
             }     
             else if (robotInfo.getTeam() == friendly) 
             {
-                countOfFriendlies++;
-                if (robotController.getFlag(robotInfo.ID) == Communication.SLANDERER_FLAG) 
+                countOfFriendlies++;                
+                if (robotController.canGetFlag(robotInfo.getID()) 
+                    && robotController.getFlag(robotInfo.ID) == Communication.SLANDERER_FLAG) 
                 {
                     friendlySlandererNearby = true;
                     if (closestMapLocationSlandererToDefend == null || robotController.getLocation().distanceSquaredTo(robotInfo.getLocation()) <=

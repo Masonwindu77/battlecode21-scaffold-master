@@ -26,7 +26,7 @@ public class EnlightenmentCenterHelper extends EnlightenmentCenterTest01
         }
         else if (checkIfRobotSignallingNeutralEnlightenmentCenterConverted(extraInformation))
         {
-            Communication.processNeutralEnlightenmentCenterHasBeenConverted();
+            Communication.processNeutralEnlightenmentCenterHasBeenConverted(Communication.getLocationFromFlag(flag));
         }
     }
     

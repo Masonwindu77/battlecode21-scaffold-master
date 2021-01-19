@@ -111,7 +111,6 @@ public class PoliticianNormal extends PoliticianTest01
             }
             else if(robotController.getLocation().isAdjacentTo(closestEnemyMuckrakerMapLocation))
             {
-                println("HERE 1 " + closestEnemyMuckrakerMapLocation + " distance" + distanceToNearestMuckraker);
                 if (distanceToNearestMuckraker != 0 && robotController.canEmpower(distanceToNearestMuckraker)) 
                 {
                     robotController.empower(distanceToNearestMuckraker);
@@ -129,7 +128,6 @@ public class PoliticianNormal extends PoliticianTest01
         {
             if (canConvertEnemyMuckraker())
             {
-                println("HERE 2 " + closestEnemyMuckrakerMapLocation + " distance" + distanceToNearestMuckraker);
                 if (distanceToNearestMuckraker != 0 && robotController.canEmpower(distanceToNearestMuckraker)) 
                 {
                     robotController.empower(distanceToNearestMuckraker);

@@ -34,7 +34,7 @@ public strictfp class RobotPlayer {
     }
 
     static int turnCount;
-    static boolean debug = false;
+    static boolean debug = true;
 
     protected static Random randomInteger;
     protected static boolean rightBugMovement = true;
