@@ -433,5 +433,9 @@ public class PoliticianTest01 extends RobotPlayer
         {
             robotRole = RobotRoles.DefendSlanderer;
         }
+        else
+        {
+            robotRole = RobotRoles.Scout;
+        }
     }
 }

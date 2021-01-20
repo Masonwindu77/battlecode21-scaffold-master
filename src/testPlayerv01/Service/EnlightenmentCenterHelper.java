@@ -218,7 +218,7 @@ public class EnlightenmentCenterHelper extends EnlightenmentCenterTest01
                 influence = randomInteger.nextInt(max - min + 1) + min;
 
                 turnsNotBuilding = 0;
-                if (robotCurrentInfluence > influence * 1.1 && influence != 0) {
+                if (robotCurrentInfluence > influence && influence != 0) {
                     buildThisTurn = true;
                     RobotBuilder.influenceToUse = influence;
                     RobotBuilder.directionToSpawn = getAvailableDirectionToSpawn();

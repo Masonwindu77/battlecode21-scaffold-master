@@ -13,12 +13,13 @@ public class MuckrakerTest01 extends RobotPlayer
     public static void run() throws GameActionException 
     {
         tryExpose();
-        senseNearbyRobots();
 
         if (turnCount > 35 || robotRole == RobotRoles.SlandererAttacker) 
         {
             SenseRobots.checkForCommunications();    
         }
+
+        senseNearbyRobots();        
 
         if (haveMessageToSend) 
         {

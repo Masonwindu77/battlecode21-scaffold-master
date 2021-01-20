@@ -80,7 +80,7 @@ public strictfp class RobotPlayer {
 
     // Movement
     protected static boolean targetInSight = false;
-    protected static final double passabilityThreshold = 0.15;
+    protected static final double passabilityThreshold = 0.05;
     protected static Direction bugDirection = null;
     protected static MapLocation locationToScout = null;
     protected static MapLocation targetLocation = null;
@@ -247,11 +247,15 @@ public strictfp class RobotPlayer {
 
     protected static void setSquaresAroundEnlightenmentCenter() 
     {
-        int iterator = 0;
-        for (Direction direction : directions) 
+        if (spawnEnlightenmentCenterHomeLocation != null) 
         {
-            squaresAroundEnlightenmentCenter[iterator] = spawnEnlightenmentCenterHomeLocation.add(direction);
-            ++iterator;
+            int iterator = 0;
+            for (Direction direction : directions) 
+            {
+                squaresAroundEnlightenmentCenter[iterator] = spawnEnlightenmentCenterHomeLocation.add(direction);
+                ++iterator;
+            }
         }
+        
     }
 }
