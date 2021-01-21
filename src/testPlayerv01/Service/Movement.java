@@ -145,7 +145,7 @@ public class Movement extends RobotPlayer {
     static boolean canRobotMoveThroughTile(Direction direction, MapLocation currentLocation)
             throws GameActionException 
         {
-            return robotController.canMove(direction) && robotController.sensePassability(currentLocation.add(direction)) >= passabilityThreshold;
+            return robotController.canMove(direction);
         // if (robotController.canSenseLocation(currentLocation.add(direction))) {
         //      // &&
         //                                                // robotController.sensePassability(currentLocation.add(direction))
@@ -165,7 +165,8 @@ public class Movement extends RobotPlayer {
         {
             directionToScout = getRandomDirection();
 
-            if (robotController.canSenseLocation(spawnEnlightenmentCenterHomeLocation)) 
+            if (spawnEnlightenmentCenterHomeLocation != null 
+                && robotController.canSenseLocation(spawnEnlightenmentCenterHomeLocation)) 
             {
                 directionToScout = getOppositeDirection(direction);
             }    

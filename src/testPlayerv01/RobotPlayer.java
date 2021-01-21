@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import battlecode.common.*;
+import testPlayerv01.Model.EnlightenmentCenterInfo;
 
 @SuppressWarnings("unused")
 public strictfp class RobotPlayer {
@@ -33,8 +34,8 @@ public strictfp class RobotPlayer {
         }
     }
 
-    static int turnCount;
-    static boolean debug = true;
+    protected static int turnCount;
+    static boolean debug = false;
 
     protected static Random randomInteger;
     protected static boolean rightBugMovement = true;
@@ -43,7 +44,6 @@ public strictfp class RobotPlayer {
     protected static Team enemy;
     protected static Team friendly;
     protected static double empowerFactor = 1;
-    static final int POLITICIAN_TAX = 10;
     protected static final int AMOUNT_OF_INFLUENCE_TO_NOT_EMPOWER_SELF = 1000000;
     
     protected static boolean haveMessageToSend = false;    
@@ -65,7 +65,7 @@ public strictfp class RobotPlayer {
     protected static boolean enemyEnlightenmentCenterInfluenceHasBeenUpdated;
     protected static int convertedEnemyIterator = 0;
     protected static int convertedNeutralIterator = 0;
-
+    protected static int neutralEnlightenmentCenterIterator = 0;
 
     // Roles
     protected static RobotRoles robotRole;
@@ -90,14 +90,15 @@ public strictfp class RobotPlayer {
     // Enemy Enlightenment Center
     protected static List<MapLocation> enemyEnlightenmentCenterMapLocation = new ArrayList<>();
     protected static List<MapLocation> convertedEnemyEnlightenmentCenterMapLocation = new ArrayList<>();
+    protected static List<EnlightenmentCenterInfo> enlightenmentCenterInfos = new ArrayList<>();
     protected static boolean enemyEnlightenmentCenterFound = false;
     protected static MapLocation currentEnemyEnlightenmentCenterGoingFor;
     protected static boolean enemyEnlightenmentCenterHasBeenConverted = false;
     protected static boolean enemyEnlightenmentCenterIsAround;
 
-    // Home Enlightenment Center
+    // Friendly Enlightenment Center
     public static MapLocation spawnEnlightenmentCenterHomeLocation;
-    public static int spawnEnlightenmentCenterRobotId;
+    public static List<Integer> friendlyEnlightenmentCenterRobotIds = new ArrayList<>();
     protected static int currentEnlightenmentCenterFlag;
     protected static MapLocation[] squaresAroundEnlightenmentCenter = new MapLocation[8];
 
@@ -110,12 +111,14 @@ public strictfp class RobotPlayer {
     protected static int neutralEnlightenmentCenterCurrentInfluence;
     protected static boolean neutralEnlightenmentCenterIsAround;
 
+    protected static final int BEGINNING_ROUND_STRAT = 150;
     protected static final int MIDDLE_GAME_ROUND_START = 600;
     protected static final int END_GAME_ROUND_STRAT = 1000;
 
     // POLITICIAN
     public static final int MIN_NORMAL_POLITICIAN = 12;
     protected static final int MAX_NORMAL_POLITICIAN = 20;
+    protected static final int POLITICIAN_TAX = 10;
     protected static boolean moveRobot;
 
     // TODO: ROLES in Flags?
@@ -240,7 +243,7 @@ public strictfp class RobotPlayer {
             if (robotInfo.getType() == RobotType.ENLIGHTENMENT_CENTER && robotInfo.getTeam() == friendly) 
             {
                 spawnEnlightenmentCenterHomeLocation = robotInfo.getLocation();
-                spawnEnlightenmentCenterRobotId = robotInfo.getID();
+                friendlyEnlightenmentCenterRobotIds.add(robotInfo.getID());
             }
         }
     }  

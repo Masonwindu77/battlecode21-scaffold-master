@@ -35,7 +35,7 @@ public class Slanderer extends RobotPlayer {
 
         if(!enemyEnlightenmentCenterFound)
         {
-            Communication.checkIfSpawnEnlightenmentCenterHasEnemyLocation();
+            Communication.checkIfFriendlyEnlightenmentCenterHasEnemyLocation();
         }
 
         if (!enemyMuckrakersNearby && !enemyEnlightenmentCenterFound) 

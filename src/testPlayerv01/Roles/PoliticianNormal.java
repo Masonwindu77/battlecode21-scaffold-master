@@ -91,6 +91,18 @@ public class PoliticianNormal extends PoliticianTest01
 
     protected static void runDefendSlandererRole() throws GameActionException
     {
+        if (politicianECBombNearby) 
+        {
+            if (neutralEnlightenmentCenterIsAround && currentNeutralEnlightenmentCenterGoingFor != null) 
+            {
+                Movement.moveAwayFromLocation(currentNeutralEnlightenmentCenterGoingFor);
+            }
+            else if (enemyEnlightenmentCenterIsAround && currentEnemyEnlightenmentCenterGoingFor != null) 
+            {
+                Movement.moveAwayFromLocation(currentEnemyEnlightenmentCenterGoingFor);
+            }
+        }
+
         // TODO: Add in a check for the farthest muckraker and try to get 2?
         stayNearSlanderers();
 
@@ -163,10 +175,15 @@ public class PoliticianNormal extends PoliticianTest01
         // Move to target if spot Muckraker
         if (closestMapLocationSlandererToDefend != null) 
         {
-            if (robotController.getLocation().isWithinDistanceSquared(closestMapLocationSlandererToDefend, 15)) 
+            if (robotController.getLocation().isWithinDistanceSquared(closestMapLocationSlandererToDefend, sensorRadiusSquared)
+                && robotController.getLocation().distanceSquaredTo(closestMapLocationSlandererToDefend) >= 20) 
             {
                 nextDirection = null;
             } 
+            else if (robotController.getLocation().distanceSquaredTo(closestMapLocationSlandererToDefend) <= 20)
+            {
+                nextDirection = Movement.getOppositeDirection(robotController.getLocation().directionTo(closestMapLocationSlandererToDefend));
+            }
             else 
             {
                 nextDirection = robotController.getLocation().directionTo(closestMapLocationSlandererToDefend);
