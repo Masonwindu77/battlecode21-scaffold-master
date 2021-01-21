@@ -105,119 +105,111 @@ public class EnlightenmentCenterHelper extends EnlightenmentCenterTest01
                 }                
             }
 
-            if (buildScout) 
-            {
-                buildScouts();
-            }
-            else if (buildSlanderer) 
+            
+            if (buildSlanderer) 
             {
                 buildEconomy();
-            }
-            else 
+            }            
+            
+            // Self Empower
+            if (robotCurrentInfluence < AMOUNT_OF_INFLUENCE_TO_NOT_EMPOWER_SELF 
+                && empowerFactor > 3 && isItSafe()
+                && !buildThisTurn)
             {
-                // Self Empower
-                if (robotCurrentInfluence < AMOUNT_OF_INFLUENCE_TO_NOT_EMPOWER_SELF 
-                    && empowerFactor > 3 && isItSafe()
-                    && !buildThisTurn)
+                RobotBuilder.directionToSpawn = getAvailableDirectionToSpawn();
+                RobotBuilder.influenceToUse = (int) (robotController.getInfluence() * .90);
+                RobotBuilder.robotTypeToBuild = RobotType.POLITICIAN;
+
+                turnsNotBuilding = 0;
+                buildThisTurn = true;
+            }  
+
+            // Build EC Bomb for Enemy Enlightenment Center
+            if (enemyEnlightenmentCenterFound
+                && !buildThisTurn) 
+            {
+                if (isThereEnoughForBomb() 
+                    && isItSafe()) 
                 {
                     RobotBuilder.directionToSpawn = getAvailableDirectionToSpawn();
-                    RobotBuilder.influenceToUse = (int) (robotController.getInfluence() * .90);
+                    RobotBuilder.influenceToUse = getAmountToMakePoliticianBomb();
                     RobotBuilder.robotTypeToBuild = RobotType.POLITICIAN;
 
                     turnsNotBuilding = 0;
+                    stockUp = false;
                     buildThisTurn = true;
-                }  
-
-                // Build EC Bomb for Enemy Enlightenment Center
-                if (enemyEnlightenmentCenterFound
-                    && !buildThisTurn) 
-                {
-                    if (isThereEnoughForBomb() && isItSafe()) 
-                    {
-                        RobotBuilder.directionToSpawn = getAvailableDirectionToSpawn();
-                        RobotBuilder.influenceToUse = getAmountToMakePoliticianBomb();
-                        RobotBuilder.robotTypeToBuild = RobotType.POLITICIAN;
-
-                        turnsNotBuilding = 0;
-                        stockUp = false;
-                        buildThisTurn = true;
-                        countOfPoliticianBomb++;
-                    } 
-                    else if (!isThereEnoughForBomb() && isItSafe() && shouldBuildSlanderer()) 
-                    {
-                        stockUp = true;
-                        turnsNotBuilding++;
-                        buildSlanderer = true;
-                    } 
-                    else if (!isItSafe()) 
-                    {
-                        turnsNotBuilding++;
-                        stockUp = true;
-                        // MapLocation enemyRobotOverTwentyInfluenceNearby = getClosestEnemyRobotOverTwentyInfluenceLocation();
-                        // Communication.sendLocation(enemyRobotOverTwentyInfluenceNearby, KILL_ENEMY_TARGET); //TODO: Implement this?
-                    }
+                    countOfPoliticianBomb++;
                 } 
-
-                if (neutralEnlightenmentCenterFound
-                    && !buildThisTurn) 
+                else if (!isThereEnoughForBomb() 
+                    && isItSafe() 
+                    && shouldBuildSlanderer()) 
                 {
-                    if (isThereEnoughForNeutralEnlightenmentCenterCapture() && isItSafe()) 
-                    {
-                        RobotBuilder.directionToSpawn = getAvailableDirectionToSpawn();
-                        RobotBuilder.influenceToUse = getAmountToMakePoliticianBombForNeutral();
-                        RobotBuilder.robotTypeToBuild = RobotType.POLITICIAN;
-
-                        turnsNotBuilding = 0;
-                        stockUp = false;
-                        buildThisTurn = true;
-                    } 
-                    else if (!isThereEnoughForNeutralEnlightenmentCenterCapture() 
-                    && income < 100
-                    && isItSafe()) 
-                    {
-                        stockUp = true;
-                        buildSlanderer = true;
-                        turnsNotBuilding++;
-                    }
-                }   
-
-                if (robotController.getRoundNum() >= MIDDLE_GAME_ROUND_START 
-                    && robotController.getRobotCount() > 150
-                    && !stockUp
-                    && !buildThisTurn) 
+                    stockUp = true;
+                    turnsNotBuilding++;
+                    buildSlanderer = true;
+                } 
+                else if (!isItSafe()) 
                 {
-                    RobotType toBuild = RobotType.POLITICIAN;
-
-                    int influence = 0;
-                    if (lastTurnInfluence > MAX_NORMAL_POLITICIAN) 
-                    {
-                        int max = lastTurnInfluence;
-                        int min = MAX_NORMAL_POLITICIAN;
-                        influence = randomInteger.nextInt(max - min + 1) + min;
-
-                        turnsNotBuilding = 0;
-                        if (robotCurrentInfluence >= influence * 1.1) 
-                        {
-                            buildThisTurn = true;
-                            RobotBuilder.influenceToUse = influence;
-                            RobotBuilder.directionToSpawn = getAvailableDirectionToSpawn();
-                            RobotBuilder.robotTypeToBuild = toBuild;
-                            countOfPoliticians++;
-                        }
-                    } 
-                    else 
-                    {
-                        turnsNotBuilding++;
-                    }
+                    turnsNotBuilding++;
+                    stockUp = true;
+                    // MapLocation enemyRobotOverTwentyInfluenceNearby = getClosestEnemyRobotOverTwentyInfluenceLocation();
+                    // Communication.sendLocation(enemyRobotOverTwentyInfluenceNearby, KILL_ENEMY_TARGET); //TODO: Implement this?
                 }
             } 
-            
 
-                      
+            if (neutralEnlightenmentCenterFound
+                && !buildThisTurn) 
+            {
+                if (isThereEnoughForNeutralEnlightenmentCenterCapture() && isItSafe()) 
+                {
+                    RobotBuilder.directionToSpawn = getAvailableDirectionToSpawn();
+                    RobotBuilder.influenceToUse = getAmountToMakePoliticianBombForNeutral();
+                    RobotBuilder.robotTypeToBuild = RobotType.POLITICIAN;
 
-            
+                    turnsNotBuilding = 0;
+                    stockUp = false;
+                    buildThisTurn = true;
+                } 
+                else if (!isThereEnoughForNeutralEnlightenmentCenterCapture() 
+                    && isItSafe()) 
+                {
+                    stockUp = true;
+                    buildSlanderer = true;
+                    turnsNotBuilding++;
+                }
+            }   
 
-            
+            if (robotController.getRoundNum() >= MIDDLE_GAME_ROUND_START 
+                && robotController.getRobotCount() > 150
+                && !stockUp
+                && !buildThisTurn) 
+            {
+                RobotType toBuild = RobotType.POLITICIAN;
+
+                int influence = 0;
+                if (lastTurnInfluence > MAX_NORMAL_POLITICIAN) 
+                {
+                    int max = lastTurnInfluence;
+                    int min = MAX_NORMAL_POLITICIAN;
+                    influence = randomInteger.nextInt(max - min + 1) + min;
+
+                    turnsNotBuilding = 0;
+                    if (robotCurrentInfluence >= influence * 1.1) 
+                    {
+                        buildThisTurn = true;
+                        RobotBuilder.influenceToUse = influence;
+                        RobotBuilder.directionToSpawn = getAvailableDirectionToSpawn();
+                        RobotBuilder.robotTypeToBuild = toBuild;
+                        countOfPoliticians++;
+                    }
+                } 
+                else 
+                {
+                    turnsNotBuilding++;
+                }
+            }
+
+            buildScouts();
         }
     }
 

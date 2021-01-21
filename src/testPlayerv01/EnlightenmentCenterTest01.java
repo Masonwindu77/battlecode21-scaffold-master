@@ -64,7 +64,7 @@ public class EnlightenmentCenterTest01 extends RobotPlayer
     protected static boolean weSpawnedRightNextToEnemy = false;
 
     // Beginning
-    protected static final int NUMBER_OF_MUCKRAKERS_IN_BEGINNING = 8;
+    protected static final int NUMBER_OF_MUCKRAKERS_IN_BEGINNING = 12;
     protected static int numberOfMuckrakersToCreateInBeginning = 0;
     protected static int scoutIterator = 0;
 
