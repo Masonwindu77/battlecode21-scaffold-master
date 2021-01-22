@@ -185,10 +185,10 @@ public class Movement extends RobotPlayer {
         {
             scoutTheDirection(directionToScout);
 
-        } else if (locationToScout != null) 
+        } 
+        else if (locationToScout != null) 
         {
             basicBugMovement(locationToScout);
-
         } 
         else 
         {

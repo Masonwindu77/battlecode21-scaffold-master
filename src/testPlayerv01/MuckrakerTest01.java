@@ -40,7 +40,7 @@ public class MuckrakerTest01 extends RobotPlayer
 
         if (!neutralEnlightenmentCenterFound && !enemyEnlightenmentCenterFound
             && robotController.getRoundNum() < BEGINNING_ROUND_STRAT
-            && turnCount > 15) 
+            && turnCount > 45) 
         {
             detectNearbyRobots();
         }                       
@@ -120,8 +120,11 @@ public class MuckrakerTest01 extends RobotPlayer
             {
                 directionToScout = spawnEnlightenmentCenterHomeLocation.directionTo(robotController.getLocation());
             }
+            else if (directionToScout == null)
+            {
+                directionToScout = Movement.getRandomDirection();
+            }            
             
-            directionToScout = Movement.getRandomDirection();
             Movement.scoutAction();
         }
 

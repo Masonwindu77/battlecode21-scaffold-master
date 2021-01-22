@@ -82,18 +82,21 @@ public class SenseRobots extends RobotPlayer
     private static void sensedNeutralEnlightenmentCenter(RobotInfo robotInfo)
     {
         if (neutralEnlightenmentCenterMapLocation.isEmpty() 
-                || !neutralEnlightenmentCenterMapLocation.contains(robotInfo.getLocation())) 
-            {
-                neutralEnlightenmentCenterMapLocation.add(robotInfo.getLocation());
-                neutralEnlightenmentCenterIterator++;
-            }
+            || !neutralEnlightenmentCenterMapLocation.contains(robotInfo.getLocation())) 
+        {
+            neutralEnlightenmentCenterMapLocation.add(robotInfo.getLocation());
+            turnsAroundNeutralEnlightenmentCenter = 0;
+        }
 
         neutralEnlightenmentCenterCurrentInfluence = robotInfo.getInfluence();
         currentNeutralEnlightenmentCenterGoingFor = robotInfo.getLocation();
         neutralEnlightenmentCenterFound = true;
         neutralEnlightenmentCenterIsAround = true;
-        turnsAroundNeutralEnlightenmentCenter++;
-        haveMessageToSend = true;
+        if (turnsAroundNeutralEnlightenmentCenter < 3) 
+        {
+            haveMessageToSend = true;
+        }
+        turnsAroundNeutralEnlightenmentCenter++;        
     }
 
     private static void checkIfEnemyEnlightenmentCenterHasBeenConverted(RobotInfo robotInfo)
@@ -115,13 +118,21 @@ public class SenseRobots extends RobotPlayer
             throws GameActionException
     {
         if (Communication.hasNeutralEnlightenmentCenterBeenConverted(robotInfo)
-            && (convertedNeutralEnlightenmentCenterMapLocation.isEmpty() || !convertedNeutralEnlightenmentCenterMapLocation.contains(robotInfo.getLocation())))
+            && (convertedNeutralEnlightenmentCenterMapLocation.isEmpty() 
+                || !convertedNeutralEnlightenmentCenterMapLocation.contains(robotInfo.getLocation())))
         {
             Communication.processNeutralEnlightenmentCenterHasBeenConverted(robotInfo.getLocation());
             neutralEnlightenmentCenterHasBeenConverted = true;
             messageLastTwoTurnsForConverted = 2;
             turnsAroundNeutralEnlightenmentCenter = 0;
             haveMessageToSend = true;
+        }
+        else if (convertedNeutralEnlightenmentCenterMapLocation.contains(robotInfo.getLocation()) 
+            && neutralEnlightenmentCenterMapLocation.contains(robotInfo.getLocation())
+            && Communication.hasNeutralEnlightenmentCenterBeenConverted(robotInfo)) 
+        {
+            Communication.processNeutralEnlightenmentCenterHasBeenConverted(robotInfo.getLocation());
+            neutralEnlightenmentCenterHasBeenConverted = true;
         }
     }
 

@@ -214,13 +214,16 @@ public class PoliticianECBomb extends PoliticianTest01 {
         {
             if (currentNeutralEnlightenmentCenterGoingFor != null
             && !robotController.getLocation().isAdjacentTo(currentNeutralEnlightenmentCenterGoingFor)
-            && (!politicianECBombNearby || (politicianECBombNearby && lowestRobotIdOfFriendlies))) 
+            && (!politicianECBombNearby 
+                || (politicianECBombNearby 
+                    && (lowestRobotIdOfFriendlies || closestRobotToNeutralEnlightenmentCenter)))) 
             {
                 Movement.moveToNeutralEnlightenmentCenter(currentNeutralEnlightenmentCenterGoingFor);
             }
             else if (currentNeutralEnlightenmentCenterGoingFor != null 
             && politicianECBombNearby
-            && !lowestRobotIdOfFriendlies)
+            && !lowestRobotIdOfFriendlies
+            && !closestRobotToNeutralEnlightenmentCenter)
             {
                 Movement.moveAwayFromLocation(currentNeutralEnlightenmentCenterGoingFor);
             }

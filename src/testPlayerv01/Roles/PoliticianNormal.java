@@ -138,7 +138,15 @@ public class PoliticianNormal extends PoliticianTest01
         }
         else if (enemyMuckrakersNearby) 
         {
-            if (canConvertEnemyMuckraker())
+            if (canConvertEnemyMuckraker() && countOfEnemiesInActionRadiusAroundEnemyMuckraker > 1)
+            {
+                if (distanceToNearestMuckraker != 0 && robotController.canEmpower(distanceToNearestMuckraker)) 
+                {
+                    robotController.empower(distanceToNearestMuckraker);
+                    return;
+                }
+            }
+            else if (nearFriendlyEnlightenmentCenter && canConvertEnemyMuckraker()) 
             {
                 if (distanceToNearestMuckraker != 0 && robotController.canEmpower(distanceToNearestMuckraker)) 
                 {
@@ -150,9 +158,13 @@ public class PoliticianNormal extends PoliticianTest01
             {
                 Movement.moveInFrontOfTarget(closestEnemyMuckrakerMapLocation, closestMapLocationSlandererToDefend);
             }
-            else if(closestMapLocationSlandererToDefend == null)
+            else if(closestMapLocationSlandererToDefend == null && spawnEnlightenmentCenterHomeLocation != null)
             {
                 Movement.moveInFrontOfTarget(closestEnemyMuckrakerMapLocation, spawnEnlightenmentCenterHomeLocation);
+            }
+            else 
+            {
+                Movement.moveToTargetLocation(closestEnemyMuckrakerMapLocation);
             }
         }
         else if (nextDirection == null) 
@@ -166,7 +178,7 @@ public class PoliticianNormal extends PoliticianTest01
     }
 
     // TODO: Once we know where enemy is at, we can move towards there
-    private static void stayNearSlanderers() 
+    private static void stayNearSlanderers() throws GameActionException 
     {
         int sensorRadiusSquared = robotController.getType().sensorRadiusSquared;
 
@@ -189,7 +201,11 @@ public class PoliticianNormal extends PoliticianTest01
                 nextDirection = robotController.getLocation().directionTo(closestMapLocationSlandererToDefend);
             }
         }
-        else
+        else if (enemyEnlightenmentCenterFound && friendlySlandererNearby) 
+        {
+            Movement.moveAwayFromLocation(currentEnemyEnlightenmentCenterGoingFor);    
+        }
+        else if (spawnEnlightenmentCenterHomeLocation != null)
         {
             if (robotController.getLocation().isWithinDistanceSquared(spawnEnlightenmentCenterHomeLocation, sensorRadiusSquared)) 
             {

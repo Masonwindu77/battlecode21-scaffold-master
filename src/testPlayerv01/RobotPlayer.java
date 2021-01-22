@@ -35,7 +35,7 @@ public strictfp class RobotPlayer {
     }
 
     protected static int turnCount;
-    static boolean debug = false;
+    static boolean debug = true;
 
     protected static Random randomInteger;
     protected static boolean rightBugMovement = true;
@@ -65,7 +65,6 @@ public strictfp class RobotPlayer {
     protected static boolean enemyEnlightenmentCenterInfluenceHasBeenUpdated;
     protected static int convertedEnemyIterator = 0;
     protected static int convertedNeutralIterator = 0;
-    protected static int neutralEnlightenmentCenterIterator = 0;
 
     // Roles
     protected static RobotRoles robotRole;
@@ -120,6 +119,7 @@ public strictfp class RobotPlayer {
     protected static final int MAX_NORMAL_POLITICIAN = 20;
     protected static final int POLITICIAN_TAX = 10;
     protected static boolean moveRobot;
+    protected static int countOfNeutralPoliticianBomb = 0;
 
     // TODO: ROLES in Flags?
 

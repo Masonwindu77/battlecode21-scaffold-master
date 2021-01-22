@@ -10,11 +10,14 @@ public class Slanderer extends RobotPlayer {
     static Direction nextDirection;
     static boolean enemyMuckrakersNearby = false;
     static MapLocation closestEnemyMuckraker;
+    static Direction directionToEdgeOfMap;
 
     public static void run() throws GameActionException 
     {
+        resetVariablesForSensing();
         senseRobotsNearby();
         checkNearbyFlagsForEnemy();
+        setEdgeOfMap();
 
         if (robotController.getRoundNum() % 2 == 0) 
         {
@@ -38,9 +41,22 @@ public class Slanderer extends RobotPlayer {
             Communication.checkIfFriendlyEnlightenmentCenterHasEnemyLocation();
         }
 
+        if (politicianECBombNearby) 
+        {
+            if (neutralEnlightenmentCenterIsAround && currentNeutralEnlightenmentCenterGoingFor != null) 
+            {
+                Movement.moveAwayFromLocation(currentNeutralEnlightenmentCenterGoingFor);
+            }
+            else if (enemyEnlightenmentCenterIsAround && currentEnemyEnlightenmentCenterGoingFor != null) 
+            {
+                Movement.moveAwayFromLocation(currentEnemyEnlightenmentCenterGoingFor);
+            }
+        }
+
         if (!enemyMuckrakersNearby && !enemyEnlightenmentCenterFound) 
         {  
             stayNearHomeBase();
+            lookForEdgeOfMap();
 
             if (nextDirection == null) 
             {
@@ -51,7 +67,8 @@ public class Slanderer extends RobotPlayer {
                 }
 
                 Movement.scoutTheDirection(randomDirection);
-            } else 
+            } 
+            else 
             {
                 Movement.scoutTheDirection(nextDirection);
             }
@@ -84,10 +101,18 @@ public class Slanderer extends RobotPlayer {
          */
     }
 
-    private static void senseRobotsNearby() throws GameActionException {
-        int sensorRadiusSquared = robotController.getType().sensorRadiusSquared;
-        RobotInfo[] robots = robotController.senseNearbyRobots(sensorRadiusSquared);
+    private static void resetVariablesForSensing()
+    {
+        politicianECBombNearby = false;
         enemyMuckrakersNearby = false;
+        enemyEnlightenmentCenterIsAround = false;
+        neutralEnlightenmentCenterIsAround = false;
+    }
+
+    private static void senseRobotsNearby() throws GameActionException 
+    {
+        int sensorRadiusSquared = robotController.getType().sensorRadiusSquared;
+        RobotInfo[] robots = robotController.senseNearbyRobots(sensorRadiusSquared);        
 
         for (RobotInfo robotInfo : robots) 
         {
@@ -102,6 +127,13 @@ public class Slanderer extends RobotPlayer {
                 {
                     closestEnemyMuckraker = robotInfo.getLocation();
                 }
+            }
+            else if (robotInfo.getTeam() == friendly 
+                && robotInfo.getType() == RobotType.POLITICIAN
+                && robotInfo.getInfluence() >= POLITICIAN_EC_BOMB 
+                && (enemyEnlightenmentCenterIsAround || neutralEnlightenmentCenterIsAround)) 
+            {
+                politicianECBombNearby = true;    
             }
             else if (robotInfo.getType() == RobotType.ENLIGHTENMENT_CENTER) 
             {
@@ -123,6 +155,41 @@ public class Slanderer extends RobotPlayer {
         {
             nextDirection = robotController.getLocation().directionTo(spawnEnlightenmentCenterHomeLocation);
         }
+    }
+
+    protected static void lookForEdgeOfMap() throws GameActionException
+    {
+        int sensorRadiusSquared = 4;
+
+        MapLocation locationToCheck = robotController.getLocation().translate(sensorRadiusSquared, 0);
+        MapLocation locationToCheck2 = robotController.getLocation().translate(-sensorRadiusSquared, 0);  
+        MapLocation locationToCheck3 = robotController.getLocation().translate(0, -sensorRadiusSquared);  
+        MapLocation locationToCheck4 = robotController.getLocation().translate(-0, -sensorRadiusSquared);  
+        
+        if (!robotController.onTheMap(locationToCheck)) 
+        {
+            directionToEdgeOfMap = robotController.getLocation().directionTo(locationToCheck);
+        }
+        else if (!robotController.onTheMap(locationToCheck2)) 
+        {
+            directionToEdgeOfMap = robotController.getLocation().directionTo(locationToCheck2);
+        }
+        else if (!robotController.onTheMap(locationToCheck3)) 
+        {
+            directionToEdgeOfMap = robotController.getLocation().directionTo(locationToCheck3);
+        }
+        else if (!robotController.onTheMap(locationToCheck4)) 
+        {
+            directionToEdgeOfMap = robotController.getLocation().directionTo(locationToCheck4);
+        }        
+    }
+
+    protected static void setEdgeOfMap()
+    {
+        if (directionToEdgeOfMap != null) 
+        {
+            directionToScout = directionToEdgeOfMap;
+        }        
     }
 
     public static void setup() 

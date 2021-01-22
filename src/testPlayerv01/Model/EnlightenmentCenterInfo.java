@@ -9,5 +9,6 @@ public class EnlightenmentCenterInfo
     public int currentInfluence; 
     public int distanceSquaredToEnlightenmentCenter;
     public int robotId;
-    public int[] robotIdThatSpottedEnlightenmentCenter;
+    public int[] robotIdThatSpottedEnlightenmentCenter = new int[20];
+    public int robotIdIterator;
 }
