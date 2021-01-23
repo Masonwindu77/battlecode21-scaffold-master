@@ -24,8 +24,9 @@ public class EnlightenmentCenterTest01 extends RobotPlayer
     } 
 
     // Gotta sava bytecode somehow
-    protected static List<Integer> robotIds = new ArrayList<>(); // TODO: Make this an arraylist of robotInfo....
+    protected static List<RobotInfo> builtRobotsInfos = new ArrayList<>(); // TODO: Make this an arraylist of robotInfo....
     protected static int whereIteratorStopped = 0;
+    protected static String flagExtraInfoToSkip = "18;";
 
     protected static int numberOfEnlightenmentCenters = 0;
 
@@ -97,33 +98,23 @@ public class EnlightenmentCenterTest01 extends RobotPlayer
     // This keeps looping
     public static void run() throws GameActionException 
     {
-        countEnemiesNearby();
-        buildThisTurn = false;
-        enemyEnlightenmentCenterInfluenceHasBeenUpdated = false;
-        convertedEnemyEnlightenmentCenterHasBeenProcessedThisTurn = false;
-
-        lastTurnInfluence = robotCurrentInfluence;
-        robotCurrentInfluence = robotController.getInfluence();
-
-        countOfDefenderPoliticianNearby = 0;
-        countOfFriendlySlandererNearby = 0;
-
-        empowerFactorInThirtyTurns = robotController.getEmpowerFactor(friendly, 30);
-        empowerFactor = robotController.getEmpowerFactor(friendly, 0);
-        enemyEnlightenmentCenterCurrentInfluence = 0;
-
+        resetVariablesForSensing();
+        countEnemiesNearby();        
         checkFlagsFromRobots();
 
-        if (!neutralEnlightenmentCenterMapLocation.isEmpty() 
-            && currentNeutralEnlightenmentCenterGoingFor == null
-            && enemyEnlightenmentCenterInfluenceHasBeenUpdated) 
+        if (!neutralEnlightenmentCenterMapLocation.isEmpty())
         {
-            setCurrentNeutralEnlightenmentCenterGoingFor();
+            setneutralCurrentEnlightenmentCenterGoingFor();
+            neutralEnlightenmentCenterFound = true;
+        }
+
+        if (!enemyEnlightenmentCenterFound && !enemyEnlightenmentCenterMapLocation.isEmpty()) 
+        {
+            enemyEnlightenmentCenterFound = true;    
         }
         
         setRateOfInfluenceReceived();
         decideIfShouldBuildSlanderer();
-        //decideIfShouldBuildMoreScouts();
         EnlightenmentCenterHelper.decideWhatToBuild();
 
         if (buildThisTurn) 
@@ -165,17 +156,16 @@ public class EnlightenmentCenterTest01 extends RobotPlayer
                 currentVoteCount = robotController.getTeamVotes();
             }
         }
-        // else
-        // {
-        //     int influenceToBid = amountToBid;
-        //     if (robotController.canBid(influenceToBid)) 
-        //     {
-        //         robotController.bid(influenceToBid);
-        //     }
-        // }
+        else if (robotController.getRoundNum() > 50)
+        {
+            int influenceToBid = amountToBid;
+            if (robotController.canBid(influenceToBid)) 
+            {
+                robotController.bid(influenceToBid);
+            }
+        }
         
         decideToSetFlags();
-
 
         // figure out high priority locations
         // decide the priority and who is going to attack there
@@ -191,18 +181,19 @@ public class EnlightenmentCenterTest01 extends RobotPlayer
         // bomb?
     }
 
-    private static void setCurrentNeutralEnlightenmentCenterGoingFor() 
+    private static void setneutralCurrentEnlightenmentCenterGoingFor() 
     {
         if (neutralEnlightenmentCenters.size() == 1) 
         {
             EnlightenmentCenterInfo enlightenmentCenterInfo = neutralEnlightenmentCenters.get(neutralEnlightenmentCenterMapLocation.get(0));
-            currentNeutralEnlightenmentCenterGoingFor = enlightenmentCenterInfo.mapLocation;
+            neutralCurrentEnlightenmentCenterGoingFor = enlightenmentCenterInfo.mapLocation;
             neutralEnlightenmentCenterCurrentInfluence = enlightenmentCenterInfo.currentInfluence;
+            println("EC HERE FOR SETTING NEUTRAL " + neutralEnlightenmentCenterCurrentInfluence + " " + neutralCurrentEnlightenmentCenterGoingFor);
         }
         else if (!neutralEnlightenmentCenters.isEmpty())
         {
             int lowestInfluenceForNeutral = 501;
-            int closestNeutralToLocation = 1000;
+            int closestDistanceSquaredToNeutral = 100000;
 
             for (Map.Entry<MapLocation, EnlightenmentCenterInfo> enlightenmentCenter : neutralEnlightenmentCenters.entrySet()) 
             {
@@ -211,75 +202,72 @@ public class EnlightenmentCenterTest01 extends RobotPlayer
                 // Lowest influence and the closest. We want that
                 if (enlightenmentCenterInfo.currentInfluence == LOWEST_INFLUENCE_VALUE_FOR_NEUTRAL_LOCATION 
                     && enlightenmentCenterInfo.distanceSquaredToEnlightenmentCenter 
-                        <= closestNeutralToLocation)
+                        <= closestDistanceSquaredToNeutral)
                 {
                     lowestInfluenceForNeutral = enlightenmentCenterInfo.currentInfluence;
-                    closestNeutralToLocation = enlightenmentCenterInfo.distanceSquaredToEnlightenmentCenter;
+                    closestDistanceSquaredToNeutral = enlightenmentCenterInfo.distanceSquaredToEnlightenmentCenter;
 
-                    currentEnemyEnlightenmentCenterGoingFor = enlightenmentCenterInfo.mapLocation;
+                    neutralCurrentEnlightenmentCenterGoingFor = enlightenmentCenterInfo.mapLocation;
                     neutralEnlightenmentCenterCurrentInfluence = enlightenmentCenterInfo.currentInfluence;
-                    break;
                 }
                 // Less than lowest current influence and closest
                 /// Will automatically set the first in the Map
                 else if(enlightenmentCenterInfo.currentInfluence <= lowestInfluenceForNeutral 
+                    && enlightenmentCenterInfo.currentInfluence >= LOWEST_INFLUENCE_VALUE_FOR_NEUTRAL_LOCATION 
                     && enlightenmentCenterInfo.distanceSquaredToEnlightenmentCenter 
-                        <= closestNeutralToLocation)
+                        <= closestDistanceSquaredToNeutral)
                 {
                     lowestInfluenceForNeutral = enlightenmentCenterInfo.currentInfluence;
-                    closestNeutralToLocation = enlightenmentCenterInfo.distanceSquaredToEnlightenmentCenter;
+                    closestDistanceSquaredToNeutral = enlightenmentCenterInfo.distanceSquaredToEnlightenmentCenter;
 
-                    currentEnemyEnlightenmentCenterGoingFor = enlightenmentCenterInfo.mapLocation;
+                    neutralCurrentEnlightenmentCenterGoingFor = enlightenmentCenterInfo.mapLocation;
                     neutralEnlightenmentCenterCurrentInfluence = enlightenmentCenterInfo.currentInfluence;
                 }
                 // Less than most influence and closest
                 else if (enlightenmentCenterInfo.currentInfluence >= lowestInfluenceForNeutral 
                     && enlightenmentCenterInfo.currentInfluence < HIGHEST_INFLUENCE_VALUE_FOR_NEUTRAL_LOCATION
                     && enlightenmentCenterInfo.distanceSquaredToEnlightenmentCenter 
-                        <= closestNeutralToLocation) 
+                        <= closestDistanceSquaredToNeutral) 
                 {
-                    closestNeutralToLocation = enlightenmentCenterInfo.distanceSquaredToEnlightenmentCenter;
+                    closestDistanceSquaredToNeutral = enlightenmentCenterInfo.distanceSquaredToEnlightenmentCenter;
 
-                    currentEnemyEnlightenmentCenterGoingFor = enlightenmentCenterInfo.mapLocation;
+                    neutralCurrentEnlightenmentCenterGoingFor = enlightenmentCenterInfo.mapLocation;
                     neutralEnlightenmentCenterCurrentInfluence = enlightenmentCenterInfo.currentInfluence;
                 }
                 // Lower influence but farther away
-                else if (enlightenmentCenterInfo.currentInfluence <= lowestInfluenceForNeutral 
-                    && enlightenmentCenterInfo.distanceSquaredToEnlightenmentCenter 
-                        >= closestNeutralToLocation) 
-                {
-                    lowestInfluenceForNeutral = enlightenmentCenterInfo.currentInfluence;
+                // else if (enlightenmentCenterInfo.currentInfluence <= lowestInfluenceForNeutral 
+                //     && enlightenmentCenterInfo.currentInfluence >= LOWEST_INFLUENCE_VALUE_FOR_NEUTRAL_LOCATION
+                //     && enlightenmentCenterInfo.distanceSquaredToEnlightenmentCenter 
+                //         >= closestDistanceSquaredToNeutral) 
+                // {
+                //     lowestInfluenceForNeutral = enlightenmentCenterInfo.currentInfluence;
 
-                    currentEnemyEnlightenmentCenterGoingFor = enlightenmentCenterInfo.mapLocation;
-                    neutralEnlightenmentCenterCurrentInfluence = enlightenmentCenterInfo.currentInfluence;
-                }     
-                else if (currentEnemyEnlightenmentCenterGoingFor ==  null)
+                //     neutralCurrentEnlightenmentCenterGoingFor = enlightenmentCenterInfo.mapLocation;
+                //     neutralEnlightenmentCenterCurrentInfluence = enlightenmentCenterInfo.currentInfluence;
+                // }     
+                else if (neutralCurrentEnlightenmentCenterGoingFor ==  null)
                 {
-                    currentEnemyEnlightenmentCenterGoingFor = enlightenmentCenterInfo.mapLocation;
-                    neutralEnlightenmentCenterCurrentInfluence = enlightenmentCenterInfo.currentInfluence;
+                    neutralCurrentEnlightenmentCenterGoingFor = enlightenmentCenterInfo.mapLocation;
+                    neutralEnlightenmentCenterCurrentInfluence = enlightenmentCenterInfo.currentInfluence >= LOWEST_INFLUENCE_VALUE_FOR_NEUTRAL_LOCATION ? enlightenmentCenterInfo.currentInfluence : LOWEST_INFLUENCE_VALUE_FOR_NEUTRAL_LOCATION;
                 }           
-                
             }
-            
+
+            println("EC AFTER%%% FOR SETTING NEUTRAL " + neutralEnlightenmentCenterCurrentInfluence + " " + neutralCurrentEnlightenmentCenterGoingFor);
         }
         
     }
 
-    // if (influence < 1000 || income < 250)
-    // income == lastRoundInfluence - thisRoundInfluence
     protected static void decideIfShouldBuildSlanderer()
     {
         if (!buildSlanderer && shouldBuildSlanderer())
         {
             buildSlanderer = true;
-            getAmountNeededForSlanderer();
         }
     }
 
     protected static boolean shouldBuildSlanderer() 
     {
         boolean shouldBuildSlanderer = false;
-        robotCurrentInfluence = robotController.getInfluence();
 
         if ((income < 175) 
         && robotController.getRoundNum() >= 300)
@@ -288,10 +276,16 @@ public class EnlightenmentCenterTest01 extends RobotPlayer
         }
         else if
         ((income < 25) 
-        && robotController.getRoundNum() < 300)
+        && robotController.getRoundNum() < 75)
         {
             shouldBuildSlanderer = true;
         }
+        else if
+        ((income < 100) 
+        && robotController.getRoundNum() < 150)
+        {
+            shouldBuildSlanderer = true;
+        }        
         else if(!enemyEnlightenmentCenterFound 
         && countOfSlanderer <= 2)
         {
@@ -332,28 +326,46 @@ public class EnlightenmentCenterTest01 extends RobotPlayer
 
     private static void checkFlagsFromRobots() throws GameActionException 
     {
-        for (; (whereIteratorStopped < robotIds.size() && Clock.getBytecodesLeft() >= 3500); whereIteratorStopped++) 
+        for (; (whereIteratorStopped < builtRobotsInfos.size() && Clock.getBytecodesLeft() >= 3500); whereIteratorStopped++) 
         {
-            int robotId = robotIds.get(whereIteratorStopped);
+            RobotInfo robotInfo = builtRobotsInfos.get(whereIteratorStopped);
+            int robotId = robotInfo.ID;
 
             if (robotController.canGetFlag(robotId)) 
             {
                 int flag = robotController.getFlag(robotId);
 
-                if (flag != 0 && flag != Communication.SLANDERER_FLAG) 
+                if (flag != 0 && flag != Communication.SLANDERER_FLAG && flag != Communication.SLANDERER_IN_TROUBLE_FLAG) 
                 {
-                    int extraInformation = Communication.getExtraInformationFromFlag(flag);
-                    EnlightenmentCenterHelper.checkFlagsForSignals(extraInformation, flag, robotId);
+                    int extraInformation = Communication.getExtraInformationFromFlag(flag); 
+                    if (!flagExtraInfoToSkip.contains(Integer.toString(extraInformation))) 
+                    {
+                        EnlightenmentCenterHelper.checkFlagsForSignals(extraInformation, flag, robotId);
+                    }                   
                 }           
             } 
             else 
             {
-                robotIds.remove(whereIteratorStopped); // TODO: this could be where you count the # of robots alive.
+                if (robotInfo.type == RobotType.POLITICIAN 
+                    && robotInfo.influence > POLITICIAN_SCOUT && robotInfo.influence <= POLITICIAN_DEFEND_SLANDERER) 
+                {
+                    countOfDefenderPolitician--;    
+                }
+                else if (robotInfo.type == RobotType.MUCKRAKER) 
+                {
+                    countOfMuckrakers--;
+                }
+                else if (robotInfo.type == RobotType.SLANDERER)
+                {
+                    countOfSlanderer--;
+                }
+
+                builtRobotsInfos.remove(whereIteratorStopped); // TODO: this could be where you count the # of robots alive.
             }
         }
 
         // reset iterator
-        if (whereIteratorStopped == robotIds.size()) 
+        if (whereIteratorStopped == builtRobotsInfos.size()) 
         {
             whereIteratorStopped = 0;    
         }
@@ -374,13 +386,9 @@ public class EnlightenmentCenterTest01 extends RobotPlayer
         }
         else if (!neutralEnlightenmentCenterMapLocation.isEmpty() && robotController.getRoundNum() % 2 != 0)
         {
-            if (currentNeutralEnlightenmentCenterGoingFor != null) 
+            if (neutralCurrentEnlightenmentCenterGoingFor != null) 
             {
-                Communication.sendLocation(currentNeutralEnlightenmentCenterGoingFor, Communication.NUETRAL_ENLIGHTENMENT_CENTER_FOUND);            
-            }
-            else
-            {
-                Communication.sendLocation(neutralEnlightenmentCenterMapLocation.get(neutralEnlightenmentCenterMapLocation.size() - 1), Communication.NUETRAL_ENLIGHTENMENT_CENTER_FOUND);            
+                Communication.sendLocation(neutralCurrentEnlightenmentCenterGoingFor, Communication.NUETRAL_ENLIGHTENMENT_CENTER_FOUND);            
             }
         }
         else if (enemyEnlightenmentCenterMapLocation.isEmpty() && neutralEnlightenmentCenterMapLocation.isEmpty())
@@ -412,15 +420,32 @@ public class EnlightenmentCenterTest01 extends RobotPlayer
         income = (int) (differenceOfInfluenceBetweenRounds + influenceUsedFromLastBuild);
     }
 
-    private static void countEnemiesNearby() 
+    protected static void resetVariablesForSensing()
     {
-        int sensorRadiusSquared = robotController.getType().sensorRadiusSquared;
-        RobotInfo[] enemyRobots = robotController.senseNearbyRobots(sensorRadiusSquared, enemy);
-        enemyTargetNearby.clear();
         countOfEnemyMuckraker = 0;
         countOfEnemyPoliticiansOverFiftyInfluence = 0;
         countOfEnemyPoliticiansUnderTwentyInfluence = 0;
         countOfOtherRobots = 0;
+
+        buildThisTurn = false;
+        enemyEnlightenmentCenterInfluenceHasBeenUpdated = false;
+        convertedEnemyEnlightenmentCenterHasBeenProcessedThisTurn = false;
+
+        lastTurnInfluence = robotCurrentInfluence;
+        robotCurrentInfluence = robotController.getInfluence();
+
+        countOfDefenderPoliticianNearby = 0;
+        countOfFriendlySlandererNearby = 0;
+
+        empowerFactorInThirtyTurns = robotController.getEmpowerFactor(friendly, 30);
+        empowerFactor = robotController.getEmpowerFactor(friendly, 0);
+        enemyEnlightenmentCenterCurrentInfluence = 0;
+    }
+
+    private static void countEnemiesNearby() 
+    {
+        int sensorRadiusSquared = robotController.getType().sensorRadiusSquared;
+        RobotInfo[] enemyRobots = robotController.senseNearbyRobots(sensorRadiusSquared, enemy);        
 
         for (RobotInfo enemyRobotInfo : enemyRobots) 
         {
@@ -432,7 +457,8 @@ public class EnlightenmentCenterTest01 extends RobotPlayer
             else if (enemyRobotInfo.getType() == RobotType.POLITICIAN && enemyRobotInfo.getConviction() <= 20)
             {
                 countOfEnemyPoliticiansUnderTwentyInfluence++;
-            } else if (enemyRobotInfo.getType() == RobotType.MUCKRAKER) 
+            } 
+            else if (enemyRobotInfo.getType() == RobotType.MUCKRAKER) 
             {
                 countOfEnemyMuckraker++;
             } 
@@ -446,10 +472,15 @@ public class EnlightenmentCenterTest01 extends RobotPlayer
     protected static boolean isThereEnoughForBomb() throws GameActionException {
         boolean isThereEnoughInfluence = false;
         int currentInfluence = robotController.getInfluence();
+        int enemyEnlightenmentCenterInfluenceWithPoliticianTax = enemyEnlightenmentCenterCurrentInfluence + POLITICIAN_TAX + 1;
 
-        if ((enemyEnlightenmentCenterCurrentInfluence != 0) 
-        && (((currentInfluence * empowerFactorInThirtyTurns) - POLITICIAN_TAX) >= enemyEnlightenmentCenterCurrentInfluence)
-        && (currentInfluence - POLITICIAN_TAX) >= POLITICIAN_EC_BOMB)
+        if (enemyEnlightenmentCenterInfluenceWithPoliticianTax < POLITICIAN_EC_BOMB) 
+        {
+            enemyEnlightenmentCenterInfluenceWithPoliticianTax += POLITICIAN_EC_BOMB;
+        }
+
+        if (enemyEnlightenmentCenterCurrentInfluence != 0
+        && currentInfluence > enemyEnlightenmentCenterInfluenceWithPoliticianTax)
         {
             isThereEnoughInfluence = true;
         }
@@ -477,21 +508,32 @@ public class EnlightenmentCenterTest01 extends RobotPlayer
         return countOfEnemyPoliticiansOverFiftyInfluence == 0 || robotCurrentInfluence > 200;
     }
 
-    protected static int getAmountToMakePoliticianBomb() {
+    protected static int getAmountToMakePoliticianBomb() 
+    {
         int currentInfluence = robotController.getInfluence();
         int influenceToBuildWith = POLITICIAN_EC_BOMB;
+        int enemyEnlightenmentCenterInfluenceWithPoliticianTax = enemyEnlightenmentCenterCurrentInfluence + POLITICIAN_TAX + 1;
 
-        if (currentInfluence > enemyEnlightenmentCenterCurrentInfluence * 5) 
+        if (enemyEnlightenmentCenterInfluenceWithPoliticianTax < POLITICIAN_EC_BOMB) 
         {
-            influenceToBuildWith = enemyEnlightenmentCenterCurrentInfluence * 5;
+            enemyEnlightenmentCenterInfluenceWithPoliticianTax += POLITICIAN_EC_BOMB;
         }
-        else if (currentInfluence > enemyEnlightenmentCenterCurrentInfluence * 2) 
+
+        if (currentInfluence > enemyEnlightenmentCenterInfluenceWithPoliticianTax * 10) 
         {
-            influenceToBuildWith = enemyEnlightenmentCenterCurrentInfluence * 2;
+            influenceToBuildWith = enemyEnlightenmentCenterInfluenceWithPoliticianTax * 10;
         }
-        else if (enemyEnlightenmentCenterCurrentInfluence != 0 && enemyEnlightenmentCenterCurrentInfluence > POLITICIAN_EC_BOMB) 
+        else if (currentInfluence > enemyEnlightenmentCenterInfluenceWithPoliticianTax * 5) 
         {
-            influenceToBuildWith = ((enemyEnlightenmentCenterCurrentInfluence + 1) + POLITICIAN_TAX);
+            influenceToBuildWith = enemyEnlightenmentCenterInfluenceWithPoliticianTax * 5;
+        }
+        else if (currentInfluence > enemyEnlightenmentCenterInfluenceWithPoliticianTax * 2) 
+        {
+            influenceToBuildWith = enemyEnlightenmentCenterInfluenceWithPoliticianTax * 2;
+        }
+        else if (enemyEnlightenmentCenterInfluenceWithPoliticianTax > POLITICIAN_EC_BOMB) 
+        {
+            influenceToBuildWith = enemyEnlightenmentCenterInfluenceWithPoliticianTax;
         }       
 
         return influenceToBuildWith;
@@ -533,27 +575,9 @@ public class EnlightenmentCenterTest01 extends RobotPlayer
 
     protected static boolean enoughDefenderPoliticianNearby()
     {
-        int sensorRadiusSquared = robotController.getType().sensorRadiusSquared;
-        RobotInfo[] friendlyRobots = robotController.senseNearbyRobots(sensorRadiusSquared, friendly);
         boolean enoughDefenderPoliticianNearby = false;
-
-        for (RobotInfo friendlyRobotInfo : friendlyRobots) 
-        {
-            if (friendlyRobotInfo.getType() == RobotType.POLITICIAN
-                && friendlyRobotInfo.getInfluence() <= POLITICIAN_DEFEND_SLANDERER 
-                && friendlyRobotInfo.getInfluence() > POLITICIAN_SCOUT) 
-            {
-                defenderPoliticianNearby = true;
-                countOfDefenderPoliticianNearby++;
-            } 
-            else if (friendlyRobotInfo.getType() == RobotType.SLANDERER) 
-            {
-                friendlySlandererNearby = true;
-                countOfFriendlySlandererNearby++;
-            }
-        }
         
-        if ((countOfDefenderPoliticianNearby) >= countOfFriendlySlandererNearby || (countOfDefenderPolitician > (countOfSlanderer)))
+        if ((countOfDefenderPolitician >= Math.ceil((countOfSlanderer * 1.25))))
         {
             enoughDefenderPoliticianNearby = true;
         }
@@ -602,18 +626,39 @@ public class EnlightenmentCenterTest01 extends RobotPlayer
 
     private static void buildRobot() throws GameActionException 
     {
-        if (robotController.canBuildRobot(RobotBuilder.robotTypeToBuild, RobotBuilder.directionToSpawn, RobotBuilder.influenceToUse)) 
+        if (RobotBuilder.directionToSpawn != Direction.CENTER) 
         {
-            robotController.buildRobot(RobotBuilder.robotTypeToBuild, RobotBuilder.directionToSpawn, RobotBuilder.influenceToUse);
-            influenceUsedFromLastBuild = RobotBuilder.influenceToUse;
-
-            RobotInfo newRobot = robotController.senseRobotAtLocation(robotController.adjacentLocation(RobotBuilder.directionToSpawn));
-
-            if (!robotIds.contains(newRobot.getID())) 
+            if (robotController.canBuildRobot(RobotBuilder.robotTypeToBuild, RobotBuilder.directionToSpawn, RobotBuilder.influenceToUse)) 
             {
-                robotIds.add(newRobot.getID());
-            }            
+                robotController.buildRobot(RobotBuilder.robotTypeToBuild, RobotBuilder.directionToSpawn, RobotBuilder.influenceToUse);
+                influenceUsedFromLastBuild = RobotBuilder.influenceToUse;
+
+                RobotInfo newRobot = robotController.senseRobotAtLocation(robotController.adjacentLocation(RobotBuilder.directionToSpawn));
+
+                builtRobotsInfos.add(newRobot);
+            }
+            else
+            {
+                println("Welp... This awk " + RobotBuilder.directionToSpawn + " " + RobotBuilder.influenceToUse);
+            }
         }
+        else
+        {
+            for (Direction direction : directions) 
+            {
+                if (robotController.canBuildRobot(RobotBuilder.robotTypeToBuild, direction, RobotBuilder.influenceToUse)) 
+                {
+                    robotController.buildRobot(RobotBuilder.robotTypeToBuild, direction, RobotBuilder.influenceToUse);
+                    influenceUsedFromLastBuild = RobotBuilder.influenceToUse;
+
+                    RobotInfo newRobot = robotController.senseRobotAtLocation(robotController.adjacentLocation(direction));
+
+                    builtRobotsInfos.add(newRobot);           
+                }
+            }
+        }
+        
+       
     }
 
     public static void setup() throws GameActionException {
@@ -627,18 +672,35 @@ public class EnlightenmentCenterTest01 extends RobotPlayer
         setConstants();
         spawnEnlightenmentCenterHomeLocation = robotController.getLocation();
         setSquaresAroundEnlightenmentCenter();        
-        checkIfSpawnIsNearEnemyEnlightenmentCenter();
+        checkIfSpawnIsNearEnlightenmentCenter();
     }
 
-    private static void checkIfSpawnIsNearEnemyEnlightenmentCenter()
+    private static void checkIfSpawnIsNearEnlightenmentCenter()
     {
-        RobotInfo[] nearbyRobotInfos = robotController.senseNearbyRobots(robotController.getType().sensorRadiusSquared, enemy);
+        RobotInfo[] nearbyRobotInfos = robotController.senseNearbyRobots(robotController.getType().sensorRadiusSquared);
 
-        for (RobotInfo robotInfo : nearbyRobotInfos) {
-            if (robotInfo.getType() == RobotType.ENLIGHTENMENT_CENTER) {
-                weSpawnedRightNextToEnemy = true;
-                enemyEnlightenmentCenterFound = true;
-                enemyEnlightenmentCenterMapLocation.add(robotInfo.getLocation());
+        for (RobotInfo robotInfo : nearbyRobotInfos) 
+        {
+            if (robotInfo.getType() == RobotType.ENLIGHTENMENT_CENTER) 
+            {
+                if(robotInfo.getTeam() == enemy)
+                {
+                    weSpawnedRightNextToEnemy = true;
+                    enemyEnlightenmentCenterFound = true;
+                    enemyEnlightenmentCenterMapLocation.add(robotInfo.getLocation());
+                }
+                else if (robotInfo.getTeam() == Team.NEUTRAL)
+                {
+                    neutralEnlightenmentCenterFound = true;
+                    EnlightenmentCenterInfo enlightenmentCenterInfo = new EnlightenmentCenterInfo();
+                    enlightenmentCenterInfo.currentInfluence = robotInfo.getInfluence();
+                    enlightenmentCenterInfo.mapLocation = robotInfo.getLocation();
+                    enlightenmentCenterInfo.distanceSquaredToEnlightenmentCenter = robotController.getLocation().distanceSquaredTo(robotInfo.getLocation());
+                    neutralEnlightenmentCenters.put(robotInfo.getLocation(), enlightenmentCenterInfo);
+                    neutralEnlightenmentCenterMapLocation.add(robotInfo.getLocation());
+                    neutralCurrentEnlightenmentCenterGoingFor = robotInfo.getLocation();
+                    neutralEnlightenmentCenterCurrentInfluence = robotInfo.getInfluence();
+                }                
             }
         }
         

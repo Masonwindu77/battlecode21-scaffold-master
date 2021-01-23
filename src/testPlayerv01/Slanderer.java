@@ -3,88 +3,126 @@ package testPlayerv01;
 import battlecode.common.*;
 import testPlayerv01.Service.Communication;
 import testPlayerv01.Service.Movement;
-import testPlayerv01.Service.SenseRobots;
+import testPlayerv01.Service.Sense;
 
 public class Slanderer extends RobotPlayer {
 
     static Direction nextDirection;
     static boolean enemyMuckrakersNearby = false;
+    static int recentlySeenMuckrakers;
+    static int slandererFlag;
+
+    static MapLocation enemyMuckrakerLocationFromFlag;
     static MapLocation closestEnemyMuckraker;
+    static MapLocation lastSeenEnemyMuckraker;
     static Direction directionToEdgeOfMap;
+
+    static boolean nearFriendlyEnlightenmentCenter;
+
+    static int edgeOfMapLocationX;
+    static int edgeOfMapLocationY;
+    private static MapLocation closestDefenderPoliticianMapLocation;
 
     public static void run() throws GameActionException 
     {
         resetVariablesForSensing();
-        senseRobotsNearby();
-        checkNearbyFlagsForEnemy();
+        senseRobotsNearby();    
+        directionToEdgeOfMap = Sense.lookForEdgeOfMap();    
         setEdgeOfMap();
 
-        if (robotController.getRoundNum() % 2 == 0) 
-        {
-            if (robotController.canSetFlag(Communication.SLANDERER_FLAG)) 
-            {
-                robotController.setFlag(Communication.SLANDERER_FLAG);    
-            }    
-        }
-        else
-        {
-            if (haveMessageToSend) 
-            {
-                Communication.setFlagMessageForScout();
-            }            
-        }
-
-        //TODO: How do I check for a corner / edge of map?
+        // Saves the last seen enemy muck location
+        runFromEnemyMuckrakers();      
+        setFlags();
 
         if(!enemyEnlightenmentCenterFound)
         {
             Communication.checkIfFriendlyEnlightenmentCenterHasEnemyLocation();
         }
 
-        if (politicianECBombNearby) 
+        if (mapLocationOfEdge == null)
         {
-            if (neutralEnlightenmentCenterIsAround && currentNeutralEnlightenmentCenterGoingFor != null) 
+            Communication.checkIfFriendlyEnlightenmentCenterHasEdgeOfMapLocation();
+        }
+
+        // Move away from Neutral if Poli EC Bomb is nearby
+        if (politicianECBombNearby && (!enemyMuckrakersNearby && !enemyEnlightenmentCenterIsAround)) 
+        {
+            if (neutralEnlightenmentCenterIsAround && neutralCurrentEnlightenmentCenterGoingFor != null) 
             {
-                Movement.moveAwayFromLocation(currentNeutralEnlightenmentCenterGoingFor);
-            }
-            else if (enemyEnlightenmentCenterIsAround && currentEnemyEnlightenmentCenterGoingFor != null) 
-            {
-                Movement.moveAwayFromLocation(currentEnemyEnlightenmentCenterGoingFor);
+                Movement.moveAwayFromLocation(neutralCurrentEnlightenmentCenterGoingFor);
             }
         }
 
-        if (!enemyMuckrakersNearby && !enemyEnlightenmentCenterFound) 
+        // If NOT enemy Muck nearby or Enemy EC found
+        if (!enemyMuckrakersNearby && !enemyEnlightenmentCenterFound && lastSeenEnemyMuckraker == null) 
         {  
-            stayNearHomeBase();
-            lookForEdgeOfMap();
-
-            if (nextDirection == null) 
+            if (mapLocationOfEdge == null) 
             {
-                Direction randomDirection = Movement.getRandomDirection();
-                while (robotController.getLocation().add(randomDirection).isAdjacentTo(spawnEnlightenmentCenterHomeLocation)) 
+                stayNearHomeBase();  
+                if (nextDirection == null) 
                 {
-                    randomDirection = Movement.getRandomDirection();
+                    Direction randomDirection = Movement.getRandomDirection();
+                    while (robotController.getLocation().add(randomDirection).isAdjacentTo(spawnEnlightenmentCenterHomeLocation)) 
+                    {
+                        randomDirection = Movement.getRandomDirection();
+                    }
+
+                    Movement.scoutTheDirection(randomDirection);
+                } 
+                else 
+                {
+                    Movement.scoutTheDirection(nextDirection);
                 }
-
-                Movement.scoutTheDirection(randomDirection);
-            } 
-            else 
-            {
-                Movement.scoutTheDirection(nextDirection);
             }
-
+            else if (mapLocationOfEdge != null)
+            {
+                if (robotController.canSenseLocation(mapLocationOfEdge)
+                    && !robotController.onTheMap(mapLocationOfEdge) 
+                    && robotController.onTheMap(robotController.getLocation().add(robotController.getLocation().directionTo(mapLocationOfEdge))))
+                {
+                    Movement.moveToTargetLocation(mapLocationOfEdge);
+                }           
+                else if (!robotController.canSenseLocation(mapLocationOfEdge)
+                    && !robotController.onTheMap(robotController.getLocation().add(robotController.getLocation().directionTo(mapLocationOfEdge))))
+                {
+                    println("HI SLANDERER :D");
+                    if (closestDefenderPoliticianMapLocation != null) 
+                    {
+                        Movement.moveToTargetLocation(closestDefenderPoliticianMapLocation);
+                    }
+                } 
+                else if (!robotController.canSenseLocation(mapLocationOfEdge))
+                {
+                    Movement.moveToTargetLocation(robotController.getLocation().add(robotController.getLocation().directionTo(mapLocationOfEdge)));              
+                }
+            }
         } 
-        else if (enemyMuckrakersNearby) 
+        else if (enemyMuckrakersNearby || lastSeenEnemyMuckraker != null) 
         {
-            Movement.moveAwayFromLocation(closestEnemyMuckraker);
+            if (closestEnemyMuckraker != null) 
+            {
+                Movement.moveAwayFromLocation(closestEnemyMuckraker);
+            }
+            else if (enemyMuckrakerLocationFromFlag != null)
+            {
+                Movement.moveAwayFromLocation(enemyMuckrakerLocationFromFlag);
+            }
+            else
+            {
+                Movement.moveAwayFromLocation(lastSeenEnemyMuckraker);
+            }
         } 
+        else if (enemyEnlightenmentCenterIsAround)
+        {
+            Movement.moveAwayFromLocation(enemyCurrentEnlightenmentCenterGoingFor);
+        }
         else if (enemyEnlightenmentCenterFound) 
         {
             // if the next move places it on the adjacent square around the EC. Don't move there.
             if (spawnEnlightenmentCenterHomeLocation != null 
-            && !robotController.getLocation().add(Movement.getOppositeDirection(robotController.getLocation().directionTo(currentEnemyEnlightenmentCenterGoingFor))).isAdjacentTo(spawnEnlightenmentCenterHomeLocation))
+            && !robotController.getLocation().add(Movement.getOppositeDirection(robotController.getLocation().directionTo(enemyCurrentEnlightenmentCenterGoingFor))).isAdjacentTo(spawnEnlightenmentCenterHomeLocation))
             {
-                Movement.moveAwayFromLocation(currentEnemyEnlightenmentCenterGoingFor);
+                Movement.moveAwayFromLocation(enemyCurrentEnlightenmentCenterGoingFor);
             }
             else
             {
@@ -107,6 +145,11 @@ public class Slanderer extends RobotPlayer {
         enemyMuckrakersNearby = false;
         enemyEnlightenmentCenterIsAround = false;
         neutralEnlightenmentCenterIsAround = false;
+        nearFriendlyEnlightenmentCenter = false;
+        slandererFlag = Communication.SLANDERER_FLAG;
+
+        enemyMuckrakerLocationFromFlag = null;
+        directionToEdgeOfMap = null;
     }
 
     private static void senseRobotsNearby() throws GameActionException 
@@ -116,11 +159,14 @@ public class Slanderer extends RobotPlayer {
 
         for (RobotInfo robotInfo : robots) 
         {
-            if (robotInfo.getTeam() == enemy && robotInfo.getType() == RobotType.MUCKRAKER) {
+            if (robotInfo.getTeam() == enemy && robotInfo.getType() == RobotType.MUCKRAKER)
+            {
                 enemyMuckrakersNearby = true;
+                slandererFlag = Communication.SLANDERER_IN_TROUBLE_FLAG;
 
                 if (closestEnemyMuckraker != null 
-                && robotController.getLocation().distanceSquaredTo(closestEnemyMuckraker) >= robotController.getLocation().distanceSquaredTo(robotInfo.getLocation())) {
+                && robotController.getLocation().distanceSquaredTo(closestEnemyMuckraker) >= robotController.getLocation().distanceSquaredTo(robotInfo.getLocation())) 
+                {
                     closestEnemyMuckraker = robotInfo.getLocation();
                 }
                 else if(closestEnemyMuckraker == null)
@@ -137,51 +183,86 @@ public class Slanderer extends RobotPlayer {
             }
             else if (robotInfo.getType() == RobotType.ENLIGHTENMENT_CENTER) 
             {
-                SenseRobots.processEnlightenmentCenterFinding(robotInfo);
+                Sense.processEnlightenmentCenterFinding(robotInfo);
+                if (robotInfo.getTeam() == friendly 
+                    && robotController.getLocation().subtract(robotController.getLocation().directionTo(robotInfo.getLocation())).distanceSquaredTo(spawnEnlightenmentCenterHomeLocation)
+                         < sensorRadiusSquared )
+                {
+                    nearFriendlyEnlightenmentCenter = true;
+                }                
+            }
+            else if (robotInfo.getTeam() == friendly)
+            {
+                if (robotController.canGetFlag(robotInfo.getID())) 
+                {
+                    checkNearbyFlagsForEnemy(robotController.getFlag(robotInfo.getID()));
+                }                
+
+                if (robotInfo.getType() == RobotType.POLITICIAN
+                && robotInfo.getInfluence() <= POLITICIAN_DEFEND_SLANDERER
+                && robotInfo.getInfluence() >= POLITICIAN_SCOUT)
+                {
+                    closestDefenderPoliticianMapLocation = robotInfo.getLocation();
+                }
             }
         }
     }
 
-    private static void checkNearbyFlagsForEnemy() {
+    private static void checkNearbyFlagsForEnemy(int flag) throws GameActionException 
+    {
+        int convertedFlag = Communication.getExtraInformationFromFlag(flag);
 
+        if (flag != 0 && convertedFlag == Communication.ENEMY_MUCKRAKER_NEARBY_FLAG) 
+        {
+            enemyMuckrakersNearby = true;
+            enemyMuckrakerLocationFromFlag = Communication.getLocationFromFlag(flag);    
+        }
     }
 
-    private static void stayNearHomeBase() {
+    private static void setFlags() throws GameActionException 
+    {
+        if (robotController.getRoundNum() % 2 == 0) 
+        {
+            if (robotController.canSetFlag(slandererFlag)) 
+            {
+                robotController.setFlag(slandererFlag);    
+            }    
+        }
+        else
+        {
+            if (haveMessageToSend) 
+            {
+                Communication.setFlagMessageForScout();
+            }            
+        }
+    }
+
+    private static void runFromEnemyMuckrakers() 
+    {
+        if (enemyMuckrakersNearby || (recentlySeenMuckrakers > 0 && recentlySeenMuckrakers < 5)) 
+        {
+            recentlySeenMuckrakers++;
+            lastSeenEnemyMuckraker = closestEnemyMuckraker;    
+        }
+        else if(recentlySeenMuckrakers >= 4)
+        {
+            recentlySeenMuckrakers = 0;
+            lastSeenEnemyMuckraker = null; 
+        }
+    }
+
+    private static void stayNearHomeBase() 
+    {
         int sensorRadiusSquared = robotController.getType().sensorRadiusSquared;
-        if (robotController.getLocation().isWithinDistanceSquared(spawnEnlightenmentCenterHomeLocation, sensorRadiusSquared)) {
+        if (robotController.getLocation().subtract(robotController.getLocation().directionTo(spawnEnlightenmentCenterHomeLocation)).distanceSquaredTo(spawnEnlightenmentCenterHomeLocation) 
+            < sensorRadiusSquared || nearFriendlyEnlightenmentCenter) 
+        {
             nextDirection = null;
         } 
         else 
         {
             nextDirection = robotController.getLocation().directionTo(spawnEnlightenmentCenterHomeLocation);
         }
-    }
-
-    protected static void lookForEdgeOfMap() throws GameActionException
-    {
-        int sensorRadiusSquared = 4;
-
-        MapLocation locationToCheck = robotController.getLocation().translate(sensorRadiusSquared, 0);
-        MapLocation locationToCheck2 = robotController.getLocation().translate(-sensorRadiusSquared, 0);  
-        MapLocation locationToCheck3 = robotController.getLocation().translate(0, -sensorRadiusSquared);  
-        MapLocation locationToCheck4 = robotController.getLocation().translate(-0, -sensorRadiusSquared);  
-        
-        if (!robotController.onTheMap(locationToCheck)) 
-        {
-            directionToEdgeOfMap = robotController.getLocation().directionTo(locationToCheck);
-        }
-        else if (!robotController.onTheMap(locationToCheck2)) 
-        {
-            directionToEdgeOfMap = robotController.getLocation().directionTo(locationToCheck2);
-        }
-        else if (!robotController.onTheMap(locationToCheck3)) 
-        {
-            directionToEdgeOfMap = robotController.getLocation().directionTo(locationToCheck3);
-        }
-        else if (!robotController.onTheMap(locationToCheck4)) 
-        {
-            directionToEdgeOfMap = robotController.getLocation().directionTo(locationToCheck4);
-        }        
     }
 
     protected static void setEdgeOfMap()

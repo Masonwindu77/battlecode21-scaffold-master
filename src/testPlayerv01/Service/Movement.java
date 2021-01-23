@@ -155,8 +155,9 @@ public class Movement extends RobotPlayer {
         // }
     }
 
-    public static void scoutTheDirection(Direction direction) throws GameActionException {
-        if (robotController.onTheMap(robotController.adjacentLocation(direction))) 
+    public static void scoutTheDirection(Direction direction) throws GameActionException 
+    {
+        if (robotController.onTheMap(robotController.getLocation().add(direction))) 
         {
             basicBugMovement(robotController.getLocation().add(direction));
         }
@@ -206,13 +207,16 @@ public class Movement extends RobotPlayer {
         return directions[randomNum];
     }
 
-    public static void moveAwayFromLocation(MapLocation locationToMoveAwayFrom) throws GameActionException {
+    public static void moveAwayFromLocation(MapLocation locationToMoveAwayFrom) throws GameActionException
+    {
         Direction directionTowardsTarget = robotController.getLocation().directionTo(locationToMoveAwayFrom);
         Direction directionToMoveAway = getOppositeDirection(directionTowardsTarget);
 
         if (robotController.canMove(directionToMoveAway)) {
             robotController.move(directionToMoveAway);
-        } else {
+        } 
+        else 
+        {
             scoutTheDirection(directionToMoveAway);
         }
     }
@@ -259,6 +263,9 @@ public class Movement extends RobotPlayer {
     {
         MapLocation adjacentMapLocation = targetLocation.subtract(targetLocation.directionTo(defendLocation));
 
-        basicBugMovement(adjacentMapLocation);
+        if (!robotController.getLocation().equals(adjacentMapLocation)) 
+        {
+            basicBugMovement(adjacentMapLocation);
+        }
     }
 }

@@ -14,8 +14,15 @@ public strictfp class RobotPlayer {
 
     static final RobotType[] spawnableRobot = { RobotType.POLITICIAN, RobotType.SLANDERER, RobotType.MUCKRAKER, };
 
-    public static final Direction[] directions = { Direction.NORTH, Direction.NORTHEAST, Direction.EAST,
-            Direction.SOUTHEAST, Direction.SOUTH, Direction.SOUTHWEST, Direction.WEST, Direction.NORTHWEST, };
+    public static final Direction[] directions = { Direction.NORTH
+        , Direction.SOUTH
+        , Direction.EAST
+        , Direction.WEST
+        , Direction.NORTHEAST
+        , Direction.SOUTHEAST
+        , Direction.SOUTHWEST
+        , Direction.NORTHWEST, 
+    };
 
     public static enum RobotRoles {
         PoliticianEnlightenmentCenterBomb, // influence >= 100
@@ -35,7 +42,7 @@ public strictfp class RobotPlayer {
     }
 
     protected static int turnCount;
-    static boolean debug = true;
+    static boolean debug = false;
 
     protected static Random randomInteger;
     protected static boolean rightBugMovement = true;
@@ -69,7 +76,7 @@ public strictfp class RobotPlayer {
     // Roles
     protected static RobotRoles robotRole;
     protected static final int POLITICIAN_EC_BOMB = 30;
-    protected static final int POLITICIAN_DEFEND_SLANDERER = 20;
+    protected static final int POLITICIAN_DEFEND_SLANDERER = 23;
     protected static final int POLITICIAN_SCOUT = 15;
     protected static final int INFLUENCE_FOR_SCOUT = 1;
     protected static final int INFLUENCE_FOR_DEFEND_SLANDERER_MUCKRAKER = 3;
@@ -85,13 +92,14 @@ public strictfp class RobotPlayer {
     protected static MapLocation targetLocation = null;
     protected static Direction directionToScout = null;
     protected static MapLocation stuckLocation = null;
+    protected static MapLocation mapLocationOfEdge;
 
     // Enemy Enlightenment Center
     protected static List<MapLocation> enemyEnlightenmentCenterMapLocation = new ArrayList<>();
     protected static List<MapLocation> convertedEnemyEnlightenmentCenterMapLocation = new ArrayList<>();
     protected static List<EnlightenmentCenterInfo> enlightenmentCenterInfos = new ArrayList<>();
     protected static boolean enemyEnlightenmentCenterFound = false;
-    protected static MapLocation currentEnemyEnlightenmentCenterGoingFor;
+    protected static MapLocation enemyCurrentEnlightenmentCenterGoingFor;
     protected static boolean enemyEnlightenmentCenterHasBeenConverted = false;
     protected static boolean enemyEnlightenmentCenterIsAround;
 
@@ -104,7 +112,7 @@ public strictfp class RobotPlayer {
     // Neutral Enlightenment Center
     protected static boolean neutralEnlightenmentCenterFound = false;
     protected static List<MapLocation> neutralEnlightenmentCenterMapLocation = new ArrayList<>();
-    protected static MapLocation currentNeutralEnlightenmentCenterGoingFor;
+    protected static MapLocation neutralCurrentEnlightenmentCenterGoingFor;
     protected static List<MapLocation> convertedNeutralEnlightenmentCenterMapLocation = new ArrayList<>();
     protected static boolean neutralEnlightenmentCenterHasBeenConverted;
     protected static int neutralEnlightenmentCenterCurrentInfluence;
@@ -116,12 +124,10 @@ public strictfp class RobotPlayer {
 
     // POLITICIAN
     public static final int MIN_NORMAL_POLITICIAN = 12;
-    protected static final int MAX_NORMAL_POLITICIAN = 20;
+    protected static final int MAX_NORMAL_POLITICIAN = 23;
     protected static final int POLITICIAN_TAX = 10;
     protected static boolean moveRobot;
     protected static int countOfNeutralPoliticianBomb = 0;
-
-    // TODO: ROLES in Flags?
 
     /**
      * run() is the method that is called when a robot is instantiated in the

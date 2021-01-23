@@ -3,6 +3,7 @@ package testPlayerv01.Roles;
 import battlecode.common.*;
 import testPlayerv01.PoliticianTest01;
 import testPlayerv01.Service.Movement;
+import testPlayerv01.Service.Communication;
 
 public class PoliticianECBomb extends PoliticianTest01 {
     // If has enemy ec location,
@@ -29,8 +30,8 @@ public class PoliticianECBomb extends PoliticianTest01 {
 
         if (enemyEnlightenmentCenterFound && neutralEnlightenmentCenterFound) 
         {
-            if (robotController.getLocation().distanceSquaredTo(currentEnemyEnlightenmentCenterGoingFor) 
-                <= robotController.getLocation().distanceSquaredTo(currentNeutralEnlightenmentCenterGoingFor)) 
+            if (robotController.getLocation().distanceSquaredTo(enemyCurrentEnlightenmentCenterGoingFor) 
+                <= robotController.getLocation().distanceSquaredTo(neutralCurrentEnlightenmentCenterGoingFor)) 
             {
                 goToEnemyEnlightenmentCenter = true;
             }
@@ -47,7 +48,6 @@ public class PoliticianECBomb extends PoliticianTest01 {
         {
             goToNeutralEnlightenmentCenter = true;
         }
-
 
         if (goToEnemyEnlightenmentCenter) 
         {
@@ -67,6 +67,10 @@ public class PoliticianECBomb extends PoliticianTest01 {
                 }
                 return;
             }
+            else if (checkIfBombShouldEmpower() && empowerCanConvertEnemyAtMaxRadius())
+            {
+
+            }
 
             if (hasTarget && closestRobotMapLocation != null) 
             {
@@ -79,12 +83,95 @@ public class PoliticianECBomb extends PoliticianTest01 {
         }
     }
 
+    public static void processActionRadiusSensedRobots(RobotInfo robotInfo) throws GameActionException
+    {
+        int robotFlag = 0; 
+        if (robotController.canGetFlag(robotInfo.getID()))
+        {
+            robotFlag = robotController.getFlag(robotInfo.getID());
+        }
+
+        if (robotInfo.getTeam() == enemy 
+                && robotInfo.getType() == RobotType.MUCKRAKER) 
+            {
+                sumOfEnemyConvictionNearby += robotInfo.getConviction();
+                countOfEnemiesInActionRadius++;
+                countOfEnemyMuckrakerInActionRadius++;
+            } 
+            else if (robotInfo.getTeam() == enemy)
+            {
+                sumOfEnemyConvictionNearby += robotInfo.getConviction();
+                countOfEnemiesInActionRadius++;
+            }
+            else if (robotInfo.getTeam() == friendly 
+                && robotInfo.getType() == RobotType.POLITICIAN
+                && (robotFlag != Communication.SLANDERER_FLAG)
+                && robotInfo.getInfluence() >= POLITICIAN_EC_BOMB 
+                && (enemyEnlightenmentCenterIsAround || neutralEnlightenmentCenterIsAround)) 
+            {
+                if (robotInfo.getID() < robotController.getID())
+                {
+                    lowestRobotIdOfFriendlies = false;
+                }
+
+                if (neutralCurrentEnlightenmentCenterGoingFor != null
+                    && robotController.getLocation().distanceSquaredTo(neutralCurrentEnlightenmentCenterGoingFor) > 
+                robotInfo.getLocation().distanceSquaredTo(neutralCurrentEnlightenmentCenterGoingFor)) 
+                {
+                    closestRobotToNeutralEnlightenmentCenter = false;
+                }
+
+                if (enemyCurrentEnlightenmentCenterGoingFor != null
+                    && robotController.getLocation().distanceSquaredTo(enemyCurrentEnlightenmentCenterGoingFor) > 
+                robotInfo.getLocation().distanceSquaredTo(enemyCurrentEnlightenmentCenterGoingFor)) 
+                {
+                    closestRobotToEnemyEnlightenmentCenter = false;
+                }
+            
+                politicianECBombNearby = true;    
+            }
+            else if (robotInfo.getTeam() == friendly && robotInfo.getType() == RobotType.ENLIGHTENMENT_CENTER) 
+            {
+                nearFriendlyEnlightenmentCenter = true;
+                friendlyEnlightenmentCenterInfluence = robotInfo.getInfluence();
+                distanceToFriendlyEnlightenmentCenter = robotController.getLocation().distanceSquaredTo(robotInfo.getLocation());
+            } 
+            else if (robotInfo.getTeam() == friendly) 
+            {
+                countOfFriendliesInActionRadius++;
+            }
+    }
+
     protected static void attackEnemyEnlightenmentCenterLocation() throws GameActionException
+    {  
+        decideAttackForEnemyEnlightenmentBomb();
+
+        if (moveRobot) 
+        {   
+            if (enemyCurrentEnlightenmentCenterGoingFor != null
+                && !robotController.getLocation().isAdjacentTo(enemyCurrentEnlightenmentCenterGoingFor))
+            {
+                moveCloserOrFartherFromEnemyEnlightenmentCenter();
+            }
+            else if (enemyCurrentEnlightenmentCenterGoingFor == null 
+                && hasTarget && closestRobotMapLocation != null) 
+            {
+                Movement.moveToTargetLocation(closestRobotMapLocation);
+            }
+            // Otherwise scout around
+            else if (enemyCurrentEnlightenmentCenterGoingFor == null)
+            {
+                Movement.scoutAction();                
+            }
+        }
+    }
+
+    protected static void decideAttackForEnemyEnlightenmentBomb() throws GameActionException
     {
         if (enemyEnlightenmentCenterIsAround
             && !homeEnlightenmentCenterSurrounded() && !empowerTheHomeBase()) 
         {
-            decideIfEmpowerForEnlightenmentCenterBombs();
+            decideIfEmpowerForEnemyEnlightenmentCenterBombs();
         }
         else if (empowerTheHomeBase() && robotController.canEmpower(distanceToFriendlyEnlightenmentCenter))
         {
@@ -104,68 +191,36 @@ public class PoliticianECBomb extends PoliticianTest01 {
             robotController.empower(distanceToClosestRobotMapLocation);
             return;
         }
-
-        if (moveRobot) 
-        {   // Move closer if not adjacent even if other bomb nearby as long as you lowest.
-            // TODO: Add closest here too
-            if ((currentEnemyEnlightenmentCenterGoingFor != null
-                && !robotController.getLocation().isAdjacentTo(currentEnemyEnlightenmentCenterGoingFor))) 
-            {
-                Movement.moveToEnemyEnlightenmentCenter(currentEnemyEnlightenmentCenterGoingFor);
-            }
-            // Move away if not lowest ID
-            else if (currentEnemyEnlightenmentCenterGoingFor != null 
-            && politicianECBombNearby
-            && !lowestRobotIdOfFriendlies) 
-            {
-                Movement.moveAwayFromLocation(currentEnemyEnlightenmentCenterGoingFor);
-            }
-            // Move towards if not nearby.
-            else if(currentEnemyEnlightenmentCenterGoingFor != null
-            && !robotController.getLocation().isAdjacentTo(currentEnemyEnlightenmentCenterGoingFor))
-            {
-                Movement.moveToEnemyEnlightenmentCenter(currentEnemyEnlightenmentCenterGoingFor);
-            } 
-            else if (hasTarget && closestRobotMapLocation != null) 
-            {
-                Movement.moveToTargetLocation(closestRobotMapLocation);
-            }
-            // Otherwise scout around
-            else if (currentEnemyEnlightenmentCenterGoingFor == null)
-            {
-                Movement.scoutAction();                
-            }
-        }
     }
 
-    // TODO: Make a check for closest
-    protected static void decideIfEmpowerForEnlightenmentCenterBombs() throws GameActionException {
+    protected static void decideIfEmpowerForEnemyEnlightenmentCenterBombs() throws GameActionException {
         if (robotController.canEmpower(distanceToEnemyEnlightenmentCenter)) 
         {
             // If it has enough, convert it.
-            if (hasEnoughConvictionToConvertEnlightenmentCenter() || canUseFullEmpowerWithoutDilution) 
+            if (hasEnoughConvictionToConvertEnemyEnlightenmentCenter() || canUseFullEmpowerWithoutDilution) 
             {
                 robotController.empower(distanceToEnemyEnlightenmentCenter);
                 return;
-            }
-            // Movement
-            else if (politicianECBombNearby 
-                && !lowestRobotIdOfFriendlies 
-                && !robotController.getLocation().isAdjacentTo(currentEnemyEnlightenmentCenterGoingFor)) 
-            {
-                moveAwayFromEnemyEnlightenmentCenter();
-                moveRobot = false;
             }
             // If adjacent to it, empower
-            else if (robotController.getLocation().isAdjacentTo(currentEnemyEnlightenmentCenterGoingFor))
+            else if (enemyCurrentEnlightenmentCenterGoingFor != null
+                && robotController.getLocation().isAdjacentTo(enemyCurrentEnlightenmentCenterGoingFor)
+                && countOfFriendliesInActionRadiusAroundEnemyEnlightenmentcenter < 1 )
             {
                 robotController.empower(distanceToEnemyEnlightenmentCenter);
                 return;
             }
+            else if (closestRobotToEnemyEnlightenmentCenter && canUseFullEmpowerWithoutDilution) 
+            {
+                robotController.empower(distanceToNeutralEnlightenmentCenter);
+                return;
+            }           
             // If it is the first in line and it's been stuck near it, attack.
             else if (lowestRobotIdOfFriendlies 
-            && (distanceToEnemyEnlightenmentCenter <= 5 && turnsNearEnemyEnlightenmentCenterForAttacking >= 10))
+            && (distanceToEnemyEnlightenmentCenter <= 5 
+                && turnsNearEnemyEnlightenmentCenterForAttacking >= 15))
             {
+                println("HERE POLI EC ENEMY 1");
                 robotController.empower(distanceToEnemyEnlightenmentCenter);
                 return;
             }             
@@ -176,7 +231,7 @@ public class PoliticianECBomb extends PoliticianTest01 {
         }
     }
 
-    static boolean hasEnoughConvictionToConvertEnlightenmentCenter() 
+    static boolean hasEnoughConvictionToConvertEnemyEnlightenmentCenter() 
     {
         getSumOfEnemyConvictionInEnemyEnlightenmentRadiusSquared();
         int countOfAllRobotsNearby = countOfEnemiesInActionRadiusAroundEnemyEnlightenmentcenter
@@ -206,82 +261,120 @@ public class PoliticianECBomb extends PoliticianTest01 {
         return hasEnoughToEmpower;
     }
 
+    protected static void moveCloserOrFartherFromEnemyEnlightenmentCenter() throws GameActionException
+    {
+        if(!politicianECBombNearby)
+        {
+            Movement.moveToEnemyEnlightenmentCenter(enemyCurrentEnlightenmentCenterGoingFor);
+        }
+        else if (politicianECBombNearby)
+        {
+            if (lowestRobotIdOfFriendlies && closestRobotToEnemyEnlightenmentCenter)
+            {
+                Movement.moveToEnemyEnlightenmentCenter(enemyCurrentEnlightenmentCenterGoingFor);
+            }
+            else if(!lowestRobotIdOfFriendlies && !closestRobotToEnemyEnlightenmentCenter)
+            {
+                Movement.moveAwayFromLocation(enemyCurrentEnlightenmentCenterGoingFor);
+            }
+            else if (lowestRobotIdOfFriendlies && !closestRobotToEnemyEnlightenmentCenter)
+            {
+                Movement.moveAwayFromLocation(enemyCurrentEnlightenmentCenterGoingFor);
+            }
+            else if (closestRobotToEnemyEnlightenmentCenter && !lowestRobotIdOfFriendlies)
+            {
+                Movement.moveToEnemyEnlightenmentCenter(enemyCurrentEnlightenmentCenterGoingFor);
+            }
+        }
+    }
+
     protected static void attackNeutralEnlightenmentCenterLocation() throws GameActionException
     {
-        decideIfEmpowerForNeutralEnlightenmentCenter();       
+        decideAttackForNeutralEnlightenmentBomb();
 
         if (moveRobot) 
         {
-            if (currentNeutralEnlightenmentCenterGoingFor != null
-            && !robotController.getLocation().isAdjacentTo(currentNeutralEnlightenmentCenterGoingFor)
-            && (!politicianECBombNearby 
-                || (politicianECBombNearby 
-                    && (lowestRobotIdOfFriendlies || closestRobotToNeutralEnlightenmentCenter)))) 
+            if(neutralCurrentEnlightenmentCenterGoingFor != null
+                && !robotController.getLocation().isAdjacentTo(neutralCurrentEnlightenmentCenterGoingFor))
             {
-                Movement.moveToNeutralEnlightenmentCenter(currentNeutralEnlightenmentCenterGoingFor);
-            }
-            else if (currentNeutralEnlightenmentCenterGoingFor != null 
-            && politicianECBombNearby
-            && !lowestRobotIdOfFriendlies
-            && !closestRobotToNeutralEnlightenmentCenter)
-            {
-                Movement.moveAwayFromLocation(currentNeutralEnlightenmentCenterGoingFor);
-            }
-            else if(currentNeutralEnlightenmentCenterGoingFor != null
-            && !robotController.getLocation().isAdjacentTo(currentNeutralEnlightenmentCenterGoingFor))
-            {
-                Movement.moveToNeutralEnlightenmentCenter(currentNeutralEnlightenmentCenterGoingFor);
+                moveCloserOrFartherFromNeutralEnlightenmentCenter();
             }
             else if (hasTarget && closestRobotMapLocation != null) 
             {
                 Movement.moveToTargetLocation(closestRobotMapLocation);
             }
-            else if (currentNeutralEnlightenmentCenterGoingFor == null)
+            else if (neutralCurrentEnlightenmentCenterGoingFor == null)
             {
                 Movement.scoutAction();                
             }
         }
     }
 
+    protected static void decideAttackForNeutralEnlightenmentBomb() throws GameActionException
+    {
+        if (neutralEnlightenmentCenterIsAround
+            && !homeEnlightenmentCenterSurrounded() && !empowerTheHomeBase())
+        {
+            decideIfEmpowerForNeutralEnlightenmentCenter(); 
+        }
+        else if (empowerTheHomeBase() && robotController.canEmpower(distanceToFriendlyEnlightenmentCenter))
+        {
+            robotController.empower(distanceToFriendlyEnlightenmentCenter);
+            return;
+        }
+        else if (homeEnlightenmentCenterSurrounded() && robotController.canEmpower(ACTION_RADIUS_POLITICIAN)) 
+        {
+            robotController.empower(ACTION_RADIUS_POLITICIAN);
+            return;
+        }
+        else if (robotController.getRoundNum() >= MIDDLE_GAME_ROUND_START 
+            && checkIfPoliticianShouldEmpower() 
+            && distanceToClosestRobotMapLocation != 0
+            && robotController.canEmpower(distanceToClosestRobotMapLocation)) 
+        {
+            robotController.empower(distanceToClosestRobotMapLocation);
+            return;
+        }
+    }
+
     static void decideIfEmpowerForNeutralEnlightenmentCenter() throws GameActionException
     {
-        if (robotController.canEmpower(distanceToNeutralEnlightenmentCenter) 
-            && neutralEnlightenmentCenterIsAround) 
+        if (robotController.canEmpower(distanceToNeutralEnlightenmentCenter)) 
         {
             // If it has enough, convert it.
             if (hasEnoughConvictionToConvertNeutralEnlightenmentCenter() || canUseFullEmpowerWithoutDilution) 
             {
+                println("POLI NEUTRAL EC 1");
                 robotController.empower(distanceToNeutralEnlightenmentCenter);
                 return;
             }
             // If adjacent to it, empower
-            else if (currentNeutralEnlightenmentCenterGoingFor != null 
-            && robotController.getLocation().isAdjacentTo(currentNeutralEnlightenmentCenterGoingFor)
+            else if (neutralCurrentEnlightenmentCenterGoingFor != null 
+            && robotController.getLocation().isAdjacentTo(neutralCurrentEnlightenmentCenterGoingFor)
             && countOfFriendliesInActionRadiusAroundNeutralEnlightenmentcenter < 1)
             {
+                println("POLI NEUTRAL EC 2");
                 robotController.empower(distanceToNeutralEnlightenmentCenter);
                 return;
             }
             // If it is the first in line and it's been stuck near it, attack.
             else if (lowestRobotIdOfFriendlies 
-            && (distanceToNeutralEnlightenmentCenter <= 5 && turnsNearNeutralEnlightenmentCenter >= 15))
+            && distanceToNeutralEnlightenmentCenter <= 5 
+            && (turnsNearNeutralEnlightenmentCenterForAttacking >= 15 
+                && (robotController.sensePassability(robotController.getLocation()) > 0.3) 
+                    || turnsNearNeutralEnlightenmentCenterForAttacking > 15 * (1 + robotController.sensePassability(robotController.getLocation())))
+            && robotController.isLocationOccupied(robotController.getLocation().add(robotController.getLocation().directionTo(neutralCurrentEnlightenmentCenterGoingFor))))
             {
+                println("POLI NEUTRAL EC 3");
                 robotController.empower(distanceToNeutralEnlightenmentCenter);
                 return;
             }
             else if (closestRobotToNeutralEnlightenmentCenter && canUseFullEmpowerWithoutDilution) 
             {
+                println("POLI NEUTRAL EC 4");
                 robotController.empower(distanceToNeutralEnlightenmentCenter);
                 return;
             }
-            // Movement
-            else if (politicianECBombNearby 
-                && !lowestRobotIdOfFriendlies 
-                && !closestRobotToNeutralEnlightenmentCenter) 
-            {
-                Movement.moveAwayFromLocation(currentNeutralEnlightenmentCenterGoingFor);
-                moveRobot = false;
-            } 
         } 
         else 
         {
@@ -300,7 +393,7 @@ public class PoliticianECBomb extends PoliticianTest01 {
 
         if (countOfAllRobotsNearby > 1) 
         {
-            remainderOfNeutralConviction = (int) (neutralEnlightenmentCenterCurrentInfluence - (robotCurrentConviction - POLITICIAN_TAX) / countOfAllRobotsNearby);
+            remainderOfNeutralConviction = (int) (neutralEnlightenmentCenterCurrentInfluence - ((robotCurrentConviction - POLITICIAN_TAX) / countOfAllRobotsNearby));
         } 
         else 
         {
@@ -318,5 +411,39 @@ public class PoliticianECBomb extends PoliticianTest01 {
         }
 
         return hasEnoughToEmpower;
+    }
+
+    protected static void moveCloserOrFartherFromNeutralEnlightenmentCenter() throws GameActionException
+    {
+        if (!politicianECBombNearby) 
+        {
+            Movement.moveToNeutralEnlightenmentCenter(neutralCurrentEnlightenmentCenterGoingFor);
+        }
+        else if (politicianECBombNearby)
+        {
+            if (lowestRobotIdOfFriendlies && closestRobotToNeutralEnlightenmentCenter)
+            {
+                Movement.moveToNeutralEnlightenmentCenter(neutralCurrentEnlightenmentCenterGoingFor);
+            }
+            else if (!lowestRobotIdOfFriendlies && !closestRobotToNeutralEnlightenmentCenter)
+            {
+                Movement.moveAwayFromLocation(neutralCurrentEnlightenmentCenterGoingFor);
+            }
+            else if (lowestRobotIdOfFriendlies && !closestRobotToNeutralEnlightenmentCenter)
+            {
+                Movement.moveAwayFromLocation(neutralCurrentEnlightenmentCenterGoingFor);
+            }
+            else if (closestRobotToNeutralEnlightenmentCenter && !lowestRobotIdOfFriendlies)
+            {
+                Movement.moveToNeutralEnlightenmentCenter(neutralCurrentEnlightenmentCenterGoingFor);
+            }
+        }
+    }
+
+    private static boolean checkIfBombShouldEmpower() 
+    {
+        return ((countOfEnemiesInActionRadius >= 6) && (countOfEnemiesInActionRadius != 0))
+        && robotController.canEmpower(ACTION_RADIUS_POLITICIAN)
+        && empowerCanConvertEnemyAtMaxRadius();
     }
 }

@@ -3,7 +3,7 @@ package testPlayerv01.Service;
 import testPlayerv01.RobotPlayer;
 import battlecode.common.*;
 
-public class SenseRobots extends RobotPlayer
+public class Sense extends RobotPlayer
 {
     public static void checkIfRobotCanSenseEnemyEnlightenmentCenter() 
     {
@@ -20,7 +20,7 @@ public class SenseRobots extends RobotPlayer
                 enemyEnlightenmentCenterMapLocation.add(robotInfo.getLocation());
                 haveMessageToSend = true;
                 enemyEnlightenmentCenterFound = true;
-                currentEnemyEnlightenmentCenterGoingFor = robotInfo.getLocation();
+                enemyCurrentEnlightenmentCenterGoingFor = robotInfo.getLocation();
             }
         }
     }
@@ -30,10 +30,10 @@ public class SenseRobots extends RobotPlayer
         if (robotInfo.getType() == RobotType.POLITICIAN 
         && robotInfo.getTeam() == friendly
         && robotInfo.getInfluence() >= POLITICIAN_EC_BOMB
-        && ((currentEnemyEnlightenmentCenterGoingFor != null 
-            && currentEnemyEnlightenmentCenterGoingFor.distanceSquaredTo(robotInfo.getLocation()) <= 10) 
-        || (currentNeutralEnlightenmentCenterGoingFor != null 
-            && currentNeutralEnlightenmentCenterGoingFor.distanceSquaredTo(robotInfo.getLocation()) <= 10))) 
+        && ((enemyCurrentEnlightenmentCenterGoingFor != null 
+            && enemyCurrentEnlightenmentCenterGoingFor.distanceSquaredTo(robotInfo.getLocation()) <= 10) 
+        || (neutralCurrentEnlightenmentCenterGoingFor != null 
+            && neutralCurrentEnlightenmentCenterGoingFor.distanceSquaredTo(robotInfo.getLocation()) <= 10))) 
         {
             return true;
         } 
@@ -72,7 +72,7 @@ public class SenseRobots extends RobotPlayer
         }
 
         enemyEnlightenmentCenterCurrentInfluence = robotInfo.getInfluence();
-        currentEnemyEnlightenmentCenterGoingFor = robotInfo.getLocation();
+        enemyCurrentEnlightenmentCenterGoingFor = robotInfo.getLocation();
         enemyEnlightenmentCenterIsAround = true;
         enemyEnlightenmentCenterFound = true;
         turnsAroundEnemyEnlightenmentCenter++;
@@ -80,6 +80,18 @@ public class SenseRobots extends RobotPlayer
     }
 
     private static void sensedNeutralEnlightenmentCenter(RobotInfo robotInfo)
+    {
+        if (robotRole != RobotRoles.PoliticianEnlightenmentCenterBomb) 
+        {
+            normalSensing(robotInfo);    
+        }
+        else 
+        {
+            checkTheInfluenceAndYourCurrentInfluenceBeforeDecidingNeutral(robotInfo);
+        }
+    }
+
+    private static void normalSensing(RobotInfo robotInfo)
     {
         if (neutralEnlightenmentCenterMapLocation.isEmpty() 
             || !neutralEnlightenmentCenterMapLocation.contains(robotInfo.getLocation())) 
@@ -89,14 +101,38 @@ public class SenseRobots extends RobotPlayer
         }
 
         neutralEnlightenmentCenterCurrentInfluence = robotInfo.getInfluence();
-        currentNeutralEnlightenmentCenterGoingFor = robotInfo.getLocation();
+        neutralCurrentEnlightenmentCenterGoingFor = robotInfo.getLocation();
         neutralEnlightenmentCenterFound = true;
         neutralEnlightenmentCenterIsAround = true;
         if (turnsAroundNeutralEnlightenmentCenter < 3) 
         {
             haveMessageToSend = true;
         }
-        turnsAroundNeutralEnlightenmentCenter++;        
+        turnsAroundNeutralEnlightenmentCenter++; 
+    }
+
+    private static void checkTheInfluenceAndYourCurrentInfluenceBeforeDecidingNeutral(RobotInfo robotInfo) 
+    {
+        if (neutralEnlightenmentCenterMapLocation.isEmpty() 
+        || !neutralEnlightenmentCenterMapLocation.contains(robotInfo.getLocation())) 
+        {
+            neutralEnlightenmentCenterMapLocation.add(robotInfo.getLocation());
+            turnsAroundNeutralEnlightenmentCenter = 0;
+        }
+
+        neutralEnlightenmentCenterIsAround = true;
+        if (turnsAroundNeutralEnlightenmentCenter < 3) 
+        {
+            haveMessageToSend = true;
+        }
+        turnsAroundNeutralEnlightenmentCenter++; 
+
+        if (robotController.getInfluence() > robotInfo.getInfluence()) 
+        {
+            neutralEnlightenmentCenterCurrentInfluence = robotInfo.getInfluence();
+            neutralCurrentEnlightenmentCenterGoingFor = robotInfo.getLocation();
+            neutralEnlightenmentCenterFound = true;
+        }
     }
 
     private static void checkIfEnemyEnlightenmentCenterHasBeenConverted(RobotInfo robotInfo)
@@ -158,7 +194,7 @@ public class SenseRobots extends RobotPlayer
         if (!enemyEnlightenmentCenterFound) 
         {
             Communication.checkIfFriendlyEnlightenmentCenterHasEnemyLocation();
-            setCurrentEnemyEnlightenmentCenterGoingFor();
+            setenemyCurrentEnlightenmentCenterGoingFor();
         }
 
         if (!enemyEnlightenmentCenterHasBeenConverted && enemyEnlightenmentCenterFound) 
@@ -166,10 +202,11 @@ public class SenseRobots extends RobotPlayer
             Communication.checkIfFriendlyEnlightenmentCenterHasEnemyLocationConverted();
         }
 
-        if (!neutralEnlightenmentCenterFound) 
+        if (!neutralEnlightenmentCenterFound
+            && robotRole != RobotRoles.Scout) 
         {
             Communication.checkIfFriendlyEnlightenmentCenterHasNeutralLocation();
-            setCurrentNeutralEnlightenmentCenterGoingFor();
+            setneutralCurrentEnlightenmentCenterGoingFor();
         }
 
         if (!neutralEnlightenmentCenterHasBeenConverted && neutralEnlightenmentCenterFound) 
@@ -178,23 +215,57 @@ public class SenseRobots extends RobotPlayer
         }
     }
 
-    protected static void setCurrentEnemyEnlightenmentCenterGoingFor()
+    protected static void setenemyCurrentEnlightenmentCenterGoingFor()
     {
-        if (currentEnemyEnlightenmentCenterGoingFor == null && !enemyEnlightenmentCenterMapLocation.isEmpty()) 
+        if (enemyCurrentEnlightenmentCenterGoingFor == null && !enemyEnlightenmentCenterMapLocation.isEmpty()) 
         {
             MapLocation enemyCenterLocation = enemyEnlightenmentCenterMapLocation.get(0);
-            currentEnemyEnlightenmentCenterGoingFor = enemyCenterLocation; // TODO: can make this cleaner
+            enemyCurrentEnlightenmentCenterGoingFor = enemyCenterLocation; // TODO: can make this cleaner
             enemyEnlightenmentCenterFound = true;
         }
     }
 
-    protected static void setCurrentNeutralEnlightenmentCenterGoingFor() 
+    protected static void setneutralCurrentEnlightenmentCenterGoingFor() 
     {
-        if (currentNeutralEnlightenmentCenterGoingFor == null && !neutralEnlightenmentCenterMapLocation.isEmpty()) 
+        if (neutralCurrentEnlightenmentCenterGoingFor == null && !neutralEnlightenmentCenterMapLocation.isEmpty()) 
         {
             MapLocation neutralCenterLocation = neutralEnlightenmentCenterMapLocation.get(neutralEnlightenmentCenterMapLocation.size() - 1);
-            currentNeutralEnlightenmentCenterGoingFor = neutralCenterLocation; // TODO: can make this cleaner
+            neutralCurrentEnlightenmentCenterGoingFor = neutralCenterLocation; // TODO: can make this cleaner
             neutralEnlightenmentCenterFound = true;
         }
+    }
+
+    public static Direction lookForEdgeOfMap() throws GameActionException
+    {
+        int sensorRadiusSquared = 4;
+        Direction directionToEdgeOfMap = null;
+
+        MapLocation locationToCheck = robotController.getLocation().translate(sensorRadiusSquared, 0);
+        MapLocation locationToCheck2 = robotController.getLocation().translate(-sensorRadiusSquared, 0);  
+        MapLocation locationToCheck3 = robotController.getLocation().translate(0, -sensorRadiusSquared);  
+        MapLocation locationToCheck4 = robotController.getLocation().translate(-0, -sensorRadiusSquared);  
+        
+        if (!robotController.onTheMap(locationToCheck)) 
+        {
+            mapLocationOfEdge = locationToCheck;
+            directionToEdgeOfMap = robotController.getLocation().directionTo(locationToCheck);
+        }
+        else if (!robotController.onTheMap(locationToCheck2)) 
+        {
+            mapLocationOfEdge = locationToCheck2;
+            directionToEdgeOfMap = robotController.getLocation().directionTo(locationToCheck2);
+        }
+        else if (!robotController.onTheMap(locationToCheck3)) 
+        {
+            mapLocationOfEdge = locationToCheck3;
+            directionToEdgeOfMap = robotController.getLocation().directionTo(locationToCheck3);
+        }
+        else if (!robotController.onTheMap(locationToCheck4)) 
+        {
+            mapLocationOfEdge = locationToCheck4;
+            directionToEdgeOfMap = robotController.getLocation().directionTo(locationToCheck4);
+        }        
+
+        return directionToEdgeOfMap;
     }
 }
