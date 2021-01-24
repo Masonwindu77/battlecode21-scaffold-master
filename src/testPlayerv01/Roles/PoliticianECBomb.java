@@ -169,14 +169,9 @@ public class PoliticianECBomb extends PoliticianTest01 {
     protected static void decideAttackForEnemyEnlightenmentBomb() throws GameActionException
     {
         if (enemyEnlightenmentCenterIsAround
-            && !homeEnlightenmentCenterSurrounded() && !empowerTheHomeBase()) 
+            && !homeEnlightenmentCenterSurrounded()) 
         {
             decideIfEmpowerForEnemyEnlightenmentCenterBombs();
-        }
-        else if (empowerTheHomeBase() && robotController.canEmpower(distanceToFriendlyEnlightenmentCenter))
-        {
-            robotController.empower(distanceToFriendlyEnlightenmentCenter);
-            return;
         }
         else if (homeEnlightenmentCenterSurrounded() && robotController.canEmpower(ACTION_RADIUS_POLITICIAN)) 
         {
@@ -216,14 +211,14 @@ public class PoliticianECBomb extends PoliticianTest01 {
                 return;
             }           
             // If it is the first in line and it's been stuck near it, attack.
-            else if (lowestRobotIdOfFriendlies 
-            && (distanceToEnemyEnlightenmentCenter <= 5 
-                && turnsNearEnemyEnlightenmentCenterForAttacking >= 15))
-            {
-                println("HERE POLI EC ENEMY 1");
-                robotController.empower(distanceToEnemyEnlightenmentCenter);
-                return;
-            }             
+            // else if (lowestRobotIdOfFriendlies 
+            // && (distanceToEnemyEnlightenmentCenter <= 5 
+            //     && turnsNearEnemyEnlightenmentCenterForAttacking >= 15))
+            // {
+            //     println("HERE POLI EC ENEMY 1");
+            //     robotController.empower(distanceToEnemyEnlightenmentCenter);
+            //     return;
+            // }             
         } 
         else 
         {
@@ -351,16 +346,16 @@ public class PoliticianECBomb extends PoliticianTest01 {
                 return;
             }
             // If it is the first in line and it's been stuck near it, attack.
-            else if (lowestRobotIdOfFriendlies 
-            && distanceToNeutralEnlightenmentCenter <= 5 
-            && (turnsNearNeutralEnlightenmentCenterForAttacking >= 15 
-                && (robotController.sensePassability(robotController.getLocation()) > 0.3) 
-                    || turnsNearNeutralEnlightenmentCenterForAttacking > 15 * (1 + robotController.sensePassability(robotController.getLocation())))
-            && robotController.isLocationOccupied(robotController.getLocation().add(robotController.getLocation().directionTo(neutralCurrentEnlightenmentCenterGoingFor))))
-            {
-                robotController.empower(distanceToNeutralEnlightenmentCenter);
-                return;
-            }
+            // else if (lowestRobotIdOfFriendlies 
+            // && distanceToNeutralEnlightenmentCenter <= 5 
+            // && (turnsNearNeutralEnlightenmentCenterForAttacking >= 15 
+            //     && (robotController.sensePassability(robotController.getLocation()) > 0.3) 
+            //         || turnsNearNeutralEnlightenmentCenterForAttacking > 15 * (1 + robotController.sensePassability(robotController.getLocation())))
+            // && robotController.isLocationOccupied(robotController.getLocation().add(robotController.getLocation().directionTo(neutralCurrentEnlightenmentCenterGoingFor))))
+            // {
+            //     robotController.empower(distanceToNeutralEnlightenmentCenter);
+            //     return;
+            // }
             else if (closestRobotToNeutralEnlightenmentCenter && canUseFullEmpowerWithoutDilution) 
             {
                 robotController.empower(distanceToNeutralEnlightenmentCenter);

@@ -76,7 +76,7 @@ public strictfp class RobotPlayer {
     // Roles
     protected static RobotRoles robotRole;
     protected static final int POLITICIAN_EC_BOMB = 30;
-    protected static final int POLITICIAN_DEFEND_SLANDERER = 23;
+    protected static final int POLITICIAN_DEFEND_SLANDERER = 29;
     protected static final int POLITICIAN_SCOUT = 15;
     protected static final int INFLUENCE_FOR_SCOUT = 1;
     protected static final int INFLUENCE_FOR_DEFEND_SLANDERER_MUCKRAKER = 3;

@@ -459,14 +459,6 @@ public class PoliticianTest01 extends RobotPlayer
         return (robotCurrentConviction - POLITICIAN_TAX) * empowerFactor;
     }
 
-    protected static boolean empowerTheHomeBase()
-    {
-        return empowerFactor > 5 
-        && nearFriendlyEnlightenmentCenter 
-        && robotController.getInfluence() > 50
-        && friendlyEnlightenmentCenterInfluence < AMOUNT_OF_INFLUENCE_TO_NOT_EMPOWER_SELF;
-    }
-
     // RobotRole == Converted
     protected static void attackOrScoutAround() throws GameActionException
     {

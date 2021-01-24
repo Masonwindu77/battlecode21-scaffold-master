@@ -83,9 +83,13 @@ public class PoliticianNormal extends PoliticianTest01
         {
             robotController.empower(ACTION_RADIUS_POLITICIAN); // TODO: Get the actual radius not the full thing
             return;
-        } else if (countOfEnemies != 0) {
+        } 
+        else if (countOfEnemies != 0) 
+        {
             hasTarget = true;
-        } else {
+        } 
+        else 
+        {
             moveRobot = true;
         }
     }
@@ -142,18 +146,14 @@ public class PoliticianNormal extends PoliticianTest01
 
         // TODO: Add in a check for the farthest muckraker and try to get 2?
         checkLocationComparedToSlanderer();
-        stayNearSlanderers();
-
-        // if (turnCount > 14) 
-        // {
-            
-        // }
-        // else if (spawnEnlightenmentCenterHomeLocation != null)
-        // {
-        //     nextDirection = spawnEnlightenmentCenterHomeLocation.directionTo(robotController.getLocation());
-        // }        
-
+        stayNearSlanderers();      
         tryAttackEnemyMuckrakerIfNearby();
+        
+        if (homeEnlightenmentCenterSurrounded() && robotController.canEmpower(ACTION_RADIUS_POLITICIAN)) 
+        {
+            robotController.empower(ACTION_RADIUS_POLITICIAN);
+            return;
+        }
         
         if (robotController.isReady()) 
         {

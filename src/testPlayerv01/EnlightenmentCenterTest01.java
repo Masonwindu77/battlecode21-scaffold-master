@@ -277,12 +277,7 @@ public class EnlightenmentCenterTest01 extends RobotPlayer
     {
         boolean shouldBuildSlanderer = false;
 
-        if ((income < 175 || robotCurrentInfluence < 3000) 
-        && robotController.getRoundNum() >= 300)
-        {
-            shouldBuildSlanderer = true;
-        }
-        else if
+        if
         ((income < 25 || robotCurrentInfluence < 500) 
         && (robotController.getRoundNum() < 75 || turnCount < 50))
         {
@@ -299,7 +294,12 @@ public class EnlightenmentCenterTest01 extends RobotPlayer
         && robotController.getRoundNum() >= BEGINNING_ROUND_STRAT && turnCount > 100)
         {
             shouldBuildSlanderer = true;
-        }      
+        } 
+        else if ((income < 175 || robotCurrentInfluence < 2500) 
+        && robotController.getRoundNum() >= 300)
+        {
+            shouldBuildSlanderer = true;
+        }     
         else if(!enemyEnlightenmentCenterFound 
         && countOfSlanderer <= 2)
         {
@@ -309,9 +309,9 @@ public class EnlightenmentCenterTest01 extends RobotPlayer
         return shouldBuildSlanderer;
     }
 
-    protected static void getAmountNeededForSlanderer()
+    protected static int getAmountNeededForSlanderer() throws GameActionException
     {
-        if (turnCount > 25 || robotController.getRoundNum() < 50)
+        if ((turnCount > 25 || robotController.getRoundNum() < 50) && isItSafe())
         {
             for (int iterator = (slandererInfluenceAmount.length - 1); iterator > 0; --iterator) 
             {
@@ -328,7 +328,7 @@ public class EnlightenmentCenterTest01 extends RobotPlayer
                 }
             }
         }
-        else if(turnCount < 25 && robotController.getRoundNum() > 50)
+        else if(turnCount < 25 && robotController.getRoundNum() > 50 && isItSafe())
         {
             for (int iterator = (newEnlightenmentCenterSlandererInfluenceAmount.length - 1); iterator > 0; --iterator) 
             {
@@ -345,6 +345,25 @@ public class EnlightenmentCenterTest01 extends RobotPlayer
                 }
             }
         }
+        else if (!isItSafe())
+        {
+            for (int iterator = (newEnlightenmentCenterSlandererInfluenceAmount.length - 1); iterator > 0; --iterator) 
+            {
+                if (newEnlightenmentCenterSlandererInfluenceAmount[iterator] > (robotCurrentInfluence - 200) 
+                && newEnlightenmentCenterSlandererInfluenceAmount[iterator - 1] < (robotCurrentInfluence - 200)) 
+                {
+                    amountNeededForSlanderer = newEnlightenmentCenterSlandererInfluenceAmount[iterator - 1];
+                    break;
+                } 
+                else if (robotCurrentInfluence >= newEnlightenmentCenterSlandererInfluenceAmount[(newEnlightenmentCenterSlandererInfluenceAmount.length - 1)])
+                {
+                    amountNeededForSlanderer = newEnlightenmentCenterSlandererInfluenceAmount[(newEnlightenmentCenterSlandererInfluenceAmount.length - 1)];
+                    break;
+                }
+            }
+        }
+
+        return amountNeededForSlanderer;
         
     }
 
@@ -523,7 +542,7 @@ public class EnlightenmentCenterTest01 extends RobotPlayer
         }
     }
 
-    protected static boolean isThereEnoughForBomb() throws GameActionException {
+    protected static boolean isThereEnoughForEnemyBomb() throws GameActionException {
         boolean isThereEnoughInfluence = false;
         int currentInfluence = robotController.getInfluence();
         int enemyEnlightenmentCenterInfluenceWithPoliticianTax = enemyEnlightenmentCenterCurrentInfluence + POLITICIAN_TAX + 1;
@@ -559,10 +578,15 @@ public class EnlightenmentCenterTest01 extends RobotPlayer
 
     protected static boolean isItSafe() throws GameActionException 
     {
-        return countOfEnemyPoliticiansOverFiftyInfluence == 0 || robotCurrentInfluence > 200;
+        return countOfEnemyPoliticiansOverFiftyInfluence == 0;
     }
 
-    protected static int getAmountToMakePoliticianBomb() 
+    protected static boolean hasEnoughInfluenceToBeSafe(int influenceToUse)
+    {
+        return (robotCurrentInfluence - influenceToUse) > 200;
+    }
+
+    protected static int getAmountToMakePoliticianBombForEnemy() 
     {
         int currentInfluence = robotController.getInfluence();
         int influenceToBuildWith = POLITICIAN_EC_BOMB;
@@ -593,19 +617,19 @@ public class EnlightenmentCenterTest01 extends RobotPlayer
         return influenceToBuildWith;
     }
 
-    protected static int getAmountToMakePoliticianBombForNeutral() 
+    protected static int getAmountToMakePoliticianBombForNeutral() throws GameActionException 
     {
         int currentInfluence = robotController.getInfluence();
         int influenceToBuildWith = POLITICIAN_EC_BOMB;
 
         if (currentInfluence > neutralEnlightenmentCenterCurrentInfluence * 2) 
-        {
+        {   
             influenceToBuildWith = neutralEnlightenmentCenterCurrentInfluence * 2;
         }
         else if (neutralEnlightenmentCenterCurrentInfluence != 0 && neutralEnlightenmentCenterCurrentInfluence > POLITICIAN_EC_BOMB) 
         {
             influenceToBuildWith = ((neutralEnlightenmentCenterCurrentInfluence + 1) + POLITICIAN_TAX);
-        }       
+        }             
 
         return influenceToBuildWith;
     }
