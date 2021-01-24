@@ -277,6 +277,7 @@ public class EnlightenmentCenterHelper extends EnlightenmentCenterTest01
             && robotController.getRobotCount() > 50
             && robotCurrentInfluence >= 1000
             && !buildThisTurn
+            && countOfBuffMucks < 10
             && isItSafe()) 
         {
             RobotType toBuild = RobotType.MUCKRAKER;
@@ -295,36 +296,36 @@ public class EnlightenmentCenterHelper extends EnlightenmentCenterTest01
                     RobotBuilder.influenceToUse = influence;
                     RobotBuilder.directionToSpawn = getAvailableDirectionToSpawn();
                     RobotBuilder.robotTypeToBuild = toBuild;
-                    countOfPoliticians++;
+                    countOfBuffMucks++;
                 }
             } 
         }
 
-        // if (robotController.getRoundNum() >= MIDDLE_GAME_ROUND_START 
-        //     && robotController.getRobotCount() > 100
-        //     && !buildThisTurn
-        //     && isItSafe()) 
-        // {
-        //     RobotType toBuild = RobotType.POLITICIAN;
+        if (robotController.getRoundNum() >= MIDDLE_GAME_ROUND_START 
+            && robotController.getRobotCount() > 100
+            && !buildThisTurn
+            && isItSafe()) 
+        {
+            RobotType toBuild = RobotType.POLITICIAN;
 
-        //     int influence = 0;
-        //     if ((lastTurnInfluence * .25) > MAX_NORMAL_POLITICIAN) 
-        //     {
-        //         int max = (int) Math.ceil(lastTurnInfluence * .25);
-        //         int min = MAX_NORMAL_POLITICIAN;
-        //         influence = randomInteger.nextInt(max - min + 1) + min;
+            int influence = 0;
+            if ((lastTurnInfluence * .25) > MAX_NORMAL_POLITICIAN) 
+            {
+                int max = (int) Math.ceil(lastTurnInfluence * .25);
+                int min = MAX_NORMAL_POLITICIAN;
+                influence = randomInteger.nextInt(max - min + 1) + min;
 
-        //         turnsNotBuilding = 0;
-        //         if (robotCurrentInfluence >= influence) 
-        //         {
-        //             buildThisTurn = true;
-        //             RobotBuilder.influenceToUse = influence;
-        //             RobotBuilder.directionToSpawn = getAvailableDirectionToSpawn();
-        //             RobotBuilder.robotTypeToBuild = toBuild;
-        //             countOfPoliticians++;
-        //         }
-        //     } 
-        // }
+                turnsNotBuilding = 0;
+                if (robotCurrentInfluence >= influence) 
+                {
+                    buildThisTurn = true;
+                    RobotBuilder.influenceToUse = influence;
+                    RobotBuilder.directionToSpawn = getAvailableDirectionToSpawn();
+                    RobotBuilder.robotTypeToBuild = toBuild;
+                    countOfPoliticians++;
+                }
+            } 
+        }
         //#endregion
 
         buildScouts();
@@ -366,20 +367,19 @@ public class EnlightenmentCenterHelper extends EnlightenmentCenterTest01
         {
             RobotBuilder.directionToSpawn = getDirectionToScout(); //getAvailableDirectionToSpawn();
             RobotBuilder.influenceToUse = INFLUENCE_FOR_SCOUT;
-            RobotBuilder.robotTypeToBuild = RobotType.MUCKRAKER;
+            RobotBuilder.robotTypeToBuild = RobotType.POLITICIAN;
 
             turnsNotBuilding = 0;
             buildThisTurn = true;
             builtScoutLastTurn = true;
-            countOfMuckrakers++;
+            countOfPoliticians++;
         } 
 
          // Build a scout if stocking up
          if (!buildThisTurn)
          {
              RobotBuilder.directionToSpawn = getAvailableDirectionToSpawn();
-             RobotBuilder.influenceToUse =  (int) (robotController.getInfluence() * .01) >= 1 && robotController.getRoundNum() <= BEGINNING_ROUND_STRAT ? 
-                (int) (robotController.getInfluence() * .01) : INFLUENCE_FOR_SCOUT;
+             RobotBuilder.influenceToUse =  INFLUENCE_FOR_SCOUT;
              RobotBuilder.robotTypeToBuild = RobotType.MUCKRAKER;
  
              builtScoutLastTurn = true;

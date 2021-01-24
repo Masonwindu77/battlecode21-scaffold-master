@@ -15,9 +15,13 @@ public class PoliticianNormal extends PoliticianTest01
     {        
         
         // Scouting Role
-        if (robotRole == RobotRoles.Scout) 
+        if (robotRole == RobotRoles.Scout && robotCurrentInfluence > 1) 
         {
-            runScoutRole();
+            runNormalScoutRole();
+        }
+        else if (robotRole == RobotRoles.Scout)
+        {
+            runLowInfluenceScoutRole();
         }
         // Defender Role
         else if (robotRole == RobotRoles.DefendSlanderer)
@@ -26,7 +30,7 @@ public class PoliticianNormal extends PoliticianTest01
         }
     }
 
-    protected static void runScoutRole() throws GameActionException
+    protected static void runNormalScoutRole() throws GameActionException
     {
         decideIfEmpowerForNonEnlightenmentCenterBombs();
 
@@ -84,6 +88,34 @@ public class PoliticianNormal extends PoliticianTest01
         } else {
             moveRobot = true;
         }
+    }
+
+    private static void runLowInfluenceScoutRole() throws GameActionException 
+    {
+        if (!enemyEnlightenmentCenterFound
+        && !neutralEnlightenmentCenterFound) 
+        {
+            // This is so that the robot will go the direction it spawns. Hopefully this will make it go all over.
+            if (robotController.getRoundNum() < 25 && spawnEnlightenmentCenterHomeLocation != null) 
+            {
+                directionToScout = spawnEnlightenmentCenterHomeLocation.directionTo(robotController.getLocation());
+                // directionTo can be from a different location. Like the enemyEC to where you are.
+            }
+
+            Movement.scoutAction();
+        }
+
+        if (neutralEnlightenmentCenterFound) 
+        {
+            Scout.senseIfRobotsAreCloseToNeutralEnlightenmentCenter();    
+        }
+        else if (!neutralEnlightenmentCenterIsAround)
+        {
+            Scout.friendlyMuckrakerIsCloserOnTeam = false;
+            Scout.friendlyPoliticianIsCloserOnTeam = false;
+        }
+
+        Scout.neutralOrEnemyBaseFound();
     }
 
     protected static void runDefendSlandererRole() throws GameActionException

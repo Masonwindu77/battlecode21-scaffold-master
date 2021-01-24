@@ -40,6 +40,7 @@ public class EnlightenmentCenterTest01 extends RobotPlayer
     protected static int countOfSlanderer = 0;
     protected static int countOfPoliticians = 0;
     protected static int countOfMuckrakers = 0;
+    protected static int countOfBuffMucks = 0;
     protected static int countOfDefenderPolitician;
     protected static int countOfFriendlySlandererNearby;
     protected static int countOfDefenderPoliticianNearby;
@@ -373,19 +374,7 @@ public class EnlightenmentCenterTest01 extends RobotPlayer
             } 
             else 
             {
-                if (robotInfo.type == RobotType.POLITICIAN 
-                    && robotInfo.influence > POLITICIAN_SCOUT && robotInfo.influence <= POLITICIAN_DEFEND_SLANDERER) 
-                {
-                    countOfDefenderPolitician--;    
-                }
-                else if (robotInfo.type == RobotType.MUCKRAKER) 
-                {
-                    countOfMuckrakers--;
-                }
-                else if (robotInfo.type == RobotType.SLANDERER)
-                {
-                    countOfSlanderer--;
-                }
+                updateCountOfRobots(robotInfo);
 
                 builtRobotsInfos.remove(whereIteratorStopped); // TODO: this could be where you count the # of robots alive.
             }
@@ -395,6 +384,30 @@ public class EnlightenmentCenterTest01 extends RobotPlayer
         if (whereIteratorStopped == builtRobotsInfos.size()) 
         {
             whereIteratorStopped = 0;    
+        }
+    }
+
+    private static void updateCountOfRobots(RobotInfo robotInfo) 
+    {
+        if (robotInfo.type == RobotType.POLITICIAN 
+            && robotInfo.influence > POLITICIAN_SCOUT && robotInfo.influence <= POLITICIAN_DEFEND_SLANDERER) 
+        {
+            countOfDefenderPolitician--;    
+        }
+        else if (robotInfo.type == RobotType.MUCKRAKER) 
+        {
+            if (robotInfo.getInfluence() >= BUFF_MUCKRAKER_MIN_INFLUENCE) 
+            {
+                countOfBuffMucks--;    
+            }
+            else 
+            {
+                countOfMuckrakers--;
+            }            
+        }
+        else if (robotInfo.type == RobotType.SLANDERER)
+        {
+            countOfSlanderer--;
         }
     }
 
@@ -583,22 +596,23 @@ public class EnlightenmentCenterTest01 extends RobotPlayer
         return influenceToBuildWith;
     }
 
-    protected static MapLocation getClosestEnemyRobotOverTwentyInfluenceLocation() {
-        MapLocation targetLocation = enemyTargetNearby.get(0);
-        int closestRobot = robotController.getType().sensorRadiusSquared;
-        int distanceSquaredTo;
+    // protected static MapLocation getClosestEnemyRobotOverTwentyInfluenceLocation() {
+    //     MapLocation targetLocation = enemyTargetNearby.get(0);
+    //     int closestRobot = robotController.getType().sensorRadiusSquared;
+    //     int distanceSquaredTo;
 
-        for (int iterator = 0; iterator < enemyTargetNearby.size(); ++iterator) {
-            distanceSquaredTo = robotController.getLocation().distanceSquaredTo(enemyTargetNearby.get(iterator));
+    //     for (int iterator = 0; iterator < enemyTargetNearby.size(); ++iterator) {
+    //         distanceSquaredTo = robotController.getLocation().distanceSquaredTo(enemyTargetNearby.get(iterator));
 
-            if (distanceSquaredTo <= closestRobot) {
-                closestRobot = distanceSquaredTo;
-                targetLocation = enemyTargetNearby.get(iterator);
-            }
-        }
+    //         if (distanceSquaredTo <= closestRobot) 
+    //         {
+    //             closestRobot = distanceSquaredTo;
+    //             targetLocation = enemyTargetNearby.get(iterator);
+    //         }
+    //     }
 
-        return targetLocation;
-    }
+    //     return targetLocation;
+    // }
 
     protected static boolean enoughDefenderPoliticianNearby()
     {

@@ -88,6 +88,10 @@ public class Slanderer extends RobotPlayer
                 {
                     Movement.scoutTheDirection(Movement.getRandomDirection());
                 } 
+                else if (robotController.onTheMap(robotController.getLocation().add(robotController.getLocation().directionTo(mapLocationOfEdge))))
+                {
+                    Movement.moveToTargetLocation(mapLocationOfEdge);
+                }
             }
         } 
         else if (enemyMuckrakersNearby || lastSeenEnemyMuckraker != null) 

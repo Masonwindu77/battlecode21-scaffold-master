@@ -6,13 +6,14 @@ import java.util.List;
 import battlecode.common.*;
 import testPlayerv01.Service.Movement;
 import testPlayerv01.Service.Sense;
+import testPlayerv01.Roles.Scout;
 import testPlayerv01.Service.Communication;
 
 public class MuckrakerTest01 extends RobotPlayer 
 {
     static MapLocation targetSlanderer;
     static MapLocation currentDetectedRobotLocationGoingFor;
-    static boolean friendlyMuckrakerIsCloserOnTeam;
+    
     static List<MapLocation> mapLocationOfRobotsThatHaveBeenSensed = new ArrayList<>();
 
     static MapLocation closestPoliticianBomb;
@@ -33,11 +34,12 @@ public class MuckrakerTest01 extends RobotPlayer
 
         if (neutralEnlightenmentCenterFound) 
         {
-            senseIfRobotsAreCloseToNeutralEnlightenmentCenter();    
+            Scout.senseIfRobotsAreCloseToNeutralEnlightenmentCenter();    
         }
         else if (!neutralEnlightenmentCenterIsAround)
         {
-            friendlyMuckrakerIsCloserOnTeam = false;
+            Scout.friendlyMuckrakerIsCloserOnTeam = false;
+            Scout.friendlyPoliticianIsCloserOnTeam = false;
         }             
 
         if (haveMessageToSend) 
@@ -56,7 +58,7 @@ public class MuckrakerTest01 extends RobotPlayer
             && targetSlanderer == null) 
         {
             // This is so that the robot will go the direction it spawns. Hopefully this will make it go all over.
-            if (robotController.getRoundNum() < 25) 
+            if (robotController.getRoundNum() < 25 && spawnEnlightenmentCenterHomeLocation != null) 
             {
                 directionToScout = spawnEnlightenmentCenterHomeLocation.directionTo(robotController.getLocation());
                 // directionTo can be from a different location. Like the enemyEC to where you are.
@@ -70,10 +72,10 @@ public class MuckrakerTest01 extends RobotPlayer
             Movement.moveToTargetLocation(targetSlanderer);    
         }
         
-        neutralOrEnemyBaseFound();   
+        Scout.neutralOrEnemyBaseFound();   
 
         // For the not scouts (Influence > 1)
-        if ((!neutralEnlightenmentCenterFound && !enemyEnlightenmentCenterFound) || friendlyMuckrakerIsCloserOnTeam)
+        if ((!neutralEnlightenmentCenterFound && !enemyEnlightenmentCenterFound) || Scout.friendlyMuckrakerIsCloserOnTeam)
         {
             if (turnCount < 15 && spawnEnlightenmentCenterHomeLocation != null) 
             {
@@ -181,78 +183,7 @@ public class MuckrakerTest01 extends RobotPlayer
         }
     }    
 
-    protected static void senseIfRobotsAreCloseToNeutralEnlightenmentCenter()
-    {
-        if (robotController.canSenseLocation(neutralCurrentEnlightenmentCenterGoingFor)) 
-        {
-            RobotInfo[] robots = robotController.senseNearbyRobots(neutralCurrentEnlightenmentCenterGoingFor, 5, friendly);
-
-            for (RobotInfo robotInfo : robots) 
-            {
-                if (robotInfo.getType() == RobotType.MUCKRAKER
-                 && ((robotController.getLocation().distanceSquaredTo(neutralCurrentEnlightenmentCenterGoingFor) 
-                        > robotInfo.getLocation().distanceSquaredTo(neutralCurrentEnlightenmentCenterGoingFor)) 
-                    || (robotInfo.getLocation().isAdjacentTo(neutralCurrentEnlightenmentCenterGoingFor) 
-                        && !robotController.getLocation().isAdjacentTo(neutralCurrentEnlightenmentCenterGoingFor))))
-                {
-                    friendlyMuckrakerIsCloserOnTeam = true;
-                } 
-            }
-        }        
-    }
-
-    protected static void neutralOrEnemyBaseFound() throws GameActionException
-    {
-        if (enemyEnlightenmentCenterFound && enemyEnlightenmentCenterIsAround) 
-        {
-            if (politicianECBombNearby) 
-            {
-                Movement.moveAwayFromLocation(enemyCurrentEnlightenmentCenterGoingFor);
-            } 
-            else if (!robotController.getLocation().isAdjacentTo(enemyCurrentEnlightenmentCenterGoingFor)) 
-            {
-                Movement.moveToEnemyEnlightenmentCenter(enemyCurrentEnlightenmentCenterGoingFor);
-            }
-        }
-        else if (enemyEnlightenmentCenterFound)
-        {
-            if (!robotController.getLocation().isAdjacentTo(enemyCurrentEnlightenmentCenterGoingFor)) 
-            {
-                Movement.moveToEnemyEnlightenmentCenter(enemyCurrentEnlightenmentCenterGoingFor);
-            }
-        }
-        else if (neutralEnlightenmentCenterFound && neutralEnlightenmentCenterIsAround) 
-        {
-            if (politicianECBombNearby) 
-            {
-                Movement.moveAwayFromLocation(neutralCurrentEnlightenmentCenterGoingFor);
-            } 
-            else if (!friendlyMuckrakerIsCloserOnTeam && !robotController.getLocation().isAdjacentTo(neutralCurrentEnlightenmentCenterGoingFor)) 
-            {
-                Movement.moveToNeutralEnlightenmentCenter(neutralCurrentEnlightenmentCenterGoingFor);
-            }         
-            else if ((friendlyMuckrakerIsCloserOnTeam && !robotController.getLocation().isAdjacentTo(neutralCurrentEnlightenmentCenterGoingFor))) 
-            {
-                Movement.scoutAction();    
-            }
-            else if (friendlyMuckrakerIsCloserOnTeam && robotController.getLocation().isAdjacentTo(neutralCurrentEnlightenmentCenterGoingFor)) 
-            {
-                Movement.moveAwayFromLocation(neutralCurrentEnlightenmentCenterGoingFor);    
-            }
-            // TODO: Move it on to a passability that's higher...
-        }
-        else if (neutralEnlightenmentCenterFound)
-        {
-            if (!neutralCurrentEnlightenmentCenterGoingFor.isWithinDistanceSquared(robotController.getLocation(), robotController.getType().sensorRadiusSquared))
-            {
-                Movement.scoutAction();
-            }
-            else if (!robotController.getLocation().isAdjacentTo(neutralCurrentEnlightenmentCenterGoingFor)) 
-            {
-                Movement.moveToEnemyEnlightenmentCenter(neutralCurrentEnlightenmentCenterGoingFor);
-            }
-        }
-    }
+    
 
     protected static void detectNearbyRobots() throws GameActionException
     {

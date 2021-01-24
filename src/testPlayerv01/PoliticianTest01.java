@@ -104,7 +104,7 @@ public class PoliticianTest01 extends RobotPlayer
             robotController.setFlag(0);
         }
 
-        if (robotController.getInfluence() <= 10) 
+        if (robotController.getInfluence() <= 10 && (robotController.getInfluence() != 1 || robotRole == RobotRoles.Converted)) 
         {
             if (robotController.canEmpower(ACTION_RADIUS_POLITICIAN)) 
             {
