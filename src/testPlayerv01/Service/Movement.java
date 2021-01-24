@@ -217,7 +217,7 @@ public class Movement extends RobotPlayer {
         } 
         else 
         {
-            scoutTheDirection(directionToMoveAway);
+            basicBugMovement(robotController.getLocation().add(directionToMoveAway));
         }
     }
 

@@ -40,6 +40,7 @@ public class EnlightenmentCenterTest01 extends RobotPlayer
     protected static int countOfSlanderer = 0;
     protected static int countOfPoliticians = 0;
     protected static int countOfMuckrakers = 0;
+    protected static int countOfScouts = 0;
     protected static int countOfBuffMucks = 0;
     protected static int countOfDefenderPolitician;
     protected static int countOfFriendlySlandererNearby;
@@ -75,7 +76,7 @@ public class EnlightenmentCenterTest01 extends RobotPlayer
 
     // Beginning
     protected static final int NUMBER_OF_MUCKRAKERS_IN_BEGINNING = 7;
-    protected static int numberOfMuckrakersToCreateInBeginning = 0;
+    protected static int numberOfScoutsToCreateInBeginning = 0;
     protected static int scoutIterator = 0;
 
     // Middle
@@ -288,11 +289,17 @@ public class EnlightenmentCenterTest01 extends RobotPlayer
             shouldBuildSlanderer = true;
         }
         else if
-        ((income < 100 || robotCurrentInfluence < 1750) 
+        ((income < 75 || robotCurrentInfluence < 1000) 
         && robotController.getRoundNum() < BEGINNING_ROUND_STRAT && turnCount > 50)
         {
             shouldBuildSlanderer = true;
-        }        
+        }   
+        else if
+        ((income < 125 || robotCurrentInfluence < 1750) 
+        && robotController.getRoundNum() >= BEGINNING_ROUND_STRAT && turnCount > 100)
+        {
+            shouldBuildSlanderer = true;
+        }      
         else if(!enemyEnlightenmentCenterFound 
         && countOfSlanderer <= 2)
         {
@@ -341,6 +348,7 @@ public class EnlightenmentCenterTest01 extends RobotPlayer
         
     }
 
+    @Deprecated
     protected static void decideIfShouldBuildMoreScouts()
     {
         if (!buildScout 
@@ -394,6 +402,11 @@ public class EnlightenmentCenterTest01 extends RobotPlayer
         {
             countOfDefenderPolitician--;    
         }
+        else if (robotInfo.type == RobotType.POLITICIAN
+            && robotInfo.influence == INFLUENCE_FOR_SCOUT)
+        {
+            countOfScouts--;
+        }
         else if (robotInfo.type == RobotType.MUCKRAKER) 
         {
             if (robotInfo.getInfluence() >= BUFF_MUCKRAKER_MIN_INFLUENCE) 
@@ -402,6 +415,7 @@ public class EnlightenmentCenterTest01 extends RobotPlayer
             }
             else 
             {
+                countOfScouts--;
                 countOfMuckrakers--;
             }            
         }
@@ -708,7 +722,7 @@ public class EnlightenmentCenterTest01 extends RobotPlayer
             numberOfEnlightenmentCenters = robotController.getRobotCount();
         }
 
-        numberOfMuckrakersToCreateInBeginning = NUMBER_OF_MUCKRAKERS_IN_BEGINNING;        
+        numberOfScoutsToCreateInBeginning = NUMBER_OF_MUCKRAKERS_IN_BEGINNING;        
 
         setConstants();
         spawnEnlightenmentCenterHomeLocation = robotController.getLocation();

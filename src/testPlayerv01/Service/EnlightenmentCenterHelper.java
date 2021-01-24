@@ -360,24 +360,29 @@ public class EnlightenmentCenterHelper extends EnlightenmentCenterTest01
 
     protected static void buildScouts() throws GameActionException
     {
-        if (countOfMuckrakers <= numberOfMuckrakersToCreateInBeginning
+        if (countOfScouts <= numberOfScoutsToCreateInBeginning
             && robotController.getRoundNum() <= BEGINNING_ROUND_STRAT 
             && !weSpawnedRightNextToEnemy
             && !buildThisTurn) 
         {
             RobotBuilder.directionToSpawn = getDirectionToScout(); //getAvailableDirectionToSpawn();
             RobotBuilder.influenceToUse = INFLUENCE_FOR_SCOUT;
-            RobotBuilder.robotTypeToBuild = RobotType.POLITICIAN;
+            RobotBuilder.robotTypeToBuild = randomSpawnableScoutRobotType();
 
             turnsNotBuilding = 0;
             buildThisTurn = true;
             builtScoutLastTurn = true;
-            countOfPoliticians++;
+            if (RobotBuilder.robotTypeToBuild == RobotType.MUCKRAKER) 
+            {
+                countOfMuckrakers++;
+            }
+
+            countOfScouts++;            
         } 
 
          // Build a scout if stocking up
-         if (!buildThisTurn)
-         {
+        if (!buildThisTurn)
+        {
              RobotBuilder.directionToSpawn = getAvailableDirectionToSpawn();
              RobotBuilder.influenceToUse =  INFLUENCE_FOR_SCOUT;
              RobotBuilder.robotTypeToBuild = RobotType.MUCKRAKER;
@@ -386,35 +391,7 @@ public class EnlightenmentCenterHelper extends EnlightenmentCenterTest01
              turnsNotBuilding = 0;
              buildThisTurn = true;
              countOfMuckrakers++;
-         }
-
-        // if (!stockUp 
-        //     && countOfPoliticians < countOfMuckrakers
-        //     && !buildThisTurn) 
-        //     {
-        //         RobotType toBuild = RobotType.POLITICIAN;
-        //         int influence = 0;
-        //         if (lastTurnInfluence >= MIN_NORMAL_POLITICIAN) {
-        //             int min = MIN_NORMAL_POLITICIAN;
-        //             int max = MAX_NORMAL_POLITICIAN;
-        //             influence = randomInteger.nextInt(max - min + 1) + min;
-
-        //             turnsNotBuilding = 0;
-        //             if (robotCurrentInfluence > influence && influence != 0) 
-        //             {
-        //                 buildThisTurn = true;
-        //                 RobotBuilder.influenceToUse = influence;
-        //                 RobotBuilder.directionToSpawn = getAvailableDirectionToSpawn();
-        //                 RobotBuilder.robotTypeToBuild = toBuild;
-        //                 countOfPoliticians++;
-        //             }
-
-        //             if (influence <= POLITICIAN_DEFEND_SLANDERER && influence >= POLITICIAN_SCOUT) 
-        //             {
-        //                 countOfDefenderPolitician++;    
-        //             }
-        //         }
-        //     }       
+        }     
     }
 
     protected static void buildDefenders() throws GameActionException

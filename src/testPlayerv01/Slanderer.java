@@ -77,21 +77,7 @@ public class Slanderer extends RobotPlayer
             }
             else if (mapLocationOfEdge != null)
             {
-                if (robotController.canSenseLocation(mapLocationOfEdge)
-                    && !robotController.onTheMap(mapLocationOfEdge) 
-                    && robotController.onTheMap(robotController.getLocation().add(robotController.getLocation().directionTo(mapLocationOfEdge)))
-                    && !robotController.getLocation().isAdjacentTo(spawnEnlightenmentCenterHomeLocation))
-                {
-                    Movement.moveToTargetLocation(mapLocationOfEdge);
-                }           
-                else if(robotController.getLocation().isAdjacentTo(spawnEnlightenmentCenterHomeLocation))
-                {
-                    Movement.scoutTheDirection(Movement.getRandomDirection());
-                } 
-                else if (robotController.onTheMap(robotController.getLocation().add(robotController.getLocation().directionTo(mapLocationOfEdge))))
-                {
-                    Movement.moveToTargetLocation(mapLocationOfEdge);
-                }
+                moveToEdgeOfTheMap();
             }
         } 
         else if (enemyMuckrakersNearby || lastSeenEnemyMuckraker != null) 
@@ -122,19 +108,13 @@ public class Slanderer extends RobotPlayer
             {
                 Movement.moveAwayFromLocation(enemyCurrentEnlightenmentCenterGoingFor);
             }
+            else if (robotController.getLocation().add(Movement.getOppositeDirection(robotController.getLocation().directionTo(enemyCurrentEnlightenmentCenterGoingFor))).isAdjacentTo(spawnEnlightenmentCenterHomeLocation))
+            {
+                Movement.moveAwayFromLocation(spawnEnlightenmentCenterHomeLocation);
+            }
             else if (mapLocationOfEdge != null)
             {
-                if (robotController.canSenseLocation(mapLocationOfEdge)
-                    && !robotController.onTheMap(mapLocationOfEdge) 
-                    && robotController.onTheMap(robotController.getLocation().add(robotController.getLocation().directionTo(mapLocationOfEdge))))
-                {
-                    Movement.moveToTargetLocation(mapLocationOfEdge);
-                }           
-                // else if (!robotController.canSenseLocation(mapLocationOfEdge)
-                //     && !robotController.onTheMap(robotController.getLocation().add(robotController.getLocation().directionTo(mapLocationOfEdge))))
-                // {
-
-                // } 
+                moveToEdgeOfTheMap();
             }
         }
     }
@@ -210,9 +190,9 @@ public class Slanderer extends RobotPlayer
 
     private static void checkNearbyFlagsForEnemy(int flag) throws GameActionException 
     {
-        int convertedFlag = Communication.getExtraInformationFromFlag(flag);
+        int extraInformation = Communication.getExtraInformationFromFlag(flag);
 
-        if (flag != 0 && convertedFlag == Communication.ENEMY_MUCKRAKER_NEARBY_FLAG) 
+        if (flag != 0 && extraInformation == Communication.ENEMY_MUCKRAKER_NEARBY_FLAG) 
         {
             enemyMuckrakersNearby = true;
             enemyMuckrakerLocationFromFlag = Communication.getLocationFromFlag(flag);    
@@ -254,11 +234,15 @@ public class Slanderer extends RobotPlayer
     private static void stayNearHomeBase() 
     {
         int sensorRadiusSquared = robotController.getType().sensorRadiusSquared;
-        if (robotController.getLocation().subtract(robotController.getLocation().directionTo(spawnEnlightenmentCenterHomeLocation)).distanceSquaredTo(spawnEnlightenmentCenterHomeLocation) 
-            < sensorRadiusSquared || nearFriendlyEnlightenmentCenter) 
+        if ((robotController.getLocation().subtract(robotController.getLocation().directionTo(spawnEnlightenmentCenterHomeLocation)).distanceSquaredTo(spawnEnlightenmentCenterHomeLocation) 
+            < sensorRadiusSquared || nearFriendlyEnlightenmentCenter)) 
         {
             nextDirection = null;
         } 
+        else if (robotController.getLocation().isAdjacentTo(spawnEnlightenmentCenterHomeLocation))
+        {
+            nextDirection = spawnEnlightenmentCenterHomeLocation.directionTo(robotController.getLocation());
+        }
         else 
         {
             nextDirection = robotController.getLocation().directionTo(spawnEnlightenmentCenterHomeLocation);
@@ -271,6 +255,43 @@ public class Slanderer extends RobotPlayer
         {
             directionToScout = directionToEdgeOfMap;
         }        
+    }
+
+    protected static void moveToEdgeOfTheMap() throws GameActionException
+    {
+        if (robotController.canSenseLocation(mapLocationOfEdge)
+            && !robotController.onTheMap(mapLocationOfEdge) 
+            && robotController.onTheMap(robotController.getLocation().add(robotController.getLocation().directionTo(mapLocationOfEdge)))
+            && !robotController.getLocation().isAdjacentTo(spawnEnlightenmentCenterHomeLocation))
+        {
+            Movement.moveToTargetLocation(mapLocationOfEdge);
+        }           
+        else if(robotController.getLocation().isAdjacentTo(spawnEnlightenmentCenterHomeLocation))
+        {
+            Movement.scoutTheDirection(Movement.getRandomDirection());
+        } 
+        else if (robotController.onTheMap(robotController.getLocation().add(robotController.getLocation().directionTo(mapLocationOfEdge))))
+        {
+            Movement.moveToTargetLocation(mapLocationOfEdge);
+        }
+        else 
+        {
+            stayNearHomeBase();
+            if (nextDirection == null) 
+            {
+                Direction randomDirection = Movement.getRandomDirection();
+                while (robotController.getLocation().add(randomDirection).isAdjacentTo(spawnEnlightenmentCenterHomeLocation)) 
+                {
+                    randomDirection = Movement.getRandomDirection();
+                }
+
+                Movement.scoutTheDirection(randomDirection);
+            } 
+            else 
+            {
+                Movement.scoutTheDirection(nextDirection);
+            }
+        }
     }
 
     public static void setup() 

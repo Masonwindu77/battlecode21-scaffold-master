@@ -12,7 +12,7 @@ import testPlayerv01.Model.EnlightenmentCenterInfo;
 public strictfp class RobotPlayer {
     protected static RobotController robotController;
 
-    static final RobotType[] spawnableRobot = { RobotType.POLITICIAN, RobotType.SLANDERER, RobotType.MUCKRAKER, };
+    static final RobotType[] spawnableScoutRobot = { RobotType.POLITICIAN, RobotType.MUCKRAKER, };
 
     public static final Direction[] directions = { Direction.NORTH
         , Direction.SOUTH
@@ -206,8 +206,8 @@ public strictfp class RobotPlayer {
      *
      * @return a random RobotType
      */
-    static RobotType randomSpawnableRobotType() {
-        return spawnableRobot[(int) (Math.random() * spawnableRobot.length)];
+    protected static RobotType randomSpawnableScoutRobotType() {
+        return spawnableScoutRobot[(int) (Math.random() * spawnableScoutRobot.length)];
     }
 
     /**
