@@ -48,6 +48,9 @@ public class EnlightenmentCenterTest01 extends RobotPlayer
     protected static final int[] slandererInfluenceAmount = {85, 107, 130, 153, 
         178, 203, 228, 282, 310, 339, 369, 399, 431, 463, 497, 
         568, 606, 644, 683, 724, 767, 810, 855, 902, 949};
+    
+    protected static final int[] newEnlightenmentCenterSlandererInfluenceAmount = 
+    {21, 41, 63, 85, 107, 130, 153, 178, 203, 228, 282, 310, 339, 369, 399, 431, 463, 497, 568, 606, 644, 683, 724, 767, 810, 855, 902, 949};
 
     // Friendly
     protected static boolean friendlySlandererNearby;
@@ -73,6 +76,9 @@ public class EnlightenmentCenterTest01 extends RobotPlayer
     protected static final int NUMBER_OF_MUCKRAKERS_IN_BEGINNING = 7;
     protected static int numberOfMuckrakersToCreateInBeginning = 0;
     protected static int scoutIterator = 0;
+
+    // Middle
+    protected static final int BUFF_MUCKRAKER_MIN_INFLUENCE = 150;
 
     // Building
     protected static boolean buildThisTurn = false;
@@ -130,7 +136,8 @@ public class EnlightenmentCenterTest01 extends RobotPlayer
 
         // Bidding
         if (robotController.getRoundNum() >= 400
-                && robotController.getTeamVotes() < AMOUNT_OF_VOTES_NEEDED_TO_WIN && isItSafe()) 
+                && robotController.getTeamVotes() < AMOUNT_OF_VOTES_NEEDED_TO_WIN 
+                && isItSafe()) 
         {
             int influenceToBid = amountToBid;
             if (robotCurrentInfluence > 100000 && influenceToBid < 500) 
@@ -156,7 +163,9 @@ public class EnlightenmentCenterTest01 extends RobotPlayer
                 currentVoteCount = robotController.getTeamVotes();
             }
         }
-        else if (robotController.getRoundNum() > 50)
+        else if (robotController.getRoundNum() > 50
+        && robotController.getTeamVotes() < AMOUNT_OF_VOTES_NEEDED_TO_WIN
+        && isItSafe())
         {
             int influenceToBid = amountToBid;
             if (robotController.canBid(influenceToBid)) 
@@ -188,7 +197,6 @@ public class EnlightenmentCenterTest01 extends RobotPlayer
             EnlightenmentCenterInfo enlightenmentCenterInfo = neutralEnlightenmentCenters.get(neutralEnlightenmentCenterMapLocation.get(0));
             neutralCurrentEnlightenmentCenterGoingFor = enlightenmentCenterInfo.mapLocation;
             neutralEnlightenmentCenterCurrentInfluence = enlightenmentCenterInfo.currentInfluence;
-            println("EC HERE FOR SETTING NEUTRAL " + neutralEnlightenmentCenterCurrentInfluence + " " + neutralCurrentEnlightenmentCenterGoingFor);
         }
         else if (!neutralEnlightenmentCenters.isEmpty())
         {
@@ -251,8 +259,6 @@ public class EnlightenmentCenterTest01 extends RobotPlayer
                     neutralEnlightenmentCenterCurrentInfluence = enlightenmentCenterInfo.currentInfluence >= LOWEST_INFLUENCE_VALUE_FOR_NEUTRAL_LOCATION ? enlightenmentCenterInfo.currentInfluence : LOWEST_INFLUENCE_VALUE_FOR_NEUTRAL_LOCATION;
                 }           
             }
-
-            println("EC AFTER%%% FOR SETTING NEUTRAL " + neutralEnlightenmentCenterCurrentInfluence + " " + neutralCurrentEnlightenmentCenterGoingFor);
         }
         
     }
@@ -269,20 +275,20 @@ public class EnlightenmentCenterTest01 extends RobotPlayer
     {
         boolean shouldBuildSlanderer = false;
 
-        if ((income < 175) 
+        if ((income < 175 || robotCurrentInfluence < 3000) 
         && robotController.getRoundNum() >= 300)
         {
             shouldBuildSlanderer = true;
         }
         else if
-        ((income < 25) 
-        && robotController.getRoundNum() < 75)
+        ((income < 25 || robotCurrentInfluence < 500) 
+        && (robotController.getRoundNum() < 75 || turnCount < 50))
         {
             shouldBuildSlanderer = true;
         }
         else if
-        ((income < 100) 
-        && robotController.getRoundNum() < 150)
+        ((income < 100 || robotCurrentInfluence < 1750) 
+        && robotController.getRoundNum() < BEGINNING_ROUND_STRAT && turnCount > 50)
         {
             shouldBuildSlanderer = true;
         }        
@@ -297,20 +303,41 @@ public class EnlightenmentCenterTest01 extends RobotPlayer
 
     protected static void getAmountNeededForSlanderer()
     {
-        for (int iterator = (slandererInfluenceAmount.length - 1); iterator > 0; --iterator) 
+        if (turnCount > 25 || robotController.getRoundNum() < 50)
         {
-            if (slandererInfluenceAmount[iterator] > robotCurrentInfluence 
-            && slandererInfluenceAmount[iterator - 1] < robotCurrentInfluence) 
+            for (int iterator = (slandererInfluenceAmount.length - 1); iterator > 0; --iterator) 
             {
-                amountNeededForSlanderer = slandererInfluenceAmount[iterator - 1];
-                break;
-            } 
-            else if (robotCurrentInfluence >= slandererInfluenceAmount[(slandererInfluenceAmount.length - 1)])
-            {
-                amountNeededForSlanderer = slandererInfluenceAmount[(slandererInfluenceAmount.length - 1)];
-                break;
+                if (slandererInfluenceAmount[iterator] > robotCurrentInfluence 
+                && slandererInfluenceAmount[iterator - 1] < robotCurrentInfluence) 
+                {
+                    amountNeededForSlanderer = slandererInfluenceAmount[iterator - 1];
+                    break;
+                } 
+                else if (robotCurrentInfluence >= slandererInfluenceAmount[(slandererInfluenceAmount.length - 1)])
+                {
+                    amountNeededForSlanderer = slandererInfluenceAmount[(slandererInfluenceAmount.length - 1)];
+                    break;
+                }
             }
         }
+        else if(turnCount < 25 && robotController.getRoundNum() > 50)
+        {
+            for (int iterator = (newEnlightenmentCenterSlandererInfluenceAmount.length - 1); iterator > 0; --iterator) 
+            {
+                if (newEnlightenmentCenterSlandererInfluenceAmount[iterator] > robotCurrentInfluence 
+                && newEnlightenmentCenterSlandererInfluenceAmount[iterator - 1] < robotCurrentInfluence) 
+                {
+                    amountNeededForSlanderer = newEnlightenmentCenterSlandererInfluenceAmount[iterator - 1];
+                    break;
+                } 
+                else if (robotCurrentInfluence >= newEnlightenmentCenterSlandererInfluenceAmount[(newEnlightenmentCenterSlandererInfluenceAmount.length - 1)])
+                {
+                    amountNeededForSlanderer = newEnlightenmentCenterSlandererInfluenceAmount[(newEnlightenmentCenterSlandererInfluenceAmount.length - 1)];
+                    break;
+                }
+            }
+        }
+        
     }
 
     protected static void decideIfShouldBuildMoreScouts()
@@ -577,7 +604,7 @@ public class EnlightenmentCenterTest01 extends RobotPlayer
     {
         boolean enoughDefenderPoliticianNearby = false;
         
-        if ((countOfDefenderPolitician >= Math.ceil((countOfSlanderer * 1.25))))
+        if (countOfDefenderPolitician >= countOfSlanderer)
         {
             enoughDefenderPoliticianNearby = true;
         }

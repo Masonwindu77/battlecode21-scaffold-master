@@ -127,7 +127,7 @@ public class Sense extends RobotPlayer
         }
         turnsAroundNeutralEnlightenmentCenter++; 
 
-        if (robotController.getInfluence() > robotInfo.getInfluence()) 
+        if (robotController.getInfluence() > robotInfo.getInfluence() || neutralEnlightenmentCenterCurrentInfluence == 0) 
         {
             neutralEnlightenmentCenterCurrentInfluence = robotInfo.getInfluence();
             neutralCurrentEnlightenmentCenterGoingFor = robotInfo.getLocation();

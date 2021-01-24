@@ -5,7 +5,8 @@ import testPlayerv01.Service.Communication;
 import testPlayerv01.Service.Movement;
 import testPlayerv01.Service.Sense;
 
-public class Slanderer extends RobotPlayer {
+public class Slanderer extends RobotPlayer 
+{
 
     static Direction nextDirection;
     static boolean enemyMuckrakersNearby = false;
@@ -31,7 +32,7 @@ public class Slanderer extends RobotPlayer {
         setEdgeOfMap();
 
         // Saves the last seen enemy muck location
-        runFromEnemyMuckrakers();      
+        setEnemyMuckrakersVariable();      
         setFlags();
 
         if(!enemyEnlightenmentCenterFound)
@@ -78,23 +79,15 @@ public class Slanderer extends RobotPlayer {
             {
                 if (robotController.canSenseLocation(mapLocationOfEdge)
                     && !robotController.onTheMap(mapLocationOfEdge) 
-                    && robotController.onTheMap(robotController.getLocation().add(robotController.getLocation().directionTo(mapLocationOfEdge))))
+                    && robotController.onTheMap(robotController.getLocation().add(robotController.getLocation().directionTo(mapLocationOfEdge)))
+                    && !robotController.getLocation().isAdjacentTo(spawnEnlightenmentCenterHomeLocation))
                 {
                     Movement.moveToTargetLocation(mapLocationOfEdge);
                 }           
-                else if (!robotController.canSenseLocation(mapLocationOfEdge)
-                    && !robotController.onTheMap(robotController.getLocation().add(robotController.getLocation().directionTo(mapLocationOfEdge))))
+                else if(robotController.getLocation().isAdjacentTo(spawnEnlightenmentCenterHomeLocation))
                 {
-                    println("HI SLANDERER :D");
-                    if (closestDefenderPoliticianMapLocation != null) 
-                    {
-                        Movement.moveToTargetLocation(closestDefenderPoliticianMapLocation);
-                    }
+                    Movement.scoutTheDirection(Movement.getRandomDirection());
                 } 
-                else if (!robotController.canSenseLocation(mapLocationOfEdge))
-                {
-                    Movement.moveToTargetLocation(robotController.getLocation().add(robotController.getLocation().directionTo(mapLocationOfEdge)));              
-                }
             }
         } 
         else if (enemyMuckrakersNearby || lastSeenEnemyMuckraker != null) 
@@ -120,23 +113,26 @@ public class Slanderer extends RobotPlayer {
         {
             // if the next move places it on the adjacent square around the EC. Don't move there.
             if (spawnEnlightenmentCenterHomeLocation != null 
-            && !robotController.getLocation().add(Movement.getOppositeDirection(robotController.getLocation().directionTo(enemyCurrentEnlightenmentCenterGoingFor))).isAdjacentTo(spawnEnlightenmentCenterHomeLocation))
+            && !robotController.getLocation().add(Movement.getOppositeDirection(robotController.getLocation().directionTo(enemyCurrentEnlightenmentCenterGoingFor))).isAdjacentTo(spawnEnlightenmentCenterHomeLocation)
+            && robotController.canSenseLocation(robotController.getLocation().add(enemyCurrentEnlightenmentCenterGoingFor.directionTo(robotController.getLocation()))))
             {
                 Movement.moveAwayFromLocation(enemyCurrentEnlightenmentCenterGoingFor);
             }
-            else
+            else if (mapLocationOfEdge != null)
             {
-                Movement.scoutTheDirection(Movement.getRandomDirection());
+                if (robotController.canSenseLocation(mapLocationOfEdge)
+                    && !robotController.onTheMap(mapLocationOfEdge) 
+                    && robotController.onTheMap(robotController.getLocation().add(robotController.getLocation().directionTo(mapLocationOfEdge))))
+                {
+                    Movement.moveToTargetLocation(mapLocationOfEdge);
+                }           
+                // else if (!robotController.canSenseLocation(mapLocationOfEdge)
+                //     && !robotController.onTheMap(robotController.getLocation().add(robotController.getLocation().directionTo(mapLocationOfEdge))))
+                // {
+
+                // } 
             }
         }
-
-        // TODO: Make Slanderer stuff
-        /*
-         * Make a check for a flag nearby of the muckraker. If the muckraker shows a
-         * position, it means an enemy is coming
-         * 
-         * Also, need to figure out where we are so we can go to a corner....?
-         */
     }
 
     private static void resetVariablesForSensing()
@@ -237,7 +233,7 @@ public class Slanderer extends RobotPlayer {
         }
     }
 
-    private static void runFromEnemyMuckrakers() 
+    private static void setEnemyMuckrakersVariable() 
     {
         if (enemyMuckrakersNearby || (recentlySeenMuckrakers > 0 && recentlySeenMuckrakers < 5)) 
         {

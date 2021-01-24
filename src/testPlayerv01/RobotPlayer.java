@@ -119,7 +119,7 @@ public strictfp class RobotPlayer {
     protected static boolean neutralEnlightenmentCenterIsAround;
 
     protected static final int BEGINNING_ROUND_STRAT = 150;
-    protected static final int MIDDLE_GAME_ROUND_START = 600;
+    protected static final int MIDDLE_GAME_ROUND_START = 450;
     protected static final int END_GAME_ROUND_STRAT = 1000;
 
     // POLITICIAN

@@ -124,9 +124,7 @@ public class EnlightenmentCenterHelper extends EnlightenmentCenterTest01
 
     protected static void updateNeutralEnlightenmentCenterForConversion(MapLocation neutralMapLocationConverted)
     {
-        println("BEFORE AFTER: " + neutralEnlightenmentCenters.size());
         neutralEnlightenmentCenters.remove(neutralMapLocationConverted);
-        println("SIZE AFTER: " + neutralEnlightenmentCenters.size());
     }
 
     //#endregion
@@ -200,11 +198,12 @@ public class EnlightenmentCenterHelper extends EnlightenmentCenterTest01
 
         if (neutralEnlightenmentCenterFound
             && !buildThisTurn
-            && (income >= 25 || robotCurrentInfluence > 200)
+            && (income >= 25 
+                || (robotCurrentInfluence > 200 && neutralEnlightenmentCenterCurrentInfluence < HIGHEST_INFLUENCE_VALUE_FOR_NEUTRAL_LOCATION)
+                || (neutralEnlightenmentCenterCurrentInfluence != 0 && neutralEnlightenmentCenterCurrentInfluence == LOWEST_INFLUENCE_VALUE_FOR_NEUTRAL_LOCATION))
             && (turnCountSinceLastNeutralBomb == 0 || (turnCount - turnCountSinceLastNeutralBomb) > 5)
             && (countOfNeutralPoliticianBomb <= countOfNeutralPoliticianBombAllowed)) 
         {
-            println("HERE EC 1");
             if (isThereEnoughForNeutralEnlightenmentCenterCapture() && isItSafe()) 
             {
                 RobotBuilder.directionToSpawn = getAvailableDirectionToSpawn();
@@ -216,7 +215,6 @@ public class EnlightenmentCenterHelper extends EnlightenmentCenterTest01
                 buildThisTurn = true;
                 countOfNeutralPoliticianBomb++;
                 turnCountSinceLastNeutralBomb = turnCount;
-                println("HERE EC 2");
             } 
             else if (isThereEnoughForNeutralEnlightenmentCenterCapture())
             {
@@ -262,7 +260,6 @@ public class EnlightenmentCenterHelper extends EnlightenmentCenterTest01
             && !stockUpForNeutralEnlightenmentCenter) 
         {
             buildEconomy();
-            println("HERE ECON 1");
         }            
         else if (buildSlanderer 
         && !buildThisTurn 
@@ -270,36 +267,25 @@ public class EnlightenmentCenterHelper extends EnlightenmentCenterTest01
         && (!stockUpForNeutralEnlightenmentCenter || !isItSafeForSlanderer() || muckRush))
         {
             buildDefenders();
-            println("HERE ECON 2");
         }          
         
-        //#region Special Builds
-        // Self Empower
-        if (robotCurrentInfluence < AMOUNT_OF_INFLUENCE_TO_NOT_EMPOWER_SELF 
-            && empowerFactor > 5 && isItSafe()
-            && !buildThisTurn)
-        {
-            RobotBuilder.directionToSpawn = getAvailableDirectionToSpawn();
-            RobotBuilder.influenceToUse = (int) (robotController.getInfluence() * .90);
-            RobotBuilder.robotTypeToBuild = RobotType.POLITICIAN;
-
-            turnsNotBuilding = 0;
-            buildThisTurn = true;
-        }             
+        //#region Special Builds         
 
         // After Mid game build more polis
-        if (robotController.getRoundNum() >= MIDDLE_GAME_ROUND_START 
-            && robotController.getRobotCount() > 100
+        if (robotController.getRoundNum() <= MIDDLE_GAME_ROUND_START 
+            && robotController.getRoundNum() > BEGINNING_ROUND_STRAT
+            && robotController.getRobotCount() > 50
+            && robotCurrentInfluence >= 1000
             && !buildThisTurn
             && isItSafe()) 
         {
-            RobotType toBuild = RobotType.POLITICIAN;
+            RobotType toBuild = RobotType.MUCKRAKER;
 
             int influence = 0;
-            if ((lastTurnInfluence * .25) > MAX_NORMAL_POLITICIAN) 
+            if ((robotCurrentInfluence * .25) > BUFF_MUCKRAKER_MIN_INFLUENCE) 
             {
-                int max = (int) Math.ceil(lastTurnInfluence * .25);
-                int min = MAX_NORMAL_POLITICIAN;
+                int max = (int) Math.ceil(robotCurrentInfluence * .25);
+                int min = BUFF_MUCKRAKER_MIN_INFLUENCE;
                 influence = randomInteger.nextInt(max - min + 1) + min;
 
                 turnsNotBuilding = 0;
@@ -313,6 +299,32 @@ public class EnlightenmentCenterHelper extends EnlightenmentCenterTest01
                 }
             } 
         }
+
+        // if (robotController.getRoundNum() >= MIDDLE_GAME_ROUND_START 
+        //     && robotController.getRobotCount() > 100
+        //     && !buildThisTurn
+        //     && isItSafe()) 
+        // {
+        //     RobotType toBuild = RobotType.POLITICIAN;
+
+        //     int influence = 0;
+        //     if ((lastTurnInfluence * .25) > MAX_NORMAL_POLITICIAN) 
+        //     {
+        //         int max = (int) Math.ceil(lastTurnInfluence * .25);
+        //         int min = MAX_NORMAL_POLITICIAN;
+        //         influence = randomInteger.nextInt(max - min + 1) + min;
+
+        //         turnsNotBuilding = 0;
+        //         if (robotCurrentInfluence >= influence) 
+        //         {
+        //             buildThisTurn = true;
+        //             RobotBuilder.influenceToUse = influence;
+        //             RobotBuilder.directionToSpawn = getAvailableDirectionToSpawn();
+        //             RobotBuilder.robotTypeToBuild = toBuild;
+        //             countOfPoliticians++;
+        //         }
+        //     } 
+        // }
         //#endregion
 
         buildScouts();
@@ -324,12 +336,10 @@ public class EnlightenmentCenterHelper extends EnlightenmentCenterTest01
 
         if (robotCurrentInfluence < amountNeededForSlanderer) 
         {
-            println("HERE ECON 3");
             stockUp = true;
         } 
         else if (amountNeededForSlanderer != 0) 
         {
-            println("HERE ECON 4");
             turnsNotBuilding = 0;
             buildThisTurn = true;
             buildSlanderer = false;

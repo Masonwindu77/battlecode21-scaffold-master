@@ -242,11 +242,11 @@ public class PoliticianECBomb extends PoliticianTest01 {
 
         if (countOfAllRobotsNearby > 1) 
         {
-            remainderOfEnemyConviction = (int) (enemyEnlightenmentCenterCurrentInfluence - ((robotCurrentConviction - POLITICIAN_TAX) / countOfAllRobotsNearby));
+            remainderOfEnemyConviction = (int) (enemyEnlightenmentCenterCurrentInfluence - (getCurrentConvictionWithEmpower() / countOfAllRobotsNearby));
         } 
         else 
         {
-            remainderOfEnemyConviction = enemyEnlightenmentCenterCurrentInfluence - (robotCurrentConviction - POLITICIAN_TAX);
+            remainderOfEnemyConviction = (int) ((int) enemyEnlightenmentCenterCurrentInfluence - (getCurrentConvictionWithEmpower() - POLITICIAN_TAX));
         }
 
         if (remainderOfEnemyConviction < 0) {
@@ -313,14 +313,9 @@ public class PoliticianECBomb extends PoliticianTest01 {
     protected static void decideAttackForNeutralEnlightenmentBomb() throws GameActionException
     {
         if (neutralEnlightenmentCenterIsAround
-            && !homeEnlightenmentCenterSurrounded() && !empowerTheHomeBase())
+            && !homeEnlightenmentCenterSurrounded())
         {
             decideIfEmpowerForNeutralEnlightenmentCenter(); 
-        }
-        else if (empowerTheHomeBase() && robotController.canEmpower(distanceToFriendlyEnlightenmentCenter))
-        {
-            robotController.empower(distanceToFriendlyEnlightenmentCenter);
-            return;
         }
         else if (homeEnlightenmentCenterSurrounded() && robotController.canEmpower(ACTION_RADIUS_POLITICIAN)) 
         {
@@ -344,7 +339,6 @@ public class PoliticianECBomb extends PoliticianTest01 {
             // If it has enough, convert it.
             if (hasEnoughConvictionToConvertNeutralEnlightenmentCenter() || canUseFullEmpowerWithoutDilution) 
             {
-                println("POLI NEUTRAL EC 1");
                 robotController.empower(distanceToNeutralEnlightenmentCenter);
                 return;
             }
@@ -353,7 +347,6 @@ public class PoliticianECBomb extends PoliticianTest01 {
             && robotController.getLocation().isAdjacentTo(neutralCurrentEnlightenmentCenterGoingFor)
             && countOfFriendliesInActionRadiusAroundNeutralEnlightenmentcenter < 1)
             {
-                println("POLI NEUTRAL EC 2");
                 robotController.empower(distanceToNeutralEnlightenmentCenter);
                 return;
             }
@@ -365,13 +358,11 @@ public class PoliticianECBomb extends PoliticianTest01 {
                     || turnsNearNeutralEnlightenmentCenterForAttacking > 15 * (1 + robotController.sensePassability(robotController.getLocation())))
             && robotController.isLocationOccupied(robotController.getLocation().add(robotController.getLocation().directionTo(neutralCurrentEnlightenmentCenterGoingFor))))
             {
-                println("POLI NEUTRAL EC 3");
                 robotController.empower(distanceToNeutralEnlightenmentCenter);
                 return;
             }
             else if (closestRobotToNeutralEnlightenmentCenter && canUseFullEmpowerWithoutDilution) 
             {
-                println("POLI NEUTRAL EC 4");
                 robotController.empower(distanceToNeutralEnlightenmentCenter);
                 return;
             }
@@ -393,11 +384,11 @@ public class PoliticianECBomb extends PoliticianTest01 {
 
         if (countOfAllRobotsNearby > 1) 
         {
-            remainderOfNeutralConviction = (int) (neutralEnlightenmentCenterCurrentInfluence - ((robotCurrentConviction - POLITICIAN_TAX) / countOfAllRobotsNearby));
+            remainderOfNeutralConviction = (int) (neutralEnlightenmentCenterCurrentInfluence - (getCurrentConvictionWithEmpower() / countOfAllRobotsNearby));
         } 
         else 
         {
-            remainderOfNeutralConviction = neutralEnlightenmentCenterCurrentInfluence - (robotCurrentConviction - POLITICIAN_TAX);
+            remainderOfNeutralConviction = (int) (neutralEnlightenmentCenterCurrentInfluence - getCurrentConvictionWithEmpower());
         }
 
         if (remainderOfNeutralConviction < 0) 

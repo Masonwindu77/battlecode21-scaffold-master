@@ -26,7 +26,7 @@ public class MuckrakerTest01 extends RobotPlayer
         senseNearbyRobots();
         tryExpose();
 
-        if (turnCount > 65 || robotRole == RobotRoles.SlandererAttacker) 
+        if ((neutralEnlightenmentCenterFound && turnCount > 75) || (robotController.getRoundNum() >= END_GAME_ROUND_STRAT) || robotRole == RobotRoles.SlandererAttacker) 
         {
             Sense.checkForCommunications();    
         }
@@ -280,11 +280,11 @@ public class MuckrakerTest01 extends RobotPlayer
     }
 
     private static void setRobotRole() {
-        if (robotController.getInfluence() == 1) {
+        if (robotController.getInfluence() < 4) 
+        {
             robotRole = RobotRoles.Scout;
-        } else if (robotController.getInfluence() == 2) {
-            robotRole = RobotRoles.DefendSlanderer;
-        } else 
+        }
+        else 
         {
             robotRole = RobotRoles.SlandererAttacker;
         }

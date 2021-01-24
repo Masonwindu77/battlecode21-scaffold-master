@@ -59,12 +59,6 @@ public class PoliticianNormal extends PoliticianTest01
                 hasTarget = false;
             }
         }
-        else if (empowerFactor > 3 && nearFriendlyEnlightenmentCenter)
-        {
-            if (robotController.canEmpower(distanceToFriendlyEnlightenmentCenter)) {
-                robotController.empower(distanceToFriendlyEnlightenmentCenter);
-            }
-        }
 
         // Movement
         if (moveRobot || (politicianECBombNearby && enemyEnlightenmentCenterIsAround))
@@ -313,7 +307,7 @@ public class PoliticianNormal extends PoliticianTest01
 
         if (countOfAllRobotsInActionRadius > 0) 
         {
-            remainderOfEnemyConviction = (int) (enemyMuckrakerConviction - (getCurrentConviction() / countOfAllRobotsInActionRadius));
+            remainderOfEnemyConviction = (int) (enemyMuckrakerConviction - (getCurrentConvictionWithEmpower() / countOfAllRobotsInActionRadius));
         }
 
         if (remainderOfEnemyConviction < 0) 
