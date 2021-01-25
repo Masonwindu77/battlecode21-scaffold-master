@@ -191,7 +191,6 @@ public class EnlightenmentCenterHelper extends EnlightenmentCenterTest01
         if (neutralEnlightenmentCenterFound
             && !buildThisTurn
             && decideToBuildNeutralEnlightenmentCenterBasedOnIncome()
-            && (turnCountSinceLastNeutralBomb == 0)
             && (countOfNeutralPoliticianBomb <= countOfNeutralPoliticianBombAllowed)) 
         {
             if (isThereEnoughForNeutralEnlightenmentCenterCapture() && isItSafe()) 
@@ -214,7 +213,6 @@ public class EnlightenmentCenterHelper extends EnlightenmentCenterTest01
         
         // Build EC Bomb for Enemy Enlightenment Center
         if (enemyEnlightenmentCenterFound
-            && decideToBuildEnemyEnlightenmentCenterBasedOnIncome()
             && !buildThisTurn
             && !buildSlanderer
             && !stockUpForNeutralEnlightenmentCenter) 
@@ -242,7 +240,7 @@ public class EnlightenmentCenterHelper extends EnlightenmentCenterTest01
             && !muckRush
             && isItSafeForSlanderer() 
             && isItSafe()
-            && (enoughDefenderPoliticianNearby() 
+            && (enoughDefenderPolitician() 
                 || (countOfSlanderer <= 2 && robotController.getRoundNum() < 25))
             && (!stockUpForNeutralEnlightenmentCenter && !stockupForEnemyEnlightenmentCenter)) 
         {
@@ -333,15 +331,13 @@ public class EnlightenmentCenterHelper extends EnlightenmentCenterTest01
         countOfPoliticianBomb++;
     }
 
-    private static boolean decideToBuildEnemyEnlightenmentCenterBasedOnIncome() {
-		return false;
-	}
-
 	private static boolean decideToBuildNeutralEnlightenmentCenterBasedOnIncome() 
     {
-        return (neutralEnlightenmentCenterCurrentInfluence != 0 && (income >= 50 && neutralEnlightenmentCenterCurrentInfluence < HIGHEST_INFLUENCE_VALUE_FOR_NEUTRAL_LOCATION) 
+        return (neutralEnlightenmentCenterCurrentInfluence != 0 
+        && ((income >= 50 && neutralEnlightenmentCenterCurrentInfluence < HIGHEST_INFLUENCE_VALUE_FOR_NEUTRAL_LOCATION)
             || (robotCurrentInfluence > 200 && neutralEnlightenmentCenterCurrentInfluence < MIDDLE_INFLUENCE_VALUE_FOR_NEUTRAL_LOCATION)
-            || (neutralEnlightenmentCenterCurrentInfluence == LOWEST_INFLUENCE_VALUE_FOR_NEUTRAL_LOCATION));
+            || (robotCurrentInfluence > 400 && income >= 25)
+            || (neutralEnlightenmentCenterCurrentInfluence == LOWEST_INFLUENCE_VALUE_FOR_NEUTRAL_LOCATION)));
     }
 
     private static void buildNeutralECBomb() throws GameActionException 

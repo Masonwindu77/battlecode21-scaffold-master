@@ -24,7 +24,7 @@ public class EnlightenmentCenterTest01 extends RobotPlayer
     } 
 
     // Gotta sava bytecode somehow
-    protected static List<RobotInfo> builtRobotsInfos = new ArrayList<>(); // TODO: Make this an arraylist of robotInfo....
+    protected static List<RobotInfo> builtRobotsInfos = new ArrayList<>();
     protected static int whereIteratorStopped = 0;
     protected static String flagExtraInfoToSkip = "18;";
 
@@ -67,7 +67,7 @@ public class EnlightenmentCenterTest01 extends RobotPlayer
     protected static final int HIGHEST_INFLUENCE_VALUE_FOR_NEUTRAL_LOCATION = 500;
 
     // Enemy robots in the area
-    protected static int countOfEnemyPoliticiansOverFiftyInfluence = 0;
+    protected static int countOfEnemyPoliticiansOverThirtyInfluence = 0;
     protected static int countOfEnemyPoliticiansUnderTwentyInfluence = 0;
     protected static int countOfEnemyMuckraker = 0;
     protected static int countOfOtherRobots = 0;
@@ -402,8 +402,7 @@ public class EnlightenmentCenterTest01 extends RobotPlayer
             else 
             {
                 updateCountOfRobots(robotInfo);
-
-                builtRobotsInfos.remove(whereIteratorStopped); // TODO: this could be where you count the # of robots alive.
+                builtRobotsInfos.remove(whereIteratorStopped);
             }
         }
 
@@ -496,7 +495,7 @@ public class EnlightenmentCenterTest01 extends RobotPlayer
     protected static void resetVariablesForSensing()
     {
         countOfEnemyMuckraker = 0;
-        countOfEnemyPoliticiansOverFiftyInfluence = 0;
+        countOfEnemyPoliticiansOverThirtyInfluence = 0;
         countOfEnemyPoliticiansUnderTwentyInfluence = 0;
         countOfOtherRobots = 0;
 
@@ -522,10 +521,10 @@ public class EnlightenmentCenterTest01 extends RobotPlayer
 
         for (RobotInfo enemyRobotInfo : enemyRobots) 
         {
-            if (enemyRobotInfo.getType() == RobotType.POLITICIAN && enemyRobotInfo.getConviction() > 60) 
+            if (enemyRobotInfo.getType() == RobotType.POLITICIAN && enemyRobotInfo.getConviction() > 30) 
             {
                 enemyTargetNearby.add(enemyRobotInfo.getLocation());
-                countOfEnemyPoliticiansOverFiftyInfluence++;
+                countOfEnemyPoliticiansOverThirtyInfluence++;
             } 
             else if (enemyRobotInfo.getType() == RobotType.POLITICIAN && enemyRobotInfo.getConviction() <= 20)
             {
@@ -578,7 +577,7 @@ public class EnlightenmentCenterTest01 extends RobotPlayer
 
     protected static boolean isItSafe() throws GameActionException 
     {
-        return countOfEnemyPoliticiansOverFiftyInfluence == 0;
+        return countOfEnemyPoliticiansOverThirtyInfluence == 0;
     }
 
     protected static boolean hasEnoughInfluenceToBeSafe(int influenceToUse)
@@ -652,16 +651,16 @@ public class EnlightenmentCenterTest01 extends RobotPlayer
     //     return targetLocation;
     // }
 
-    protected static boolean enoughDefenderPoliticianNearby()
+    protected static boolean enoughDefenderPolitician()
     {
-        boolean enoughDefenderPoliticianNearby = false;
+        boolean enoughDefenderPolitician = false;
         
-        if (countOfDefenderPolitician >= countOfSlanderer)
+        if (countOfDefenderPolitician >= Math.ceil(countOfSlanderer * 0.75))
         {
-            enoughDefenderPoliticianNearby = true;
+            enoughDefenderPolitician = true;
         }
 
-        return enoughDefenderPoliticianNearby;
+        return enoughDefenderPolitician;
     }
 
     protected static Direction getAvailableDirectionToSpawn() throws GameActionException 
