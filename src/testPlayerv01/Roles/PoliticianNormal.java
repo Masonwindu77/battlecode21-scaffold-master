@@ -149,9 +149,9 @@ public class PoliticianNormal extends PoliticianTest01
         stayNearSlanderers();      
         tryAttackEnemyMuckrakerIfNearby();
         
-        if (homeEnlightenmentCenterSurrounded() && robotController.canEmpower(ACTION_RADIUS_POLITICIAN)) 
+        if (homeEnlightenmentCenterSurrounded() && robotController.canEmpower(distanceToClosestRobotMapLocation)) 
         {
-            robotController.empower(ACTION_RADIUS_POLITICIAN);
+            robotController.empower(distanceToClosestRobotMapLocation);
             return;
         }
         
@@ -281,7 +281,8 @@ public class PoliticianNormal extends PoliticianTest01
         // Check that the slanderer to defend is within the radius
         // Move randomly either towards enemy or back to slanderer
         // Move to target if spot Muckraker
-        if (closestMapLocationSlandererToDefend != null && !slandererIsInTrouble) 
+        if (closestMapLocationSlandererToDefend != null 
+            && !slandererIsInTrouble && !tooCloseToFriendlyDefender) 
         {
             if (robotController.getLocation().isWithinDistanceSquared(closestMapLocationSlandererToDefend, sensorRadiusSquared)
                 && robotController.getLocation().distanceSquaredTo(closestMapLocationSlandererToDefend) >= ACTION_RADIUS_POLITICIAN
@@ -309,6 +310,10 @@ public class PoliticianNormal extends PoliticianTest01
         else if (slandererIsInTrouble && !enemyMuckrakersNearby)
         {
             nextDirection = robotController.getLocation().directionTo(slandererInTroubleMapLocation);
+        }
+        else if (tooCloseToFriendlyDefender)
+        {
+            nextDirection = closestFriendlyDefenderMapLocation.directionTo(robotController.getLocation());
         }
         // else if (enemyEnlightenmentCenterFound && friendlySlandererNearby) 
         // {

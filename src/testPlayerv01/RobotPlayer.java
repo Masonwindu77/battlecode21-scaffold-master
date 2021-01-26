@@ -14,7 +14,8 @@ public strictfp class RobotPlayer {
 
     static final RobotType[] spawnableScoutRobot = { RobotType.POLITICIAN, RobotType.MUCKRAKER, };
 
-    public static final Direction[] directions = { Direction.NORTH
+    public static final Direction[] directions = { 
+        Direction.NORTH
         , Direction.SOUTH
         , Direction.EAST
         , Direction.WEST
@@ -42,7 +43,7 @@ public strictfp class RobotPlayer {
     }
 
     protected static int turnCount;
-    static boolean debug = false;
+    static boolean debug = true;
 
     protected static Random randomInteger;
     protected static boolean rightBugMovement = true;
@@ -123,8 +124,7 @@ public strictfp class RobotPlayer {
     protected static final int END_GAME_ROUND_STRAT = 1000;
 
     // POLITICIAN
-    public static final int MIN_NORMAL_POLITICIAN = 12;
-    protected static final int MAX_NORMAL_POLITICIAN = 23;
+    protected static final int MAX_NORMAL_POLITICIAN = 30;
     protected static final int POLITICIAN_TAX = 10;
     protected static boolean moveRobot;
     protected static int countOfNeutralPoliticianBomb = 0;

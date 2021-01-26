@@ -102,19 +102,25 @@ public class Slanderer extends RobotPlayer
         else if (enemyEnlightenmentCenterFound) 
         {
             // if the next move places it on the adjacent square around the EC. Don't move there.
-            if (spawnEnlightenmentCenterHomeLocation != null 
-            && !robotController.getLocation().add(Movement.getOppositeDirection(robotController.getLocation().directionTo(enemyCurrentEnlightenmentCenterGoingFor))).isAdjacentTo(spawnEnlightenmentCenterHomeLocation)
-            && robotController.canSenseLocation(robotController.getLocation().add(enemyCurrentEnlightenmentCenterGoingFor.directionTo(robotController.getLocation()))))
+            if(spawnEnlightenmentCenterHomeLocation != null)
             {
-                Movement.moveAwayFromLocation(enemyCurrentEnlightenmentCenterGoingFor);
-            }
-            else if (robotController.getLocation().add(Movement.getOppositeDirection(robotController.getLocation().directionTo(enemyCurrentEnlightenmentCenterGoingFor))).isAdjacentTo(spawnEnlightenmentCenterHomeLocation))
-            {
-                Movement.moveAwayFromLocation(spawnEnlightenmentCenterHomeLocation);
-            }
+                if (!robotController.getLocation().add(Movement.getOppositeDirection(robotController.getLocation().directionTo(enemyCurrentEnlightenmentCenterGoingFor))).isAdjacentTo(spawnEnlightenmentCenterHomeLocation)
+                && robotController.canSenseLocation(robotController.getLocation().add(enemyCurrentEnlightenmentCenterGoingFor.directionTo(robotController.getLocation()))))
+                {
+                    Movement.moveAwayFromLocation(enemyCurrentEnlightenmentCenterGoingFor);
+                }
+                else if (robotController.getLocation().add(Movement.getOppositeDirection(robotController.getLocation().directionTo(enemyCurrentEnlightenmentCenterGoingFor))).isAdjacentTo(spawnEnlightenmentCenterHomeLocation))
+                {
+                    Movement.moveAwayFromLocation(spawnEnlightenmentCenterHomeLocation);
+                }
+            }            
             else if (mapLocationOfEdge != null)
             {
                 moveToEdgeOfTheMap();
+            }
+            else 
+            {
+                Movement.moveAwayFromLocation(enemyCurrentEnlightenmentCenterGoingFor);
             }
         }
     }

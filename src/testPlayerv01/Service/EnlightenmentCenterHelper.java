@@ -12,7 +12,6 @@ public class EnlightenmentCenterHelper extends EnlightenmentCenterTest01
 
     static boolean stockUpForNeutralEnlightenmentCenter;
     static boolean muckRush;
-    private static int turnCountSinceLastNeutralBomb;
 	private static boolean stockupForEnemyEnlightenmentCenter;
 
     public static void checkFlagsForSignals(int extraInformation, int flag, int robotIdThatSpotted) throws GameActionException
@@ -137,6 +136,10 @@ public class EnlightenmentCenterHelper extends EnlightenmentCenterTest01
     public static void decideWhatToBuild() throws GameActionException
     {
         muckRush = false;
+        if (!neutralEnlightenmentCenterFound || neutralEnlightenmentCenterHasBeenConverted) 
+        {
+            stockUpForNeutralEnlightenmentCenter = false;
+        }
 
         if (robotController.isReady()) 
         {
@@ -238,22 +241,23 @@ public class EnlightenmentCenterHelper extends EnlightenmentCenterTest01
         if (buildSlanderer
             && !buildThisTurn 
             && !muckRush
+            && !weSpawnedRightNextToEnemy
             && isItSafeForSlanderer() 
             && isItSafe()
-            && (enoughDefenderPolitician() 
-                || (countOfSlanderer <= 2 && robotController.getRoundNum() < 25))
-            && (!stockUpForNeutralEnlightenmentCenter && !stockupForEnemyEnlightenmentCenter)) 
+            && (enoughDefenderPolitician() || countOfSlanderer <= 2 && robotController.getRoundNum() < 25)
+            && (!stockUpForNeutralEnlightenmentCenter && !stockupForEnemyEnlightenmentCenter))
         {
             buildEconomy();
         }
-        else if (!isItSafe() && hasEnoughInfluenceToBeSafe(getAmountNeededForSlanderer()))  
+        else if (!isItSafe() && isItSafeForSlanderer() && hasEnoughInfluenceToBeSafe(getAmountNeededForSlanderer()))  
         {
             buildEconomy();
         }          
         else if (buildSlanderer 
         && !buildThisTurn 
         && isItSafe()
-        && (!stockUpForNeutralEnlightenmentCenter || !isItSafeForSlanderer() || muckRush))
+        && (!isItSafeForSlanderer() || muckRush) 
+        && (!stockUpForNeutralEnlightenmentCenter && !stockupForEnemyEnlightenmentCenter))
         {
             buildDefenders();
         }          
@@ -263,18 +267,19 @@ public class EnlightenmentCenterHelper extends EnlightenmentCenterTest01
         // After Mid game build more polis
         if (robotController.getRoundNum() <= MIDDLE_GAME_ROUND_START 
             && robotController.getRoundNum() > BEGINNING_ROUND_STRAT
-            && robotController.getRobotCount() > 50
-            && robotCurrentInfluence >= 1000
+            && robotController.getRobotCount() > 40
+            && (robotCurrentInfluence >= 1000 || income > 50)
             && !buildThisTurn
             && countOfBuffMucks < 10
+            && !stockUp
             && isItSafe()) 
         {
             RobotType toBuild = RobotType.MUCKRAKER;
 
             int influence = 0;
-            if ((robotCurrentInfluence * .25) > BUFF_MUCKRAKER_MIN_INFLUENCE) 
+            if ((robotCurrentInfluence * .15) > BUFF_MUCKRAKER_MIN_INFLUENCE) 
             {
-                int max = (int) Math.ceil(robotCurrentInfluence * .25);
+                int max = (int) Math.ceil(robotCurrentInfluence * .15);
                 int min = BUFF_MUCKRAKER_MIN_INFLUENCE;
                 influence = randomInteger.nextInt(max - min + 1) + min;
 
@@ -290,15 +295,15 @@ public class EnlightenmentCenterHelper extends EnlightenmentCenterTest01
             } 
         }
 
-        if (robotController.getRoundNum() >= MIDDLE_GAME_ROUND_START 
+        if (robotController.getRoundNum() >= END_GAME_ROUND_STRAT 
             && robotController.getRobotCount() > 100
-            && !buildThisTurn
+            && (!buildThisTurn && !stockUpForNeutralEnlightenmentCenter && !stockupForEnemyEnlightenmentCenter && !stockUp)
             && isItSafe()) 
         {
             RobotType toBuild = RobotType.POLITICIAN;
 
             int influence = 0;
-            if ((lastTurnInfluence * .25) > MAX_NORMAL_POLITICIAN) 
+            if ((lastTurnInfluence * .15) > MAX_NORMAL_POLITICIAN) 
             {
                 int max = (int) Math.ceil(lastTurnInfluence * .25);
                 int min = MAX_NORMAL_POLITICIAN;
@@ -326,7 +331,7 @@ public class EnlightenmentCenterHelper extends EnlightenmentCenterTest01
         RobotBuilder.robotTypeToBuild = RobotType.POLITICIAN;
 
         turnsNotBuilding = 0;
-        stockUp = false;
+        stockupForEnemyEnlightenmentCenter = false;
         buildThisTurn = true;
         countOfPoliticianBomb++;
     }
@@ -337,7 +342,7 @@ public class EnlightenmentCenterHelper extends EnlightenmentCenterTest01
         && ((income >= 50 && neutralEnlightenmentCenterCurrentInfluence < HIGHEST_INFLUENCE_VALUE_FOR_NEUTRAL_LOCATION)
             || (robotCurrentInfluence > 200 && neutralEnlightenmentCenterCurrentInfluence < MIDDLE_INFLUENCE_VALUE_FOR_NEUTRAL_LOCATION)
             || (robotCurrentInfluence > 400 && income >= 25)
-            || (neutralEnlightenmentCenterCurrentInfluence == LOWEST_INFLUENCE_VALUE_FOR_NEUTRAL_LOCATION)));
+            || (neutralEnlightenmentCenterCurrentInfluence <= (LOWEST_INFLUENCE_VALUE_FOR_NEUTRAL_LOCATION * 2))));
     }
 
     private static void buildNeutralECBomb() throws GameActionException 
@@ -350,7 +355,6 @@ public class EnlightenmentCenterHelper extends EnlightenmentCenterTest01
         stockUpForNeutralEnlightenmentCenter = false;
         buildThisTurn = true;
         countOfNeutralPoliticianBomb++;
-        turnCountSinceLastNeutralBomb = turnCount;
     }
 
     protected static void buildEconomy() throws GameActionException
@@ -398,7 +402,7 @@ public class EnlightenmentCenterHelper extends EnlightenmentCenterTest01
         } 
 
          // Build a scout if stocking up
-        if (!buildThisTurn)
+        if (!buildThisTurn && countOfMuckrakers <= 200)
         {
              RobotBuilder.directionToSpawn = getAvailableDirectionToSpawn();
              RobotBuilder.influenceToUse =  INFLUENCE_FOR_SCOUT;

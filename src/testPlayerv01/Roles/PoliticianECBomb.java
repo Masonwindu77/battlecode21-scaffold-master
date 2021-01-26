@@ -59,7 +59,7 @@ public class PoliticianECBomb extends PoliticianTest01 {
         }        
         else 
         {
-            if (robotController.getRoundNum() >= MIDDLE_GAME_ROUND_START 
+            if (robotController.getRoundNum() >= END_GAME_ROUND_STRAT 
             && checkIfPoliticianShouldEmpower() && distanceToClosestRobotMapLocation != 0) 
             {
                 if (robotController.canEmpower(distanceToClosestRobotMapLocation)) {
@@ -69,17 +69,43 @@ public class PoliticianECBomb extends PoliticianTest01 {
             }
             else if (checkIfBombShouldEmpower() && empowerCanConvertEnemyAtMaxRadius())
             {
-
+                if (robotController.canEmpower(ACTION_RADIUS_POLITICIAN)) 
+                {
+                    robotController.empower(ACTION_RADIUS_POLITICIAN);
+                }
+                return;
             }
 
-            if (hasTarget && closestRobotMapLocation != null) 
+            if (robotController.getRoundNum() <= MIDDLE_GAME_ROUND_START) 
             {
-                Movement.moveToTargetLocation(closestRobotMapLocation);
+                if (closestFriendlyEnlightenmentCenter != null)
+                {
+                    Direction directionFromFriendlyEnlightenmentCenter = closestFriendlyEnlightenmentCenter.directionTo(robotController.getLocation());
+                    MapLocation placeNearbyFriendlyEnlightenmentCenter = closestFriendlyEnlightenmentCenter.add(directionFromFriendlyEnlightenmentCenter).add(directionFromFriendlyEnlightenmentCenter);
+                    int sensorRadiusSquared = robotController.getType().sensorRadiusSquared;
+
+                    if (robotController.getLocation().distanceSquaredTo(closestFriendlyEnlightenmentCenter) <= (sensorRadiusSquared * 1.5)) 
+                    {
+                        Movement.moveToTargetLocation(placeNearbyFriendlyEnlightenmentCenter);    
+                    }
+                }
+                else if (closestRobotMapLocation != null)
+                {
+                    directionToScout = robotController.getLocation().directionTo(closestRobotMapLocation);
+                    Movement.scoutAction();
+                }                
             }
             else 
             {
-                Movement.scoutAction();
-            }
+                if (hasTarget && closestRobotMapLocation != null) 
+                {
+                    Movement.moveToTargetLocation(closestRobotMapLocation);
+                }
+                else 
+                {
+                    Movement.scoutAction();
+                }
+            }            
         }
     }
 
@@ -176,14 +202,6 @@ public class PoliticianECBomb extends PoliticianTest01 {
         else if (homeEnlightenmentCenterSurrounded() && robotController.canEmpower(ACTION_RADIUS_POLITICIAN)) 
         {
             robotController.empower(ACTION_RADIUS_POLITICIAN);
-            return;
-        }
-        else if (robotController.getRoundNum() >= MIDDLE_GAME_ROUND_START 
-            && checkIfPoliticianShouldEmpower() 
-            && distanceToClosestRobotMapLocation != 0
-            && robotController.canEmpower(distanceToClosestRobotMapLocation)) 
-        {
-            robotController.empower(distanceToClosestRobotMapLocation);
             return;
         }
     }
@@ -315,14 +333,6 @@ public class PoliticianECBomb extends PoliticianTest01 {
         else if (homeEnlightenmentCenterSurrounded() && robotController.canEmpower(ACTION_RADIUS_POLITICIAN)) 
         {
             robotController.empower(ACTION_RADIUS_POLITICIAN);
-            return;
-        }
-        else if (robotController.getRoundNum() >= MIDDLE_GAME_ROUND_START 
-            && checkIfPoliticianShouldEmpower() 
-            && distanceToClosestRobotMapLocation != 0
-            && robotController.canEmpower(distanceToClosestRobotMapLocation)) 
-        {
-            robotController.empower(distanceToClosestRobotMapLocation);
             return;
         }
     }

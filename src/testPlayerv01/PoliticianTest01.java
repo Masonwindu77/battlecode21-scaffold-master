@@ -13,7 +13,10 @@ public class PoliticianTest01 extends RobotPlayer
     // Friendly
     protected static boolean nearFriendlyEnlightenmentCenter;
     protected static int distanceToFriendlyEnlightenmentCenter;
+    protected static MapLocation closestFriendlyEnlightenmentCenter;
     protected static int friendlyEnlightenmentCenterInfluence;
+    protected static boolean tooCloseToFriendlyDefender;
+    protected static MapLocation closestFriendlyDefenderMapLocation;
     
     // Enemy
     protected static int distanceToEnemyEnlightenmentCenter;
@@ -132,6 +135,12 @@ public class PoliticianTest01 extends RobotPlayer
         empowerFactor = robotController.getEmpowerFactor(friendly, 0);
         moveRobot = true;
 
+        if (spawnEnlightenmentCenterHomeLocation != null 
+            && closestFriendlyEnlightenmentCenter == spawnEnlightenmentCenterHomeLocation) 
+        {
+            closestFriendlyEnlightenmentCenter = null;
+        }
+
         enemyEnlightenmentCenterIsAround = false;
         neutralEnlightenmentCenterIsAround = false;
 
@@ -164,6 +173,8 @@ public class PoliticianTest01 extends RobotPlayer
         enemyMuckrakerConviction = 0;
         slandererIsInTrouble = false;
         slandererInTroubleMapLocation = null;
+        tooCloseToFriendlyDefender = false;
+        closestFriendlyDefenderMapLocation = null;
 
         if (messageLastTwoTurnsForConverted == 0) 
         {
@@ -254,6 +265,21 @@ public class PoliticianTest01 extends RobotPlayer
                     slandererIsInTrouble = true;
                     slandererInTroubleMapLocation = robotInfo.getLocation();
                 }
+                else if (robotInfo.getInfluence() > POLITICIAN_SCOUT && robotInfo.getInfluence() <= POLITICIAN_DEFEND_SLANDERER
+                    && robotInfo.getType() == RobotType.POLITICIAN)
+                {
+                    if (closestFriendlyDefenderMapLocation == null || robotController.getLocation().distanceSquaredTo(robotInfo.getLocation()) <=
+                    robotController.getLocation().distanceSquaredTo(closestFriendlyDefenderMapLocation)) 
+                    {
+                        closestFriendlyDefenderMapLocation = robotInfo.getLocation();
+                        if (robotController.getLocation().isAdjacentTo(closestFriendlyDefenderMapLocation)
+                        && (spawnEnlightenmentCenterHomeLocation != null 
+                            && !robotController.getLocation().isAdjacentTo(spawnEnlightenmentCenterHomeLocation))) 
+                        {
+                            tooCloseToFriendlyDefender = true;
+                        }
+                    }
+                }
             }
         }
     }        
@@ -308,6 +334,7 @@ public class PoliticianTest01 extends RobotPlayer
                     nearFriendlyEnlightenmentCenter = true;
                     friendlyEnlightenmentCenterInfluence = robotInfo.getInfluence();
                     distanceToFriendlyEnlightenmentCenter = robotController.getLocation().distanceSquaredTo(robotInfo.getLocation());
+                    closestFriendlyEnlightenmentCenter = robotInfo.getLocation();
                 } 
                 else if (robotInfo.getTeam() == friendly) 
                 {
@@ -497,7 +524,8 @@ public class PoliticianTest01 extends RobotPlayer
         if (robotCurrentInfluence >= POLITICIAN_EC_BOMB) 
         {
             robotRole = RobotRoles.PoliticianEnlightenmentCenterBomb;
-        } else if (robotCurrentInfluence <= POLITICIAN_SCOUT) 
+        } 
+        else if (robotCurrentInfluence <= POLITICIAN_SCOUT) 
         {
             robotRole = RobotRoles.Scout;
         } 

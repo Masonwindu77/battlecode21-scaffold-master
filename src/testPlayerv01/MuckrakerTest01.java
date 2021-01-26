@@ -27,7 +27,7 @@ public class MuckrakerTest01 extends RobotPlayer
         senseNearbyRobots();
         tryExpose();
 
-        if ((neutralEnlightenmentCenterFound && turnCount > 75) || (robotController.getRoundNum() >= END_GAME_ROUND_STRAT) || robotRole == RobotRoles.SlandererAttacker) 
+        if ((neutralEnlightenmentCenterFound && turnCount > 65) || (robotController.getRoundNum() >= END_GAME_ROUND_STRAT) || robotRole == RobotRoles.SlandererAttacker) 
         {
             Sense.checkForCommunications();    
         }
@@ -63,6 +63,10 @@ public class MuckrakerTest01 extends RobotPlayer
                 directionToScout = spawnEnlightenmentCenterHomeLocation.directionTo(robotController.getLocation());
                 // directionTo can be from a different location. Like the enemyEC to where you are.
             }
+            // else if (getClosestEnemyRobot)
+            // {
+                // TODO: Add a way for the scouts to follow enemies back to their base.. Send location when getting closer?
+            // }
 
             Movement.scoutAction();
         } 
