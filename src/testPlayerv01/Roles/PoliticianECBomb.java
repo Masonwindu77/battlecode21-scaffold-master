@@ -223,17 +223,17 @@ public class PoliticianECBomb extends PoliticianTest01 {
                 robotController.empower(distanceToEnemyEnlightenmentCenter);
                 return;
             }
+            // If waiting around and close, empower
             else if (closestRobotToEnemyEnlightenmentCenter 
-                && politicianECBombNearby) 
+                && politicianECBombNearby
+                && turnsNearEnemyEnlightenmentCenterForAttacking > 20
+                && (robotController.getLocation().isAdjacentTo(enemyCurrentEnlightenmentCenterGoingFor) 
+                    || (countOfFriendliesInActionRadiusAroundEnemyEnlightenmentcenter < 1 && countOfEnemiesInActionRadiusAroundEnemyEnlightenmentcenter < 3)
+                    || robotController.getLocation().distanceSquaredTo(enemyCurrentEnlightenmentCenterGoingFor) >= 5))
             {
                 robotController.empower(distanceToEnemyEnlightenmentCenter);
                 return;
-            }
-            else if (turnsNearEnemyEnlightenmentCenterForAttacking > 10 && politicianECBombNearby)
-            {
-                robotController.empower(distanceToEnemyEnlightenmentCenter);
-                return;
-            }                        
+            }                      
         } 
         else 
         {

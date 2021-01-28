@@ -46,7 +46,7 @@ public strictfp class RobotPlayer {
 
     protected static int turnCount;
     static boolean debug = true;
-    static final int versionNumber = 27;
+    static final int versionNumber = 28;
 
     protected static Random randomInteger;
     protected static boolean rightBugMovement = true;
