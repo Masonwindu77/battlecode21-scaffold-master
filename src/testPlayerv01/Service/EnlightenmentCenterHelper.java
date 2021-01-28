@@ -294,7 +294,7 @@ public class EnlightenmentCenterHelper extends EnlightenmentCenterTest01
             && !weSpawnedRightNextToEnemy
             && isItSafeForSlanderer() 
             && isItSafe()
-            && (enoughDefenderPolitician() || (countOfSlanderer <= 2 && robotController.getRoundNum() < 25))
+            && (enoughDefenderPolitician() || (countOfSlanderer <= 2 && turnCount < 25))
             && (!stockUpForNeutralEnlightenmentCenter && !stockupForEnemyEnlightenmentCenter))
         {
             buildEconomy();

@@ -832,9 +832,8 @@ public class EnlightenmentCenterTest01 extends RobotPlayer
         if (robotController.getRoundNum() == 1) 
         {
             numberOfEnlightenmentCenters = robotController.getRobotCount();
+            numberOfScoutsToCreateInBeginning = NUMBER_OF_MUCKRAKERS_IN_BEGINNING;
         }
-
-        numberOfScoutsToCreateInBeginning = NUMBER_OF_MUCKRAKERS_IN_BEGINNING;        
 
         setConstants();
         spawnEnlightenmentCenterHomeLocation = robotController.getLocation();

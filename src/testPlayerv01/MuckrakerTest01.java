@@ -19,6 +19,9 @@ public class MuckrakerTest01 extends RobotPlayer
     static MapLocation closestPoliticianBomb;
     public static boolean enemyMuckrakersNearby;
     public static MapLocation enemyMuckrakerMapLocation;
+    private static int targetSlandererInfluence;
+    private static MapLocation exposeThisSlandererLocation;
+    private static int exposeThisSlandererInfluence;
 
     @SuppressWarnings("unused")
     public static void run() throws GameActionException 
@@ -76,8 +79,15 @@ public class MuckrakerTest01 extends RobotPlayer
             Movement.moveToTargetLocation(targetSlanderer);    
         }
         
-        Scout.neutralOrEnemyBaseFound();   
-
+        if (robotRole == RobotRoles.Scout) 
+        {
+            Scout.neutralOrEnemyBaseFound();
+        }
+        else 
+        {
+            movementForSlandererAttacker();
+        }
+           
         // For the not scouts (Influence > 1)
         if ((!neutralEnlightenmentCenterFound && !enemyEnlightenmentCenterFound) || Scout.friendlyMuckrakerIsCloserOnTeam)
         {
@@ -122,6 +132,7 @@ public class MuckrakerTest01 extends RobotPlayer
         Team enemy = robotController.getTeam().opponent();
         int actionRadius = robotController.getType().actionRadiusSquared;
         RobotInfo[] enemyRobots = robotController.senseNearbyRobots(actionRadius, enemy);
+        exposeThisSlandererLocation = null;
 
         for (RobotInfo robotInfo : enemyRobots) 
         {
@@ -129,15 +140,30 @@ public class MuckrakerTest01 extends RobotPlayer
             {
                 if (robotController.canExpose(robotInfo.location)) 
                 {
-                    robotController.expose(robotInfo.location);
-                    if (targetSlanderer != null && targetSlanderer == robotInfo.location) 
+                    if (exposeThisSlandererLocation == null) 
                     {
-                        targetSlanderer = null;
+                        exposeThisSlandererLocation = robotInfo.location;
+                        exposeThisSlandererInfluence = robotInfo.influence;
                     }
-                    return;
+                    else if (exposeThisSlandererInfluence < robotInfo.influence)
+                    {
+                        exposeThisSlandererLocation = robotInfo.location;
+                        exposeThisSlandererInfluence = robotInfo.influence;
+                    }                    
                 }
             }
         }
+        
+        if (exposeThisSlandererLocation != null) 
+        {
+            robotController.expose(exposeThisSlandererLocation);
+            
+            if (targetSlanderer != null && targetSlanderer == exposeThisSlandererLocation) 
+            {
+                targetSlanderer = null;
+            }
+            return;
+        }       
     }
 
     private static void senseNearbyRobots() throws GameActionException
@@ -163,10 +189,18 @@ public class MuckrakerTest01 extends RobotPlayer
                 }                
             }
             else if (robotInfo.getType() == RobotType.SLANDERER 
-                && robotInfo.getTeam() == enemy
-                && targetSlanderer == null) 
+                && robotInfo.getTeam() == enemy) 
             {
-                targetSlanderer = robotInfo.getLocation();    
+                if(targetSlanderer == null)
+                {
+                    targetSlanderer = robotInfo.getLocation();
+                    targetSlandererInfluence = robotInfo.getInfluence();
+                }
+                else if (targetSlandererInfluence < robotInfo.getInfluence())
+                {
+                    targetSlanderer = robotInfo.getLocation();
+                    targetSlandererInfluence = robotInfo.getInfluence();
+                }                    
             }
             else if (robotInfo.getType() == RobotType.MUCKRAKER
                 && robotInfo.getTeam() == enemy) 
@@ -175,34 +209,33 @@ public class MuckrakerTest01 extends RobotPlayer
                 enemyMuckrakerMapLocation = robotInfo.getLocation(); 
                 haveMessageToSend = true;             
             }
-            if (robotController.getRoundNum() < BEGINNING_ROUND_STRAT
-                && Clock.getBytecodesLeft() >= 4500) 
-            {
-                if (!mapLocationOfRobotsThatHaveBeenSensed.contains(robotInfo.getLocation())) 
-                {
-                    mapLocationOfRobotsThatHaveBeenSensed.add(robotInfo.getLocation());
-                }
-            }
-            
         }
     }    
 
     
-
-    protected static void detectNearbyRobots() throws GameActionException
+    public static void movementForSlandererAttacker() throws GameActionException
     {
-        int detectRadiusSquared = robotController.getType().detectionRadiusSquared;
-        int sensorRadiusSquared = robotController.getType().sensorRadiusSquared;
-        MapLocation[] mapLocationOfRobots = robotController.detectNearbyRobots(detectRadiusSquared);
-        
-        for (MapLocation mapLocation : mapLocationOfRobots) 
+        if (enemyEnlightenmentCenterFound && enemyEnlightenmentCenterIsAround) 
         {
-            if ((robotController.getLocation().distanceSquaredTo(mapLocation) > sensorRadiusSquared) 
-                && !mapLocationOfRobotsThatHaveBeenSensed.contains(mapLocation)
-                && Clock.getBytecodesLeft() >= 3000) 
+            if (politicianECBombNearby) 
             {
-                currentDetectedRobotLocationGoingFor = mapLocation;
+                Movement.moveAwayFromLocation(enemyCurrentEnlightenmentCenterGoingFor);
+            } 
+            else if (targetSlanderer == null) 
+            {
+                Movement.moveToEnemyEnlightenmentCenter(enemyCurrentEnlightenmentCenterGoingFor);
             }
+        }
+        else if (enemyEnlightenmentCenterFound)
+        {
+            if (!robotController.getLocation().isWithinDistanceSquared(enemyCurrentEnlightenmentCenterGoingFor, robotController.getType().sensorRadiusSquared)) 
+            {
+                Movement.moveToEnemyEnlightenmentCenter(enemyCurrentEnlightenmentCenterGoingFor);
+            }
+        }
+        else
+        {
+            Movement.scoutAction();
         }
     }
 
