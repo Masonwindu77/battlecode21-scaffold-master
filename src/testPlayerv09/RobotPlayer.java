@@ -1,4 +1,4 @@
-package testPlayerv01;
+package testPlayerv09;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,24 +6,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import battlecode.common.*;
-import testPlayerv01.Model.EnlightenmentCenterInfo;
 
 @SuppressWarnings("unused")
 public strictfp class RobotPlayer {
     protected static RobotController robotController;
 
-    static final RobotType[] spawnableScoutRobot = { RobotType.POLITICIAN, RobotType.MUCKRAKER, RobotType.MUCKRAKER};
+    static final RobotType[] spawnableRobot = { RobotType.POLITICIAN, RobotType.SLANDERER, RobotType.MUCKRAKER, };
 
-    public static final Direction[] directions = { 
-        Direction.NORTH
-        , Direction.SOUTH
-        , Direction.EAST
-        , Direction.WEST
-        , Direction.NORTHEAST
-        , Direction.SOUTHEAST
-        , Direction.SOUTHWEST
-        , Direction.NORTHWEST, 
-    };
+    public static final Direction[] directions = { Direction.NORTH, Direction.NORTHEAST, Direction.EAST,
+            Direction.SOUTHEAST, Direction.SOUTH, Direction.SOUTHWEST, Direction.WEST, Direction.NORTHWEST, };
 
     public static enum RobotRoles {
         PoliticianEnlightenmentCenterBomb, // influence >= 100
@@ -36,17 +27,14 @@ public strictfp class RobotPlayer {
         Converted,
     }
 
-    public static void println(String string) 
-    {
-        if (debug) 
-        {
+    public static void println(String string) {
+        if (debug) {
             System.out.println(string);
         }
     }
 
-    protected static int turnCount;
+    static int turnCount;
     static boolean debug = true;
-    static final int versionNumber = 27;
 
     protected static Random randomInteger;
     protected static boolean rightBugMovement = true;
@@ -55,6 +43,7 @@ public strictfp class RobotPlayer {
     protected static Team enemy;
     protected static Team friendly;
     protected static double empowerFactor = 1;
+    static final int POLITICIAN_TAX = 10;
     protected static final int AMOUNT_OF_INFLUENCE_TO_NOT_EMPOWER_SELF = 1000000;
     
     protected static boolean haveMessageToSend = false;    
@@ -77,10 +66,11 @@ public strictfp class RobotPlayer {
     protected static int convertedEnemyIterator = 0;
     protected static int convertedNeutralIterator = 0;
 
+
     // Roles
     protected static RobotRoles robotRole;
     protected static final int POLITICIAN_EC_BOMB = 30;
-    protected static final int POLITICIAN_DEFEND_SLANDERER = 23;
+    protected static final int POLITICIAN_DEFEND_SLANDERER = 20;
     protected static final int POLITICIAN_SCOUT = 15;
     protected static final int INFLUENCE_FOR_SCOUT = 1;
     protected static final int INFLUENCE_FOR_DEFEND_SLANDERER_MUCKRAKER = 3;
@@ -90,46 +80,45 @@ public strictfp class RobotPlayer {
 
     // Movement
     protected static boolean targetInSight = false;
-    protected static final double passabilityThreshold = 0.05;
+    protected static final double passabilityThreshold = 0.15;
     protected static Direction bugDirection = null;
     protected static MapLocation locationToScout = null;
     protected static MapLocation targetLocation = null;
     protected static Direction directionToScout = null;
     protected static MapLocation stuckLocation = null;
-    protected static MapLocation mapLocationOfEdge;
 
     // Enemy Enlightenment Center
     protected static List<MapLocation> enemyEnlightenmentCenterMapLocation = new ArrayList<>();
     protected static List<MapLocation> convertedEnemyEnlightenmentCenterMapLocation = new ArrayList<>();
-    protected static List<EnlightenmentCenterInfo> enlightenmentCenterInfos = new ArrayList<>();
     protected static boolean enemyEnlightenmentCenterFound = false;
-    protected static MapLocation enemyCurrentEnlightenmentCenterGoingFor;
+    protected static MapLocation currentEnemyEnlightenmentCenterGoingFor;
     protected static boolean enemyEnlightenmentCenterHasBeenConverted = false;
     protected static boolean enemyEnlightenmentCenterIsAround;
 
-    // Friendly Enlightenment Center
+    // Home Enlightenment Center
     public static MapLocation spawnEnlightenmentCenterHomeLocation;
-    public static List<Integer> friendlyEnlightenmentCenterRobotIds = new ArrayList<>();
+    public static int spawnEnlightenmentCenterRobotId;
     protected static int currentEnlightenmentCenterFlag;
     protected static MapLocation[] squaresAroundEnlightenmentCenter = new MapLocation[8];
 
     // Neutral Enlightenment Center
     protected static boolean neutralEnlightenmentCenterFound = false;
     protected static List<MapLocation> neutralEnlightenmentCenterMapLocation = new ArrayList<>();
-    protected static MapLocation neutralCurrentEnlightenmentCenterGoingFor;
+    protected static MapLocation currentNeutralEnlightenmentCenterGoingFor;
     protected static List<MapLocation> convertedNeutralEnlightenmentCenterMapLocation = new ArrayList<>();
     protected static boolean neutralEnlightenmentCenterHasBeenConverted;
     protected static int neutralEnlightenmentCenterCurrentInfluence;
     protected static boolean neutralEnlightenmentCenterIsAround;
 
-    protected static final int BEGINNING_ROUND_STRAT = 150;
-    protected static final int MIDDLE_GAME_ROUND_START = 450;
+    protected static final int MIDDLE_GAME_ROUND_START = 600;
     protected static final int END_GAME_ROUND_STRAT = 1000;
 
     // POLITICIAN
-    protected static final int MAX_NORMAL_POLITICIAN = 30;
-    protected static final int POLITICIAN_TAX = 10;
+    public static final int MIN_NORMAL_POLITICIAN = 12;
+    protected static final int MAX_NORMAL_POLITICIAN = 20;
     protected static boolean moveRobot;
+
+    // TODO: ROLES in Flags?
 
     /**
      * run() is the method that is called when a robot is instantiated in the
@@ -144,11 +133,6 @@ public strictfp class RobotPlayer {
         RobotPlayer.robotController = robotController;
 
         turnCount = 0;
-
-        if (robotController.getRoundNum() == 1)
-        {
-            System.out.println("Version: " + versionNumber);
-        }
 
         switch (robotController.getType()) {
             case ENLIGHTENMENT_CENTER:
@@ -213,8 +197,8 @@ public strictfp class RobotPlayer {
      *
      * @return a random RobotType
      */
-    protected static RobotType randomSpawnableScoutRobotType() {
-        return spawnableScoutRobot[(int) (Math.random() * spawnableScoutRobot.length)];
+    static RobotType randomSpawnableRobotType() {
+        return spawnableRobot[(int) (Math.random() * spawnableRobot.length)];
     }
 
     /**
@@ -256,22 +240,18 @@ public strictfp class RobotPlayer {
             if (robotInfo.getType() == RobotType.ENLIGHTENMENT_CENTER && robotInfo.getTeam() == friendly) 
             {
                 spawnEnlightenmentCenterHomeLocation = robotInfo.getLocation();
-                friendlyEnlightenmentCenterRobotIds.add(robotInfo.getID());
+                spawnEnlightenmentCenterRobotId = robotInfo.getID();
             }
         }
     }  
 
     protected static void setSquaresAroundEnlightenmentCenter() 
     {
-        if (spawnEnlightenmentCenterHomeLocation != null) 
+        int iterator = 0;
+        for (Direction direction : directions) 
         {
-            int iterator = 0;
-            for (Direction direction : directions) 
-            {
-                squaresAroundEnlightenmentCenter[iterator] = spawnEnlightenmentCenterHomeLocation.add(direction);
-                ++iterator;
-            }
+            squaresAroundEnlightenmentCenter[iterator] = spawnEnlightenmentCenterHomeLocation.add(direction);
+            ++iterator;
         }
-        
     }
 }

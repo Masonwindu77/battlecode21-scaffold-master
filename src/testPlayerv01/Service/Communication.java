@@ -1,10 +1,10 @@
 package testPlayerv01.Service;
 
 import battlecode.common.*;
+import testPlayerv01.EnlightenmentCenterTest01;
 import testPlayerv01.MuckrakerTest01;
-import testPlayerv01.RobotPlayer;
 
-public class Communication extends RobotPlayer
+public class Communication extends EnlightenmentCenterTest01
 {
 
     // Sending Flags
@@ -150,8 +150,7 @@ public class Communication extends RobotPlayer
                     }
                 }
             }
-        }
-        
+        }        
     }
 
     public static boolean checkIfEnemeyEnlightenmentCenterHasBeenFound(int flag) throws GameActionException {
@@ -163,6 +162,30 @@ public class Communication extends RobotPlayer
         }
 
         return foundTheEnlightenmentCenter;
+    }
+
+    protected static boolean processEnemyEnlightenmentCenterHasBeenFound(int flag) throws GameActionException
+    {
+        MapLocation enemyEnlightenmentCenterLocation = Communication.getLocationFromFlag(flag);
+        boolean newEntry = false;
+
+        if (enemyEnlightenmentCenterMapLocation.isEmpty() 
+            || !enemyEnlightenmentCenterMapLocation.contains(enemyEnlightenmentCenterLocation))
+        {
+            enemyEnlightenmentCenterMapLocation.add(enemyEnlightenmentCenterLocation);
+            enemyEnlightenmentCenterFound = true;
+            newEntry = true;
+            countOfEnemyPoliticianBomb = 0; 
+        }
+
+        if (!convertedEnemyEnlightenmentCenterMapLocation.isEmpty()
+            && convertedEnemyEnlightenmentCenterMapLocation.contains(enemyEnlightenmentCenterLocation)) 
+        {
+            convertedEnemyEnlightenmentCenterMapLocation.removeIf(n -> n.equals(enemyEnlightenmentCenterLocation));
+            convertedEnemyIterator--;
+        }
+
+        return newEntry;
     }
 
     public static void checkIfFriendlyEnlightenmentCenterHasNeutralLocation() throws GameActionException 
@@ -393,8 +416,8 @@ public class Communication extends RobotPlayer
             convertedEnemyIterator++;
             enemyEnlightenmentCenterFound = false; 
             enemyEnlightenmentCenterHasBeenConverted = true;      
-            enemyCurrentEnlightenmentCenterGoingFor = null; 
-            convertedEnemyEnlightenmentCenterHasBeenProcessedThisTurn = true;                 
+            convertedEnemyEnlightenmentCenterHasBeenProcessedThisTurn = true;   
+            countOfEnemyPoliticianBomb = 0;               
         }              
     }
 

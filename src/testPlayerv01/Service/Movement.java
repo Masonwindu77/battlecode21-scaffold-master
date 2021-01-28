@@ -56,12 +56,9 @@ public class Movement extends RobotPlayer
                     bugDirection = direction;
                 }
 
-                // stuckCount++;
-                // TODO: Do BFS for getting around stuff...
-
                 while (bugDirection == direction || !canRobotMoveThroughTile(bugDirection, currentLocation)) {
                     bugDirection = getRandomDirection();
-                    if (canRobotMoveThroughTile(bugDirection, currentLocation)) // TODO: Test stuck location..
+                    if (canRobotMoveThroughTile(bugDirection, currentLocation))
                     {
                         robotController.move(bugDirection);
                         break;
@@ -81,22 +78,15 @@ public class Movement extends RobotPlayer
                     }
                 }
             }
-        } else if (robotController.isReady()) {
+        } else if (robotController.isReady()) 
+        {
             targetInSight = true;
-            // run BFS pathfinding
         }
     }
 
     static boolean canRobotMoveThroughTile(Direction direction, MapLocation currentLocation)
             throws GameActionException {
         return robotController.canMove(direction);
-        // if (robotController.canSenseLocation(currentLocation.add(direction))) {
-        // // &&
-        // // robotController.sensePassability(currentLocation.add(direction))
-        // // >= passabilityThreshold; // TODO: Need to fix movement still.
-        // } else {
-        // return false;
-        // }
     }
 
     protected static void greedyMoveToLocation(MapLocation target) throws GameActionException 
@@ -162,10 +152,10 @@ public class Movement extends RobotPlayer
 
     public static void scoutTheDirection(Direction direction) throws GameActionException 
     {
-        if (robotController.onTheMap(robotController.getLocation().add(direction).add(direction))) 
+        if (robotController.onTheMap(robotController.getLocation().add(direction).add(direction).add(direction))) 
         {
             //basicBugMovement(robotController.getLocation().add(direction));
-            greedyMoveToLocation(robotController.getLocation().add(direction).add(direction));
+            greedyMoveToLocation(robotController.getLocation().add(direction).add(direction).add(direction));
         }
         // Checking if still near home base and if found a wall.
         else
@@ -221,7 +211,7 @@ public class Movement extends RobotPlayer
         else 
         {
             //basicBugMovement(robotController.getLocation().add(directionToMoveAway));
-            greedyMoveToLocation(robotController.getLocation().add(directionToMoveAway));
+            greedyMoveToLocation(robotController.getLocation().add(directionToMoveAway).add(directionToMoveAway));
         }
     }
 

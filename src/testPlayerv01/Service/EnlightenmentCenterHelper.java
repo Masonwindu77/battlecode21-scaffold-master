@@ -19,15 +19,21 @@ public class EnlightenmentCenterHelper extends EnlightenmentCenterTest01
         // TODO: Add in check for edge of map
         if (checkIfRobotSignallingTheyFoundEnemyEnlightenmentCenter(extraInformation)) 
         {
-            setEnemyEnlightenmentCenter(flag);
+            if (Communication.processEnemyEnlightenmentCenterHasBeenFound(flag))
+            {
+                createEnemyEnlightenmentCenterEntry(robotIdThatSpotted, enemyEnlightenmentCenterMapLocation.get(enemyEnlightenmentCenterMapLocation.size() - 1));
+            }
         }
         else if (checkIfRobotSignallingEnlightenmentCenterConverted(extraInformation))
         {
-            Communication.processEnemyEnlightenmentCenterHasBeenConverted(Communication.getLocationFromFlag(flag));
+            MapLocation location = Communication.getLocationFromFlag(flag);
+            Communication.processEnemyEnlightenmentCenterHasBeenConverted(location);
+            updateEnemyEnlightenmentCenterForConversion(location);
         }
         else if (checkIfRobotSignallingEnemyECInfluence(extraInformation))
         {
             enemyEnlightenmentCenterCurrentInfluence = Communication.getEnemyEnlightenmentCenterInfluenceFromFlag(flag);
+            updateEnemyEnlightenmentCenterWithInfluence(robotIdThatSpotted, enemyEnlightenmentCenterCurrentInfluence);
         }
         else if (checkIfRobotSignallingNeutralEnlightenmentCenterFound(extraInformation))
         {
@@ -84,7 +90,6 @@ public class EnlightenmentCenterHelper extends EnlightenmentCenterTest01
 
     protected static void createNeutralEnlightenmentCenterEntry(int robotIdThatSpotted, MapLocation neutralMapLocation)
     {
-
         if(neutralEnlightenmentCenters.isEmpty() || !neutralEnlightenmentCenters.containsKey(neutralMapLocation))
         {
             EnlightenmentCenterInfo enlightenmentCenterInfo = new EnlightenmentCenterInfo();
@@ -110,12 +115,12 @@ public class EnlightenmentCenterHelper extends EnlightenmentCenterTest01
             for (Map.Entry<MapLocation, EnlightenmentCenterInfo> enlightenmentCenter : neutralEnlightenmentCenters.entrySet()) 
             {
                 EnlightenmentCenterInfo enlightenmentCenterInfo = enlightenmentCenter.getValue();
-                for (Integer robotIdThatSpottedInMap : enlightenmentCenterInfo.robotIdThatSpottedEnlightenmentCenter) {
+                for (Integer robotIdThatSpottedInMap : enlightenmentCenterInfo.robotIdThatSpottedEnlightenmentCenter) 
+                {
                     if (robotIdThatSpottedInMap == robotIdThatSpotted) 
                     {
                         enlightenmentCenterInfo.currentInfluence = localNeutralEnlightenmentCenterCurrentInfluence;
                         alreadyProcessedNeutralCenters++;
-                        enemyEnlightenmentCenterInfluenceHasBeenUpdated = true;
                     }
                 }
             }
@@ -125,13 +130,56 @@ public class EnlightenmentCenterHelper extends EnlightenmentCenterTest01
     protected static void updateNeutralEnlightenmentCenterForConversion(MapLocation neutralMapLocationConverted)
     {
         neutralEnlightenmentCenters.remove(neutralMapLocationConverted);
+        alreadyProcessedNeutralCenters--;
+    }
+
+    protected static void createEnemyEnlightenmentCenterEntry(int robotIdThatSpotted, MapLocation enemyMapLocation)
+    {
+        if(enemyEnlightenmentCenters.isEmpty() || !enemyEnlightenmentCenters.containsKey(enemyMapLocation))
+        {
+            EnlightenmentCenterInfo enlightenmentCenterInfo = new EnlightenmentCenterInfo();
+            enlightenmentCenterInfo.mapLocation = enemyMapLocation;
+            enlightenmentCenterInfo.robotIdIterator = 0;
+            enlightenmentCenterInfo.robotIdThatSpottedEnlightenmentCenter[enlightenmentCenterInfo.robotIdIterator] = robotIdThatSpotted;
+            enlightenmentCenterInfo.distanceSquaredToEnlightenmentCenter = robotController.getLocation().distanceSquaredTo(enemyMapLocation);
+            enlightenmentCenterInfo.team = enemy;
+            enemyEnlightenmentCenters.put(enemyMapLocation, enlightenmentCenterInfo);
+        }
+        else if (enemyEnlightenmentCenters.containsKey(enemyMapLocation)) 
+        {
+            EnlightenmentCenterInfo enlightenmentCenterInfo = enemyEnlightenmentCenters.get(enemyMapLocation);
+            enlightenmentCenterInfo.robotIdThatSpottedEnlightenmentCenter[enlightenmentCenterInfo.robotIdIterator] = robotIdThatSpotted;
+            enlightenmentCenterInfo.robotIdIterator++;
+        }
+    }
+
+    protected static void updateEnemyEnlightenmentCenterWithInfluence(int robotIdThatSpotted, int localEnemyEnlightenmentCenterCurrentInfluence)
+    {
+        if (enemyEnlightenmentCenters.size() != alreadyProcessedEnemyCenters) 
+        {
+            for (Map.Entry<MapLocation, EnlightenmentCenterInfo> enlightenmentCenter : enemyEnlightenmentCenters.entrySet()) 
+            {
+                EnlightenmentCenterInfo enlightenmentCenterInfo = enlightenmentCenter.getValue();
+                for (Integer robotIdThatSpottedInMap : enlightenmentCenterInfo.robotIdThatSpottedEnlightenmentCenter) {
+                    if (robotIdThatSpottedInMap == robotIdThatSpotted) 
+                    {
+                        enlightenmentCenterInfo.currentInfluence = localEnemyEnlightenmentCenterCurrentInfluence;
+                        alreadyProcessedEnemyCenters++;
+                        enemyEnlightenmentCenterInfluenceHasBeenUpdated = true;
+                    }
+                }
+            }
+        }        
+    }
+
+    protected static void updateEnemyEnlightenmentCenterForConversion(MapLocation enemyMapLocationConverted)
+    {
+        enemyEnlightenmentCenters.remove(enemyMapLocationConverted);
+        alreadyProcessedEnemyCenters--;
     }
 
     //#endregion
 
-    /** 
-
-    */
 
     public static void decideWhatToBuild() throws GameActionException
     {
@@ -170,7 +218,7 @@ public class EnlightenmentCenterHelper extends EnlightenmentCenterTest01
 
     protected static void buildNormalDefenseEconomy() throws GameActionException
     {
-        int countOfNeutralPoliticianBombAllowed = (neutralEnlightenmentCenters.size() * 2) != 0 ? (neutralEnlightenmentCenterMapLocation.size() * 2) : 2;
+        int countOfNeutralPoliticianBombAllowed = (neutralEnlightenmentCenters.size() * 2) != 0 ? (neutralEnlightenmentCenters.size() * 2) : 2;
 
         if (turnCount < 3 && !weSpawnedRightNextToEnemy && isItSafeForSlanderer() && isItSafe()) 
         {
@@ -191,7 +239,7 @@ public class EnlightenmentCenterHelper extends EnlightenmentCenterTest01
             }                
         }
 
-        if (neutralEnlightenmentCenterFound
+        if ((neutralEnlightenmentCenterFound && !enemyEnlightenmentCenterIsCloser)
             && !buildThisTurn
             && decideToBuildNeutralEnlightenmentCenterBasedOnIncome()
             && (countOfNeutralPoliticianBomb <= countOfNeutralPoliticianBombAllowed)) 
@@ -200,7 +248,7 @@ public class EnlightenmentCenterHelper extends EnlightenmentCenterTest01
             {
                 buildNeutralECBomb();
             } 
-            else if (!isThereEnoughForNeutralEnlightenmentCenterCapture())
+            else if (!isThereEnoughForNeutralEnlightenmentCenterCapture() && ((getAmountToMakePoliticianBombForNeutral() - robotCurrentInfluence) < 150))
             {
                 stockUpForNeutralEnlightenmentCenter = true;
             }
@@ -218,13 +266,15 @@ public class EnlightenmentCenterHelper extends EnlightenmentCenterTest01
         if (enemyEnlightenmentCenterFound
             && !buildThisTurn
             && !buildSlanderer
+            && decideToBuildEnemyEnlightenmentCenterBasedOnIncome()
+            //&& countOfEnemyPoliticianBomb <= countOfEnemyPoliticianBombAllowed
             && !stockUpForNeutralEnlightenmentCenter) 
         {
-            if (isThereEnoughForEnemyBomb() && isItSafe()) 
+            if (isThereEnoughForEnemyECCapture() && isItSafe()) 
             {
                 buildEnemyECBomb();
             }
-            else if (!isThereEnoughForEnemyBomb())
+            else if (!isThereEnoughForEnemyECCapture() && ((getAmountToMakePoliticianBombForEnemy() - robotCurrentInfluence) < 150))
             {
                 stockupForEnemyEnlightenmentCenter = true;
             }
@@ -244,7 +294,7 @@ public class EnlightenmentCenterHelper extends EnlightenmentCenterTest01
             && !weSpawnedRightNextToEnemy
             && isItSafeForSlanderer() 
             && isItSafe()
-            && (enoughDefenderPolitician() || countOfSlanderer <= 2 && robotController.getRoundNum() < 25)
+            && (enoughDefenderPolitician() || (countOfSlanderer <= 2 && robotController.getRoundNum() < 25))
             && (!stockUpForNeutralEnlightenmentCenter && !stockupForEnemyEnlightenmentCenter))
         {
             buildEconomy();
@@ -256,19 +306,87 @@ public class EnlightenmentCenterHelper extends EnlightenmentCenterTest01
         else if (buildSlanderer 
         && !buildThisTurn 
         && isItSafe()
-        && (!isItSafeForSlanderer() || muckRush) 
+        && (!isItSafeForSlanderer() || muckRush || !enoughDefenderPolitician()) 
         && (!stockUpForNeutralEnlightenmentCenter && !stockupForEnemyEnlightenmentCenter))
         {
             buildDefenders();
         }          
         
-        //#region Special Builds         
+        buildSpecialUnits();
+        buildScouts();
+    }
 
-        // After Mid game build more polis
+    
+
+	private static boolean decideToBuildNeutralEnlightenmentCenterBasedOnIncome() 
+    {
+        return (neutralEnlightenmentCenterCurrentInfluence != 0 
+        && ((income >= 50 && neutralEnlightenmentCenterCurrentInfluence < HIGHEST_INFLUENCE_VALUE_FOR_NEUTRAL_LOCATION)
+            || (robotCurrentInfluence > 200 && neutralEnlightenmentCenterCurrentInfluence < MIDDLE_INFLUENCE_VALUE_FOR_NEUTRAL_LOCATION)
+            || (robotCurrentInfluence > neutralEnlightenmentCenterCurrentInfluence + POLITICIAN_TAX + 1)
+            || (robotCurrentInfluence > 400 && neutralEnlightenmentCenterCurrentInfluence == HIGHEST_INFLUENCE_VALUE_FOR_NEUTRAL_LOCATION && income > 25)
+            || (neutralEnlightenmentCenterCurrentInfluence <= (LOWEST_INFLUENCE_VALUE_FOR_NEUTRAL_LOCATION * 2))));
+    }
+
+    private static void buildNeutralECBomb() throws GameActionException 
+    {
+        RobotBuilder.directionToSpawn = getAvailableDirectionToSpawn();
+        RobotBuilder.influenceToUse = getAmountToMakePoliticianBombForNeutral();
+        RobotBuilder.robotTypeToBuild = RobotType.POLITICIAN;
+
+        turnsNotBuilding = 0;
+        stockUpForNeutralEnlightenmentCenter = false;
+        buildThisTurn = true;
+        countOfNeutralPoliticianBomb++;
+    }
+
+    private static boolean decideToBuildEnemyEnlightenmentCenterBasedOnIncome() 
+    {
+        return (enemyEnlightenmentCenterCurrentInfluence != 0 
+        && ((income >= 50 && 300 > (enemyEnlightenmentCenterCurrentInfluence - robotCurrentInfluence))
+            || (robotCurrentInfluence > (enemyEnlightenmentCenterCurrentInfluence * 2))
+            || (robotCurrentInfluence > 400 && income >= 25)
+            || (enemyEnlightenmentCenterCurrentInfluence <= 100 && robotCurrentInfluence >= 200)));
+    }
+
+    private static void buildEnemyECBomb() throws GameActionException {
+        RobotBuilder.directionToSpawn = getAvailableDirectionToSpawn();
+        RobotBuilder.influenceToUse = getAmountToMakePoliticianBombForEnemy();
+        RobotBuilder.robotTypeToBuild = RobotType.POLITICIAN;
+
+        turnsNotBuilding = 0;
+        stockupForEnemyEnlightenmentCenter = false;
+        buildThisTurn = true;
+        countOfEnemyPoliticianBomb++;
+    }
+
+    protected static void buildEconomy() throws GameActionException
+    {
+        getAmountNeededForSlanderer();
+
+        if (robotCurrentInfluence < amountNeededForSlanderer) 
+        {
+            stockUp = true;
+        } 
+        else if (amountNeededForSlanderer != 0) 
+        {
+            turnsNotBuilding = 0;
+            buildThisTurn = true;
+            buildSlanderer = false;
+            RobotBuilder.robotTypeToBuild = RobotType.SLANDERER;
+            RobotBuilder.directionToSpawn = getAvailableDirectionToSpawn();
+            RobotBuilder.influenceToUse = amountNeededForSlanderer;
+            countOfSlanderer++;
+            stockUp = false;
+            amountNeededForSlanderer = 0;
+        }        
+    }
+
+    private static void buildSpecialUnits() throws GameActionException {
         if (robotController.getRoundNum() <= MIDDLE_GAME_ROUND_START 
             && robotController.getRoundNum() > BEGINNING_ROUND_STRAT
             && robotController.getRobotCount() > 40
-            && (robotCurrentInfluence >= 1000 || income > 50)
+            && (robotCurrentInfluence >= 500 || income > 75)
             && !buildThisTurn
             && countOfBuffMucks < 10
             && !stockUp
@@ -320,63 +438,6 @@ public class EnlightenmentCenterHelper extends EnlightenmentCenterTest01
                 }
             } 
         }
-        //#endregion
-
-        buildScouts();
-    }
-
-    private static void buildEnemyECBomb() throws GameActionException {
-        RobotBuilder.directionToSpawn = getAvailableDirectionToSpawn();
-        RobotBuilder.influenceToUse = getAmountToMakePoliticianBombForEnemy();
-        RobotBuilder.robotTypeToBuild = RobotType.POLITICIAN;
-
-        turnsNotBuilding = 0;
-        stockupForEnemyEnlightenmentCenter = false;
-        buildThisTurn = true;
-        countOfPoliticianBomb++;
-    }
-
-	private static boolean decideToBuildNeutralEnlightenmentCenterBasedOnIncome() 
-    {
-        return (neutralEnlightenmentCenterCurrentInfluence != 0 
-        && ((income >= 50 && neutralEnlightenmentCenterCurrentInfluence < HIGHEST_INFLUENCE_VALUE_FOR_NEUTRAL_LOCATION)
-            || (robotCurrentInfluence > 200 && neutralEnlightenmentCenterCurrentInfluence < MIDDLE_INFLUENCE_VALUE_FOR_NEUTRAL_LOCATION)
-            || (robotCurrentInfluence > 400 && income >= 25)
-            || (neutralEnlightenmentCenterCurrentInfluence <= (LOWEST_INFLUENCE_VALUE_FOR_NEUTRAL_LOCATION * 2))));
-    }
-
-    private static void buildNeutralECBomb() throws GameActionException 
-    {
-        RobotBuilder.directionToSpawn = getAvailableDirectionToSpawn();
-        RobotBuilder.influenceToUse = getAmountToMakePoliticianBombForNeutral();
-        RobotBuilder.robotTypeToBuild = RobotType.POLITICIAN;
-
-        turnsNotBuilding = 0;
-        stockUpForNeutralEnlightenmentCenter = false;
-        buildThisTurn = true;
-        countOfNeutralPoliticianBomb++;
-    }
-
-    protected static void buildEconomy() throws GameActionException
-    {
-        getAmountNeededForSlanderer();
-
-        if (robotCurrentInfluence < amountNeededForSlanderer) 
-        {
-            stockUp = true;
-        } 
-        else if (amountNeededForSlanderer != 0) 
-        {
-            turnsNotBuilding = 0;
-            buildThisTurn = true;
-            buildSlanderer = false;
-            RobotBuilder.robotTypeToBuild = RobotType.SLANDERER;
-            RobotBuilder.directionToSpawn = getAvailableDirectionToSpawn();
-            RobotBuilder.influenceToUse = amountNeededForSlanderer;
-            countOfSlanderer++;
-            stockUp = false;
-            amountNeededForSlanderer = 0;
-        }        
     }
 
     protected static void buildScouts() throws GameActionException
@@ -386,7 +447,7 @@ public class EnlightenmentCenterHelper extends EnlightenmentCenterTest01
             && !weSpawnedRightNextToEnemy
             && !buildThisTurn) 
         {
-            RobotBuilder.directionToSpawn = getDirectionToScout(); //getAvailableDirectionToSpawn();
+            RobotBuilder.directionToSpawn = getDirectionToScout();
             RobotBuilder.influenceToUse = INFLUENCE_FOR_SCOUT;
             RobotBuilder.robotTypeToBuild = randomSpawnableScoutRobotType();
 
@@ -402,16 +463,22 @@ public class EnlightenmentCenterHelper extends EnlightenmentCenterTest01
         } 
 
          // Build a scout if stocking up
-        if (!buildThisTurn && countOfMuckrakers <= 200)
+        if (!buildThisTurn && countOfScouts <= 175)
         {
              RobotBuilder.directionToSpawn = getAvailableDirectionToSpawn();
              RobotBuilder.influenceToUse =  INFLUENCE_FOR_SCOUT;
-             RobotBuilder.robotTypeToBuild = RobotType.MUCKRAKER;
+             RobotBuilder.robotTypeToBuild = randomSpawnableScoutRobotType();
  
              builtScoutLastTurn = true;
              turnsNotBuilding = 0;
              buildThisTurn = true;
-             countOfMuckrakers++;
+
+             if (RobotBuilder.robotTypeToBuild == RobotType.MUCKRAKER) 
+            {
+                countOfMuckrakers++;
+            }
+
+            countOfScouts++;
         }     
     }
 

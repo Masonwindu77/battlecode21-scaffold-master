@@ -11,4 +11,5 @@ public class EnlightenmentCenterInfo
     public int robotId;
     public int[] robotIdThatSpottedEnlightenmentCenter = new int[20];
     public int robotIdIterator;
+    public int numberOfRobotsGoingToIt;
 }
