@@ -375,7 +375,7 @@ public class PoliticianTest01 extends RobotPlayer
         RobotInfo[] allRobotInfos = robotController.senseNearbyRobots(distanceToEnemyEnlightenmentCenter);
         for (RobotInfo robotInfo : allRobotInfos) 
         {
-            if (robotInfo.getTeam() == enemy && robotInfo.getType() != RobotType.ENLIGHTENMENT_CENTER) 
+            if (robotInfo.getTeam() == enemy) 
             {
                 countOfEnemiesInActionRadiusAroundEnemyEnlightenmentcenter++;
             } 

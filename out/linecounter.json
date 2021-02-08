@@ -1,0 +1,3565 @@
+{
+    "extension": "linecounter",
+    "version": "0.2.7",
+    "workspace": "c:\\Users\\matope\\Desktop\\hodor\\Code\\BattleCode2021\\battlecode21-scaffold-master",
+    "linecount": [
+        {
+            "version": "0.2.7",
+            "counttime": "2021-01-30 16:08:07",
+            "filesum": 286,
+            "codesum": 21300,
+            "commentsum": 574,
+            "blanksum": 3686,
+            "statistics": {
+                ".txt": {
+                    "code": 19,
+                    "comment": 0,
+                    "blank": 3
+                },
+                ".java": {
+                    "code": 6518,
+                    "comment": 493,
+                    "blank": 950
+                },
+                ".md": {
+                    "code": 20,
+                    "comment": 1,
+                    "blank": 7
+                },
+                ".MF": {
+                    "code": 1,
+                    "comment": 0,
+                    "blank": 1
+                },
+                ".gradle": {
+                    "code": 280,
+                    "comment": 42,
+                    "blank": 72
+                },
+                ".properties": {
+                    "code": 15,
+                    "comment": 1,
+                    "blank": 0
+                },
+                "": {
+                    "code": 269,
+                    "comment": 35,
+                    "blank": 53
+                },
+                ".mapping": {
+                    "code": 2,
+                    "comment": 0,
+                    "blank": 0
+                },
+                ".json": {
+                    "code": 1,
+                    "comment": 0,
+                    "blank": 0
+                },
+                ".xml": {
+                    "code": 7,
+                    "comment": 0,
+                    "blank": 0
+                },
+                ".bat": {
+                    "code": 42,
+                    "comment": 0,
+                    "blank": 9
+                },
+                ".html": {
+                    "code": 13762,
+                    "comment": 1,
+                    "blank": 2497
+                },
+                ".idx": {
+                    "code": 1,
+                    "comment": 0,
+                    "blank": 0
+                },
+                ".bin": {
+                    "code": 1,
+                    "comment": 0,
+                    "blank": 0
+                },
+                ".css": {
+                    "code": 214,
+                    "comment": 0,
+                    "blank": 49
+                },
+                ".js": {
+                    "code": 148,
+                    "comment": 1,
+                    "blank": 45
+                }
+            },
+            "filelist": [
+                {
+                    "blank": 0,
+                    "code": 2,
+                    "comment": 0,
+                    "filename": ".gitattributes"
+                },
+                {
+                    "blank": 0,
+                    "code": 1,
+                    "comment": 33,
+                    "filename": ".gitignore"
+                },
+                {
+                    "filename": ".gradle\\6.0.1\\executionHistory\\executionHistory.bin",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": ".gradle\\6.0.1\\executionHistory\\executionHistory.lock",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "blank": 0,
+                    "code": 1,
+                    "comment": 0,
+                    "filename": ".gradle\\6.0.1\\fileChanges\\last-build.bin"
+                },
+                {
+                    "filename": ".gradle\\6.0.1\\fileContent\\fileContent.lock",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": ".gradle\\6.0.1\\fileHashes\\fileHashes.bin",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": ".gradle\\6.0.1\\fileHashes\\fileHashes.lock",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": ".gradle\\6.0.1\\fileHashes\\resourceHashesCache.bin",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0,
+                    "filename": ".gradle\\6.0.1\\gc.properties"
+                },
+                {
+                    "filename": ".gradle\\6.0.1\\javaCompile\\classAnalysis.bin",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": ".gradle\\6.0.1\\javaCompile\\jarAnalysis.bin",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": ".gradle\\6.0.1\\javaCompile\\javaCompile.lock",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": ".gradle\\6.0.1\\javaCompile\\taskHistory.bin",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": ".gradle\\buildOutputCleanup\\buildOutputCleanup.lock",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "blank": 0,
+                    "code": 2,
+                    "comment": 0,
+                    "filename": ".gradle\\buildOutputCleanup\\cache.properties"
+                },
+                {
+                    "filename": ".gradle\\buildOutputCleanup\\outputFiles.bin",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0,
+                    "filename": ".gradle\\vcs-1\\gc.properties"
+                },
+                {
+                    "blank": 0,
+                    "code": 1,
+                    "comment": 0,
+                    "filename": "access.txt"
+                },
+                {
+                    "filename": "bin\\main\\examplefuncsplayer\\RobotPlayer.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\SubmittedCode\\testPlayerv01 (2)-Sprint-1-11-21.zip",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\SubmittedCode\\testPlayerv02 -Submission - 1-11-21.zip",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\SubmittedCode\\testPlayerv03-Submission-1-16-21.zip",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\SubmittedCode\\testPlayerv04-Submission-1-16-21(2).zip",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\SubmittedCode\\testPlayerv05-Submission-1-17-21.zip",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\SubmittedCode\\testPlayerv06-Submission-1-18-21.zip",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\SubmittedCode\\testPlayerv07-Submission-1-18-21.zip",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\SubmittedCode\\testPlayerv08-SprintSubmission-1-18-21.zip",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\SubmittedCode\\testPlayerv09 - Submission -1-20-21.zip",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\SubmittedCode\\testPlayerv10 - Submission - 1-20-21.zip",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\SubmittedCode\\testPlayerv11 - Submission - 1-20-21.zip",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\SubmittedCode\\testPlayerv12 - Submission - 1-20-21.zip",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\SubmittedCode\\testPlayerv13 - Submission - 1-21-21.zip",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\SubmittedCode\\testPlayerv14 - Submission - 1-21-21.zip",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\SubmittedCode\\testPlayerv15 - Submission - 1-21-21.zip",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\SubmittedCode\\testPlayerv16 - Submission - 1-22-21.zip",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\SubmittedCode\\testPlayerv17 - Submission - 1-23-21.zip",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\SubmittedCode\\testPlayerv19-Submission-1-23-21.zip",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\SubmittedCode\\testPlayerv20-Submission-1-23-21.zip",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\SubmittedCode\\testPlayerv24-Submission-1-24-21.zip",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\SubmittedCode\\testPlayerv25 - Submission-1-26-21.zip",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\SubmittedCode\\testPlayerv26-Submission-1-26-21.zip",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\SubmittedCode\\testPlayerv27-Submission-1-27-21.zip",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\SubmittedCode\\testPlayerv28-Submission-1-28-21.zip",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\testPlayerv01\\EnlightenmentCenterTest01$RobotBuilder.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\testPlayerv01\\EnlightenmentCenterTest01.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\testPlayerv01\\Model\\EnlightenmentCenterInfo.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\testPlayerv01\\MuckrakerTest01.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\testPlayerv01\\PoliticianTest01.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\testPlayerv01\\RobotPlayer$RobotRoles.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\testPlayerv01\\RobotPlayer.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\testPlayerv01\\Roles\\PoliticianECBomb.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\testPlayerv01\\Roles\\PoliticianNormal.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\testPlayerv01\\Roles\\Scout.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\testPlayerv01\\Service\\Communication.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\testPlayerv01\\Service\\EnlightenmentCenterHelper.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\testPlayerv01\\Service\\Movement.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\testPlayerv01\\Service\\Sense.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\testPlayerv01\\Slanderer.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\testPlayerv09\\EnlightenmentCenterTest01$RobotBuilder.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\testPlayerv09\\EnlightenmentCenterTest01.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\testPlayerv09\\MuckrakerTest01.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\testPlayerv09\\PoliticianTest01.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\testPlayerv09\\RobotPlayer$RobotRoles.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\testPlayerv09\\RobotPlayer.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\testPlayerv09\\Roles\\PoliticianECBomb.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\testPlayerv09\\Roles\\PoliticianNormal.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\testPlayerv09\\Service\\Communication.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\testPlayerv09\\Service\\EnlightenmentCenterHelper.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\testPlayerv09\\Service\\Movement.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\testPlayerv09\\Service\\SenseRobots.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\testPlayerv09\\Slanderer.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\testPlayerv29.zip",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\test\\examplefuncsplayer\\RobotPlayerTest.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "blank": 72,
+                    "code": 280,
+                    "comment": 42,
+                    "filename": "build.gradle"
+                },
+                {
+                    "filename": "build\\classes\\examplefuncsplayer\\RobotPlayer$1.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\examplefuncsplayer\\RobotPlayer.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\testPlayerv01\\EnlightenmentCenterTest01$RobotBuilder.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\testPlayerv01\\EnlightenmentCenterTest01.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\testPlayerv01\\Model\\EnlightenmentCenterInfo.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\testPlayerv01\\MuckrakerTest01.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\testPlayerv01\\PoliticianTest01.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\testPlayerv01\\RobotPlayer$1.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\testPlayerv01\\RobotPlayer$RobotRoles.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\testPlayerv01\\RobotPlayer.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\testPlayerv01\\Roles\\PoliticianECBomb.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\testPlayerv01\\Roles\\PoliticianNormal.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\testPlayerv01\\Roles\\Scout.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\testPlayerv01\\Service\\Communication.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\testPlayerv01\\Service\\EnlightenmentCenterHelper.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\testPlayerv01\\Service\\Movement.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\testPlayerv01\\Service\\Sense.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\testPlayerv01\\Slanderer.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\testPlayerv09\\EnlightenmentCenterTest01$RobotBuilder.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\testPlayerv09\\EnlightenmentCenterTest01.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\testPlayerv09\\MuckrakerTest01.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\testPlayerv09\\PoliticianTest01.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\testPlayerv09\\RobotPlayer$1.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\testPlayerv09\\RobotPlayer$RobotRoles.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\testPlayerv09\\RobotPlayer.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\testPlayerv09\\Roles\\PoliticianECBomb.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\testPlayerv09\\Roles\\PoliticianNormal.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\testPlayerv09\\Service\\Communication.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\testPlayerv09\\Service\\EnlightenmentCenterHelper.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\testPlayerv09\\Service\\Movement.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\testPlayerv09\\Service\\SenseRobots.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\testPlayerv09\\Slanderer.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\libs\\battlecode21-scaffold-master.jar",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "blank": 0,
+                    "code": 96,
+                    "comment": 0,
+                    "filename": "build\\reports\\tests\\test\\classes\\examplefuncsplayer.RobotPlayerTest.html"
+                },
+                {
+                    "blank": 31,
+                    "code": 148,
+                    "comment": 0,
+                    "filename": "build\\reports\\tests\\test\\css\\base-style.css"
+                },
+                {
+                    "blank": 18,
+                    "code": 66,
+                    "comment": 0,
+                    "filename": "build\\reports\\tests\\test\\css\\style.css"
+                },
+                {
+                    "blank": 0,
+                    "code": 133,
+                    "comment": 0,
+                    "filename": "build\\reports\\tests\\test\\index.html"
+                },
+                {
+                    "blank": 45,
+                    "code": 148,
+                    "comment": 1,
+                    "filename": "build\\reports\\tests\\test\\js\\report.js"
+                },
+                {
+                    "blank": 0,
+                    "code": 103,
+                    "comment": 0,
+                    "filename": "build\\reports\\tests\\test\\packages\\examplefuncsplayer.html"
+                },
+                {
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0,
+                    "filename": "build\\test-results\\test\\binary\\output.bin"
+                },
+                {
+                    "blank": 0,
+                    "code": 1,
+                    "comment": 0,
+                    "filename": "build\\test-results\\test\\binary\\output.bin.idx"
+                },
+                {
+                    "filename": "build\\test-results\\test\\binary\\results.bin",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "blank": 0,
+                    "code": 7,
+                    "comment": 0,
+                    "filename": "build\\test-results\\test\\TEST-examplefuncsplayer.RobotPlayerTest.xml"
+                },
+                {
+                    "filename": "build\\tests\\examplefuncsplayer\\RobotPlayerTest.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "blank": 1,
+                    "code": 1,
+                    "comment": 0,
+                    "filename": "build\\tmp\\jar\\MANIFEST.MF"
+                },
+                {
+                    "filename": "build\\tmp\\scala\\compilerAnalysis\\compileScala.analysis",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "blank": 0,
+                    "code": 2,
+                    "comment": 0,
+                    "filename": "build\\tmp\\scala\\compilerAnalysis\\compileScala.mapping"
+                },
+                {
+                    "filename": "build\\tmp\\scala\\compilerAnalysis\\compileTestScala.analysis",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\Battlecode Client.exe",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\chrome_100_percent.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\chrome_200_percent.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\d3dcompiler_47.dll",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\ffmpeg.dll",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\icudtl.dat",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\libEGL.dll",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\libGLESv2.dll",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "blank": 3,
+                    "code": 17,
+                    "comment": 0,
+                    "filename": "client\\LICENSE.electron.txt"
+                },
+                {
+                    "blank": 2497,
+                    "code": 13430,
+                    "comment": 1,
+                    "filename": "client\\LICENSES.chromium.html"
+                },
+                {
+                    "filename": "client\\locales\\am.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\ar.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\bg.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\bn.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\ca.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\cs.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\da.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\de.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\el.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\en-GB.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\en-US.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\es-419.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\es.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\et.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\fa.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\fi.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\fil.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\fr.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\gu.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\he.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\hi.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\hr.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\hu.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\id.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\it.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\ja.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\kn.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\ko.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\lt.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\lv.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\ml.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\mr.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\ms.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\nb.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\nl.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\pl.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\pt-BR.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\pt-PT.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\ro.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\ru.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\sk.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\sl.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\sr.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\sv.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\sw.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\ta.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\te.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\th.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\tr.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\uk.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\vi.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\zh-CN.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\zh-TW.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\resources.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\snapshot_blob.bin",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\swiftshader\\Battlecode Client.exe",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\swiftshader\\libEGL.dll",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\swiftshader\\libGLESv2.dll",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\v8_context_snapshot.bin",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\vk_swiftshader.dll",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "blank": 0,
+                    "code": 1,
+                    "comment": 0,
+                    "filename": "client\\vk_swiftshader_icd.json"
+                },
+                {
+                    "filename": "client\\vulkan-1.dll",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "blank": 0,
+                    "code": 8,
+                    "comment": 0,
+                    "filename": "gradle.properties"
+                },
+                {
+                    "filename": "gradle\\wrapper\\gradle-wrapper.jar",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "blank": 0,
+                    "code": 5,
+                    "comment": 1,
+                    "filename": "gradle\\wrapper\\gradle-wrapper.properties"
+                },
+                {
+                    "blank": 11,
+                    "code": 77,
+                    "comment": 1,
+                    "filename": "gradlew"
+                },
+                {
+                    "blank": 9,
+                    "code": 42,
+                    "comment": 0,
+                    "filename": "gradlew.bat"
+                },
+                {
+                    "blank": 42,
+                    "code": 189,
+                    "comment": 1,
+                    "filename": "LICENSE"
+                },
+                {
+                    "filename": "matches\\ApolloReplays\\atomAlpha-vs-examplefuncsplayer-on-circle.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\examplefuncsplayer-vs-examplefuncsplayer-on-maptestsmall.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\testPlayerv01-vs-examplefuncsplayer-on-Bog.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\testPlayerv01-vs-examplefuncsplayer-on-Chevron.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\testPlayerv01-vs-examplefuncsplayer-on-circle.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\testPlayerv01-vs-examplefuncsplayer-on-Gridlock.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\testPlayerv01-vs-examplefuncsplayer-on-Illusion.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\testPlayerv01-vs-examplefuncsplayer-on-maptestsmall.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\testPlayerv01-vs-examplefuncsplayer-on-quadrants.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\testPlayerv01-vs-testPlayerv08-on-Andromeda.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\testPlayerv01-vs-testPlayerv08-on-SlowMusic.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\testPlayerv01-vs-testPlayerv09-on-Andromeda.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\testPlayerv08-vs-testPlayerv01-on-Andromeda.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\testPlayerv08-vs-testPlayerv01-on-BadSnowflake.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\testPlayerv08-vs-testPlayerv01-on-CringyAsF.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\testPlayerv08-vs-testPlayerv01-on-NotAPuzzle.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\testPlayerv08-vs-testPlayerv01-on-SeaFloor.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\testPlayerv08-vs-testPlayerv01-on-SlowMusic.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\testPlayerv09-vs-testPlayerv01-on-Andromeda.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\testPlayerv09-vs-testPlayerv01-on-Chevron.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\testPlayerv09-vs-testPlayerv01-on-circle.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\testPlayerv09-vs-testPlayerv01-on-Corridor.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\testPlayerv09-vs-testPlayerv01-on-FindYourWay.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\testPlayerv09-vs-testPlayerv01-on-GetShrekt.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\testPlayerv09-vs-testPlayerv01-on-Goldfish.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\testPlayerv09-vs-testPlayerv01-on-Licc.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\testPlayerv09-vs-testPlayerv01-on-MainCampus.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\testPlayerv09-vs-testPlayerv01-on-Surprised.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\tmscmooReplays\\r10-vs-r09-on-quadrants.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\tmscmooReplays\\r10-vs-r11-on-quadrants.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\tmscmooReplays\\r14-vs-r15-on-circle.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\tmscmooReplays\\r15-vs-r14-on-circle.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "blank": 7,
+                    "code": 20,
+                    "comment": 1,
+                    "filename": "README.md"
+                },
+                {
+                    "blank": 17,
+                    "code": 96,
+                    "comment": 36,
+                    "filename": "src\\examplefuncsplayer\\RobotPlayer.java"
+                },
+                {
+                    "filename": "src\\SubmittedCode\\testPlayerv01 (2)-Sprint-1-11-21.zip",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "src\\SubmittedCode\\testPlayerv02 -Submission - 1-11-21.zip",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "src\\SubmittedCode\\testPlayerv03-Submission-1-16-21.zip",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "src\\SubmittedCode\\testPlayerv04-Submission-1-16-21(2).zip",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "src\\SubmittedCode\\testPlayerv05-Submission-1-17-21.zip",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "src\\SubmittedCode\\testPlayerv06-Submission-1-18-21.zip",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "src\\SubmittedCode\\testPlayerv07-Submission-1-18-21.zip",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "src\\SubmittedCode\\testPlayerv08-SprintSubmission-1-18-21.zip",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "src\\SubmittedCode\\testPlayerv09 - Submission -1-20-21.zip",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "src\\SubmittedCode\\testPlayerv10 - Submission - 1-20-21.zip",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "src\\SubmittedCode\\testPlayerv11 - Submission - 1-20-21.zip",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "src\\SubmittedCode\\testPlayerv12 - Submission - 1-20-21.zip",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "src\\SubmittedCode\\testPlayerv13 - Submission - 1-21-21.zip",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "src\\SubmittedCode\\testPlayerv14 - Submission - 1-21-21.zip",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "src\\SubmittedCode\\testPlayerv15 - Submission - 1-21-21.zip",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "src\\SubmittedCode\\testPlayerv16 - Submission - 1-22-21.zip",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "src\\SubmittedCode\\testPlayerv17 - Submission - 1-23-21.zip",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "src\\SubmittedCode\\testPlayerv19-Submission-1-23-21.zip",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "src\\SubmittedCode\\testPlayerv20-Submission-1-23-21.zip",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "src\\SubmittedCode\\testPlayerv24-Submission-1-24-21.zip",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "src\\SubmittedCode\\testPlayerv25 - Submission-1-26-21.zip",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "src\\SubmittedCode\\testPlayerv26-Submission-1-26-21.zip",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "src\\SubmittedCode\\testPlayerv27-Submission-1-27-21.zip",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "src\\SubmittedCode\\testPlayerv28-Submission-1-28-21.zip",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "src\\SubmittedCode\\testPlayerv29-Submission-1-28-21.zip",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "blank": 110,
+                    "code": 752,
+                    "comment": 27,
+                    "filename": "src\\testPlayerv01\\EnlightenmentCenterTest01.java"
+                },
+                {
+                    "blank": 2,
+                    "code": 13,
+                    "comment": 0,
+                    "filename": "src\\testPlayerv01\\Model\\EnlightenmentCenterInfo.java"
+                },
+                {
+                    "blank": 30,
+                    "code": 215,
+                    "comment": 15,
+                    "filename": "src\\testPlayerv01\\MuckrakerTest01.java"
+                },
+                {
+                    "blank": 60,
+                    "code": 470,
+                    "comment": 18,
+                    "filename": "src\\testPlayerv01\\PoliticianTest01.java"
+                },
+                {
+                    "blank": 38,
+                    "code": 196,
+                    "comment": 47,
+                    "filename": "src\\testPlayerv01\\RobotPlayer.java"
+                },
+                {
+                    "blank": 38,
+                    "code": 383,
+                    "comment": 16,
+                    "filename": "src\\testPlayerv01\\Roles\\PoliticianECBomb.java"
+                },
+                {
+                    "blank": 27,
+                    "code": 314,
+                    "comment": 17,
+                    "filename": "src\\testPlayerv01\\Roles\\PoliticianNormal.java"
+                },
+                {
+                    "blank": 5,
+                    "code": 86,
+                    "comment": 1,
+                    "filename": "src\\testPlayerv01\\Roles\\Scout.java"
+                },
+                {
+                    "blank": 75,
+                    "code": 400,
+                    "comment": 4,
+                    "filename": "src\\testPlayerv01\\Service\\Communication.java"
+                },
+                {
+                    "blank": 56,
+                    "code": 456,
+                    "comment": 7,
+                    "filename": "src\\testPlayerv01\\Service\\EnlightenmentCenterHelper.java"
+                },
+                {
+                    "blank": 62,
+                    "code": 221,
+                    "comment": 129,
+                    "filename": "src\\testPlayerv01\\Service\\Movement.java"
+                },
+                {
+                    "blank": 30,
+                    "code": 241,
+                    "comment": 2,
+                    "filename": "src\\testPlayerv01\\Service\\Sense.java"
+                },
+                {
+                    "blank": 30,
+                    "code": 283,
+                    "comment": 4,
+                    "filename": "src\\testPlayerv01\\Slanderer.java"
+                },
+                {
+                    "blank": 76,
+                    "code": 362,
+                    "comment": 28,
+                    "filename": "src\\testPlayerv09\\EnlightenmentCenterTest01.java"
+                },
+                {
+                    "blank": 17,
+                    "code": 121,
+                    "comment": 11,
+                    "filename": "src\\testPlayerv09\\MuckrakerTest01.java"
+                },
+                {
+                    "blank": 53,
+                    "code": 370,
+                    "comment": 16,
+                    "filename": "src\\testPlayerv09\\PoliticianTest01.java"
+                },
+                {
+                    "blank": 38,
+                    "code": 175,
+                    "comment": 48,
+                    "filename": "src\\testPlayerv09\\RobotPlayer.java"
+                },
+                {
+                    "blank": 25,
+                    "code": 261,
+                    "comment": 23,
+                    "filename": "src\\testPlayerv09\\Roles\\PoliticianECBomb.java"
+                },
+                {
+                    "blank": 18,
+                    "code": 179,
+                    "comment": 10,
+                    "filename": "src\\testPlayerv09\\Roles\\PoliticianNormal.java"
+                },
+                {
+                    "blank": 54,
+                    "code": 278,
+                    "comment": 5,
+                    "filename": "src\\testPlayerv09\\Service\\Communication.java"
+                },
+                {
+                    "blank": 22,
+                    "code": 229,
+                    "comment": 17,
+                    "filename": "src\\testPlayerv09\\Service\\EnlightenmentCenterHelper.java"
+                },
+                {
+                    "blank": 26,
+                    "code": 176,
+                    "comment": 9,
+                    "filename": "src\\testPlayerv09\\Service\\Movement.java"
+                },
+                {
+                    "blank": 18,
+                    "code": 121,
+                    "comment": 2,
+                    "filename": "src\\testPlayerv09\\Service\\SenseRobots.java"
+                },
+                {
+                    "blank": 19,
+                    "code": 111,
+                    "comment": 1,
+                    "filename": "src\\testPlayerv09\\Slanderer.java"
+                },
+                {
+                    "blank": 4,
+                    "code": 9,
+                    "comment": 0,
+                    "filename": "test\\examplefuncsplayer\\RobotPlayerTest.java"
+                },
+                {
+                    "blank": 0,
+                    "code": 1,
+                    "comment": 0,
+                    "filename": "version.txt"
+                }
+            ]
+        },
+        {
+            "version": "0.2.7",
+            "counttime": "2021-01-30 16:09:22",
+            "filesum": 210,
+            "codesum": 18821,
+            "commentsum": 368,
+            "blanksum": 3303,
+            "statistics": {
+                ".md": {
+                    "code": 20,
+                    "comment": 1,
+                    "blank": 7
+                },
+                ".txt": {
+                    "code": 19,
+                    "comment": 0,
+                    "blank": 3
+                },
+                ".json": {
+                    "code": 1,
+                    "comment": 0,
+                    "blank": 0
+                },
+                ".java": {
+                    "code": 4039,
+                    "comment": 287,
+                    "blank": 567
+                },
+                "": {
+                    "code": 269,
+                    "comment": 35,
+                    "blank": 53
+                },
+                ".properties": {
+                    "code": 15,
+                    "comment": 1,
+                    "blank": 0
+                },
+                ".gradle": {
+                    "code": 280,
+                    "comment": 42,
+                    "blank": 72
+                },
+                ".bat": {
+                    "code": 42,
+                    "comment": 0,
+                    "blank": 9
+                },
+                ".MF": {
+                    "code": 1,
+                    "comment": 0,
+                    "blank": 1
+                },
+                ".xml": {
+                    "code": 7,
+                    "comment": 0,
+                    "blank": 0
+                },
+                ".idx": {
+                    "code": 1,
+                    "comment": 0,
+                    "blank": 0
+                },
+                ".mapping": {
+                    "code": 2,
+                    "comment": 0,
+                    "blank": 0
+                },
+                ".bin": {
+                    "code": 1,
+                    "comment": 0,
+                    "blank": 0
+                },
+                ".html": {
+                    "code": 13762,
+                    "comment": 1,
+                    "blank": 2497
+                },
+                ".css": {
+                    "code": 214,
+                    "comment": 0,
+                    "blank": 49
+                },
+                ".js": {
+                    "code": 148,
+                    "comment": 1,
+                    "blank": 45
+                }
+            },
+            "filelist": [
+                {
+                    "blank": 0,
+                    "code": 2,
+                    "comment": 0,
+                    "filename": ".gitattributes"
+                },
+                {
+                    "blank": 0,
+                    "code": 1,
+                    "comment": 33,
+                    "filename": ".gitignore"
+                },
+                {
+                    "filename": ".gradle\\6.0.1\\executionHistory\\executionHistory.bin",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": ".gradle\\6.0.1\\executionHistory\\executionHistory.lock",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "blank": 0,
+                    "code": 1,
+                    "comment": 0,
+                    "filename": ".gradle\\6.0.1\\fileChanges\\last-build.bin"
+                },
+                {
+                    "filename": ".gradle\\6.0.1\\fileContent\\fileContent.lock",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": ".gradle\\6.0.1\\fileHashes\\fileHashes.bin",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": ".gradle\\6.0.1\\fileHashes\\fileHashes.lock",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": ".gradle\\6.0.1\\fileHashes\\resourceHashesCache.bin",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0,
+                    "filename": ".gradle\\6.0.1\\gc.properties"
+                },
+                {
+                    "filename": ".gradle\\6.0.1\\javaCompile\\classAnalysis.bin",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": ".gradle\\6.0.1\\javaCompile\\jarAnalysis.bin",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": ".gradle\\6.0.1\\javaCompile\\javaCompile.lock",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": ".gradle\\6.0.1\\javaCompile\\taskHistory.bin",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": ".gradle\\buildOutputCleanup\\buildOutputCleanup.lock",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "blank": 0,
+                    "code": 2,
+                    "comment": 0,
+                    "filename": ".gradle\\buildOutputCleanup\\cache.properties"
+                },
+                {
+                    "filename": ".gradle\\buildOutputCleanup\\outputFiles.bin",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0,
+                    "filename": ".gradle\\vcs-1\\gc.properties"
+                },
+                {
+                    "blank": 0,
+                    "code": 1,
+                    "comment": 0,
+                    "filename": "access.txt"
+                },
+                {
+                    "filename": "bin\\main\\testPlayerv01\\EnlightenmentCenterTest01$RobotBuilder.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\testPlayerv01\\EnlightenmentCenterTest01.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\testPlayerv01\\Model\\EnlightenmentCenterInfo.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\testPlayerv01\\MuckrakerTest01.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\testPlayerv01\\PoliticianTest01.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\testPlayerv01\\RobotPlayer$RobotRoles.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\testPlayerv01\\RobotPlayer.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\testPlayerv01\\Roles\\PoliticianECBomb.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\testPlayerv01\\Roles\\PoliticianNormal.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\testPlayerv01\\Roles\\Scout.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\testPlayerv01\\Service\\Communication.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\testPlayerv01\\Service\\EnlightenmentCenterHelper.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\testPlayerv01\\Service\\Movement.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\testPlayerv01\\Service\\Sense.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\main\\testPlayerv01\\Slanderer.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "bin\\test\\examplefuncsplayer\\RobotPlayerTest.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "blank": 72,
+                    "code": 280,
+                    "comment": 42,
+                    "filename": "build.gradle"
+                },
+                {
+                    "filename": "build\\classes\\examplefuncsplayer\\RobotPlayer$1.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\examplefuncsplayer\\RobotPlayer.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\testPlayerv01\\EnlightenmentCenterTest01$RobotBuilder.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\testPlayerv01\\EnlightenmentCenterTest01.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\testPlayerv01\\Model\\EnlightenmentCenterInfo.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\testPlayerv01\\MuckrakerTest01.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\testPlayerv01\\PoliticianTest01.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\testPlayerv01\\RobotPlayer$1.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\testPlayerv01\\RobotPlayer$RobotRoles.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\testPlayerv01\\RobotPlayer.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\testPlayerv01\\Roles\\PoliticianECBomb.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\testPlayerv01\\Roles\\PoliticianNormal.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\testPlayerv01\\Roles\\Scout.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\testPlayerv01\\Service\\Communication.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\testPlayerv01\\Service\\EnlightenmentCenterHelper.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\testPlayerv01\\Service\\Movement.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\testPlayerv01\\Service\\Sense.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\testPlayerv01\\Slanderer.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\testPlayerv09\\EnlightenmentCenterTest01$RobotBuilder.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\testPlayerv09\\EnlightenmentCenterTest01.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\testPlayerv09\\MuckrakerTest01.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\testPlayerv09\\PoliticianTest01.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\testPlayerv09\\RobotPlayer$1.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\testPlayerv09\\RobotPlayer$RobotRoles.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\testPlayerv09\\RobotPlayer.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\testPlayerv09\\Roles\\PoliticianECBomb.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\testPlayerv09\\Roles\\PoliticianNormal.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\testPlayerv09\\Service\\Communication.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\testPlayerv09\\Service\\EnlightenmentCenterHelper.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\testPlayerv09\\Service\\Movement.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\testPlayerv09\\Service\\SenseRobots.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\classes\\testPlayerv09\\Slanderer.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "build\\libs\\battlecode21-scaffold-master.jar",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "blank": 0,
+                    "code": 96,
+                    "comment": 0,
+                    "filename": "build\\reports\\tests\\test\\classes\\examplefuncsplayer.RobotPlayerTest.html"
+                },
+                {
+                    "blank": 31,
+                    "code": 148,
+                    "comment": 0,
+                    "filename": "build\\reports\\tests\\test\\css\\base-style.css"
+                },
+                {
+                    "blank": 18,
+                    "code": 66,
+                    "comment": 0,
+                    "filename": "build\\reports\\tests\\test\\css\\style.css"
+                },
+                {
+                    "blank": 0,
+                    "code": 133,
+                    "comment": 0,
+                    "filename": "build\\reports\\tests\\test\\index.html"
+                },
+                {
+                    "blank": 45,
+                    "code": 148,
+                    "comment": 1,
+                    "filename": "build\\reports\\tests\\test\\js\\report.js"
+                },
+                {
+                    "blank": 0,
+                    "code": 103,
+                    "comment": 0,
+                    "filename": "build\\reports\\tests\\test\\packages\\examplefuncsplayer.html"
+                },
+                {
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0,
+                    "filename": "build\\test-results\\test\\binary\\output.bin"
+                },
+                {
+                    "blank": 0,
+                    "code": 1,
+                    "comment": 0,
+                    "filename": "build\\test-results\\test\\binary\\output.bin.idx"
+                },
+                {
+                    "filename": "build\\test-results\\test\\binary\\results.bin",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "blank": 0,
+                    "code": 7,
+                    "comment": 0,
+                    "filename": "build\\test-results\\test\\TEST-examplefuncsplayer.RobotPlayerTest.xml"
+                },
+                {
+                    "filename": "build\\tests\\examplefuncsplayer\\RobotPlayerTest.class",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "blank": 1,
+                    "code": 1,
+                    "comment": 0,
+                    "filename": "build\\tmp\\jar\\MANIFEST.MF"
+                },
+                {
+                    "filename": "build\\tmp\\scala\\compilerAnalysis\\compileScala.analysis",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "blank": 0,
+                    "code": 2,
+                    "comment": 0,
+                    "filename": "build\\tmp\\scala\\compilerAnalysis\\compileScala.mapping"
+                },
+                {
+                    "filename": "build\\tmp\\scala\\compilerAnalysis\\compileTestScala.analysis",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\Battlecode Client.exe",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\chrome_100_percent.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\chrome_200_percent.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\d3dcompiler_47.dll",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\ffmpeg.dll",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\icudtl.dat",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\libEGL.dll",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\libGLESv2.dll",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "blank": 3,
+                    "code": 17,
+                    "comment": 0,
+                    "filename": "client\\LICENSE.electron.txt"
+                },
+                {
+                    "blank": 2497,
+                    "code": 13430,
+                    "comment": 1,
+                    "filename": "client\\LICENSES.chromium.html"
+                },
+                {
+                    "filename": "client\\locales\\am.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\ar.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\bg.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\bn.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\ca.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\cs.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\da.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\de.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\el.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\en-GB.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\en-US.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\es-419.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\es.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\et.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\fa.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\fi.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\fil.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\fr.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\gu.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\he.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\hi.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\hr.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\hu.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\id.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\it.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\ja.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\kn.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\ko.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\lt.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\lv.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\ml.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\mr.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\ms.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\nb.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\nl.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\pl.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\pt-BR.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\pt-PT.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\ro.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\ru.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\sk.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\sl.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\sr.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\sv.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\sw.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\ta.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\te.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\th.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\tr.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\uk.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\vi.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\zh-CN.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\locales\\zh-TW.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\resources.pak",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\snapshot_blob.bin",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\swiftshader\\Battlecode Client.exe",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\swiftshader\\libEGL.dll",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\swiftshader\\libGLESv2.dll",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\v8_context_snapshot.bin",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "client\\vk_swiftshader.dll",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "blank": 0,
+                    "code": 1,
+                    "comment": 0,
+                    "filename": "client\\vk_swiftshader_icd.json"
+                },
+                {
+                    "filename": "client\\vulkan-1.dll",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "blank": 0,
+                    "code": 8,
+                    "comment": 0,
+                    "filename": "gradle.properties"
+                },
+                {
+                    "filename": "gradle\\wrapper\\gradle-wrapper.jar",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "blank": 0,
+                    "code": 5,
+                    "comment": 1,
+                    "filename": "gradle\\wrapper\\gradle-wrapper.properties"
+                },
+                {
+                    "blank": 11,
+                    "code": 77,
+                    "comment": 1,
+                    "filename": "gradlew"
+                },
+                {
+                    "blank": 9,
+                    "code": 42,
+                    "comment": 0,
+                    "filename": "gradlew.bat"
+                },
+                {
+                    "blank": 42,
+                    "code": 189,
+                    "comment": 1,
+                    "filename": "LICENSE"
+                },
+                {
+                    "filename": "matches\\ApolloReplays\\atomAlpha-vs-examplefuncsplayer-on-circle.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\examplefuncsplayer-vs-examplefuncsplayer-on-maptestsmall.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\testPlayerv01-vs-examplefuncsplayer-on-Bog.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\testPlayerv01-vs-examplefuncsplayer-on-Chevron.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\testPlayerv01-vs-examplefuncsplayer-on-circle.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\testPlayerv01-vs-examplefuncsplayer-on-Gridlock.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\testPlayerv01-vs-examplefuncsplayer-on-Illusion.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\testPlayerv01-vs-examplefuncsplayer-on-maptestsmall.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\testPlayerv01-vs-examplefuncsplayer-on-quadrants.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\testPlayerv01-vs-testPlayerv08-on-Andromeda.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\testPlayerv01-vs-testPlayerv08-on-SlowMusic.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\testPlayerv01-vs-testPlayerv09-on-Andromeda.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\testPlayerv08-vs-testPlayerv01-on-Andromeda.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\testPlayerv08-vs-testPlayerv01-on-BadSnowflake.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\testPlayerv08-vs-testPlayerv01-on-CringyAsF.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\testPlayerv08-vs-testPlayerv01-on-NotAPuzzle.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\testPlayerv08-vs-testPlayerv01-on-SeaFloor.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\testPlayerv08-vs-testPlayerv01-on-SlowMusic.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\testPlayerv09-vs-testPlayerv01-on-Andromeda.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\testPlayerv09-vs-testPlayerv01-on-Chevron.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\testPlayerv09-vs-testPlayerv01-on-circle.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\testPlayerv09-vs-testPlayerv01-on-Corridor.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\testPlayerv09-vs-testPlayerv01-on-FindYourWay.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\testPlayerv09-vs-testPlayerv01-on-GetShrekt.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\testPlayerv09-vs-testPlayerv01-on-Goldfish.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\testPlayerv09-vs-testPlayerv01-on-Licc.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\testPlayerv09-vs-testPlayerv01-on-MainCampus.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\testPlayerv09-vs-testPlayerv01-on-Surprised.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\tmscmooReplays\\r10-vs-r09-on-quadrants.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\tmscmooReplays\\r10-vs-r11-on-quadrants.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\tmscmooReplays\\r14-vs-r15-on-circle.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "matches\\tmscmooReplays\\r15-vs-r14-on-circle.bc21",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "blank": 7,
+                    "code": 20,
+                    "comment": 1,
+                    "filename": "README.md"
+                },
+                {
+                    "blank": 110,
+                    "code": 752,
+                    "comment": 27,
+                    "filename": "src\\testPlayerv01\\EnlightenmentCenterTest01.java"
+                },
+                {
+                    "blank": 2,
+                    "code": 13,
+                    "comment": 0,
+                    "filename": "src\\testPlayerv01\\Model\\EnlightenmentCenterInfo.java"
+                },
+                {
+                    "blank": 30,
+                    "code": 215,
+                    "comment": 15,
+                    "filename": "src\\testPlayerv01\\MuckrakerTest01.java"
+                },
+                {
+                    "blank": 60,
+                    "code": 470,
+                    "comment": 18,
+                    "filename": "src\\testPlayerv01\\PoliticianTest01.java"
+                },
+                {
+                    "blank": 38,
+                    "code": 196,
+                    "comment": 47,
+                    "filename": "src\\testPlayerv01\\RobotPlayer.java"
+                },
+                {
+                    "blank": 38,
+                    "code": 383,
+                    "comment": 16,
+                    "filename": "src\\testPlayerv01\\Roles\\PoliticianECBomb.java"
+                },
+                {
+                    "blank": 27,
+                    "code": 314,
+                    "comment": 17,
+                    "filename": "src\\testPlayerv01\\Roles\\PoliticianNormal.java"
+                },
+                {
+                    "blank": 5,
+                    "code": 86,
+                    "comment": 1,
+                    "filename": "src\\testPlayerv01\\Roles\\Scout.java"
+                },
+                {
+                    "blank": 75,
+                    "code": 400,
+                    "comment": 4,
+                    "filename": "src\\testPlayerv01\\Service\\Communication.java"
+                },
+                {
+                    "blank": 56,
+                    "code": 456,
+                    "comment": 7,
+                    "filename": "src\\testPlayerv01\\Service\\EnlightenmentCenterHelper.java"
+                },
+                {
+                    "blank": 62,
+                    "code": 221,
+                    "comment": 129,
+                    "filename": "src\\testPlayerv01\\Service\\Movement.java"
+                },
+                {
+                    "blank": 30,
+                    "code": 241,
+                    "comment": 2,
+                    "filename": "src\\testPlayerv01\\Service\\Sense.java"
+                },
+                {
+                    "blank": 30,
+                    "code": 283,
+                    "comment": 4,
+                    "filename": "src\\testPlayerv01\\Slanderer.java"
+                },
+                {
+                    "blank": 4,
+                    "code": 9,
+                    "comment": 0,
+                    "filename": "test\\examplefuncsplayer\\RobotPlayerTest.java"
+                },
+                {
+                    "blank": 0,
+                    "code": 1,
+                    "comment": 0,
+                    "filename": "version.txt"
+                }
+            ]
+        }
+    ]
+}
