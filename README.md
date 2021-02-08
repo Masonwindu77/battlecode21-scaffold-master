@@ -1,3 +1,8 @@
+# Battlecode 2021 Repository
+My final bot is version 29. I had a lot of fun with this code and ended up placing in the 20s for scrimmaging. 
+
+Below is the readme from the official Battlecode repo. 
+
 # Battlecode 2021 Scaffold
 
 This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read https://2021.battlecode.org/getting-started!
