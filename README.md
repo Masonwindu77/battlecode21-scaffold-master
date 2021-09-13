@@ -1,5 +1,6 @@
 # Battlecode 2021 Repository
 My final bot is version 29. I had a lot of fun with this code and ended up placing in the 20s for scrimmaging. 
+The versions can be found here: battlecode21-scaffold-master/src/SubmittedCode/
 
 Below is the readme from the official Battlecode repo. 
 
